@@ -1,0 +1,113 @@
+﻿<UserControl
+    x:Class="StreamDeck.ObsOverlay.VMeter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:StreamDeck.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:StreamDeck.ObsOverlay"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    d:DesignHeight="200"
+    d:DesignWidth="30"
+    Background="Transparent"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converter:VuConverter x:Key="VuConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <ListBox
+                Background="Transparent"
+                BorderThickness="0"
+                ItemsSource="{Binding Meters}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </ListBox.Resources>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Width="5"
+                            Margin="0"
+                            BorderThickness="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                    <GradientStop Offset="0" Color="Lime" />
+                                    <GradientStop Offset="0.66" Color="Lime" />
+                                    <GradientStop Offset="0.66" Color="Yellow" />
+                                    <GradientStop Offset="0.86" Color="Yellow" />
+                                    <GradientStop Offset="0.86" Color="Red" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Border
+                                VerticalAlignment="Top"
+                                Background="#71000000"
+                                BorderThickness="0">
+                                <Border.Height>
+                                    <MultiBinding Converter="{StaticResource VuConverter}">
+                                        <Binding />
+                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type Border}}" />
+                                    </MultiBinding>
+                                </Border.Height>
+                            </Border>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="FontSize" Value="10" />
+                    </Style>
+                </Grid.Resources>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock>0</TextBlock>
+                <TextBlock Grid.Row="1">-5</TextBlock>
+                <TextBlock Grid.Row="2">-10</TextBlock>
+                <TextBlock Grid.Row="3">-15</TextBlock>
+                <TextBlock Grid.Row="4">-20</TextBlock>
+                <TextBlock Grid.Row="5">-25</TextBlock>
+                <TextBlock Grid.Row="6">-30</TextBlock>
+                <TextBlock Grid.Row="7">-35</TextBlock>
+                <TextBlock Grid.Row="8">-40</TextBlock>
+                <TextBlock Grid.Row="9">-45</TextBlock>
+                <TextBlock Grid.Row="10">-50</TextBlock>
+                <TextBlock Grid.Row="11">-55</TextBlock>
+                <TextBlock Grid.Row="12">-60</TextBlock>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
