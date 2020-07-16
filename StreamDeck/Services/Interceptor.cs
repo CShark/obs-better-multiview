@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Interceptor;
 
 namespace StreamDeck.Services {
-    class Interceptor {
+    public class Interceptor {
         private Input _interceptor;
         public event Action<KeyPressedEventArgs> KeyPressed;
 
-        public Interceptor(Settings settings) {
+        public Interceptor() {
             _interceptor = new Input();
             _interceptor.KeyboardFilterMode = KeyboardFilterMode.All;
             _interceptor.OnKeyPressed += (sender, args) => { OnKeyPressed(args); };
@@ -22,6 +22,10 @@ namespace StreamDeck.Services {
 
         public void Stop() {
             _interceptor.Unload();
+        }
+
+        public void SendKey(Keys key, KeyState state, int deviceId) {
+            _interceptor.SendKey(key, state, deviceId);
         }
 
         protected virtual void OnKeyPressed(KeyPressedEventArgs obj) {

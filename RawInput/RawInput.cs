@@ -47,6 +47,14 @@ namespace RawInput_dll
             _devNotifyHandle = RegisterForDeviceNotifications(parentHandle);
         }
 
+        public RawInput(bool captureOnlyInForeground) {
+            base.CreateHandle(new CreateParams());
+            
+            _keyboardDriver = new RawKeyboard(Handle, captureOnlyInForeground);
+            _keyboardDriver.EnumerateDevices();
+            _devNotifyHandle = RegisterForDeviceNotifications(Handle);
+        }
+
         static IntPtr RegisterForDeviceNotifications(IntPtr parent)
         {
             var usbNotifyHandle = IntPtr.Zero;

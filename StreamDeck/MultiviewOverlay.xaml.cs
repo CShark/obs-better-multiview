@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -21,6 +22,7 @@ using NAudio.MediaFoundation;
 using OBS.WebSocket.NET;
 using OBS.WebSocket.NET.Types;
 using StreamDeck.Services;
+using StreamDeck.Services.Youtube;
 using Path = System.IO.Path;
 
 namespace StreamDeck {
@@ -30,10 +32,10 @@ namespace StreamDeck {
     public partial class MultiviewOverlay : Window {
         private Settings _settings;
         private ProfileSettings _profile;
-        
+
 
         #region Multiview Overlay in Front
-        
+
         enum SystemEvents {
             EVENT_SYSTEM_FOREGROUND = 0x03
         }
@@ -120,7 +122,7 @@ namespace StreamDeck {
         private void InitializeOBS() {
             var state = _obs.Api.GetStreamingStatus();
 
-            Dispatcher.Invoke(() => { IsStreaming = state.IsStreaming; });
+            Dispatcher.Invoke(() => { StreamState = state.IsStreaming ? OutputState.Started : OutputState.Stopped; });
 
             _obs.WebSocket.StreamingStateChanged += ObsOnStreamingStateChanged;
             _obs.WebSocket.StreamStatus += ObsOnStreamStatus;
@@ -146,12 +148,12 @@ namespace StreamDeck {
                 KBits = status.KbitsPerSec;
             });
         }
-        
+
         private void ObsOnStreamingStateChanged(ObsWebSocket sender, OutputState type) {
             Dispatcher.Invoke(() => {
-                IsStreaming = (type == OutputState.Started || type == OutputState.Stopping);
+                StreamState = type;
 
-                if (!IsStreaming) {
+                if (StreamState == OutputState.Stopped) {
                     FPS = 0;
                     KBits = 0;
                 }
@@ -160,12 +162,36 @@ namespace StreamDeck {
 
         #endregion
 
-        public static readonly DependencyProperty IsStreamingProperty = DependencyProperty.Register(
-            nameof(IsStreaming), typeof(bool), typeof(MultiviewOverlay), new PropertyMetadata(default(bool)));
+        #region Youtube
 
-        public bool IsStreaming {
-            get { return (bool) GetValue(IsStreamingProperty); }
-            set { SetValue(IsStreamingProperty, value); }
+        private YoutubeService _youtube;
+
+        public static readonly DependencyProperty LiveStreamsProperty = DependencyProperty.Register(
+            nameof(LiveStreams), typeof(ObservableCollection<LiveStream>), typeof(MultiviewOverlay),
+            new PropertyMetadata(default(ObservableCollection<LiveStream>)));
+
+        public ObservableCollection<LiveStream> LiveStreams {
+            get { return (ObservableCollection<LiveStream>) GetValue(LiveStreamsProperty); }
+            set { SetValue(LiveStreamsProperty, value); }
+        }
+
+        private async void InitializeYoutube() {
+            await _youtube.Authenticate();
+
+            Dispatcher.Invoke(() => { LiveStreams = _youtube.Livestreams; });
+        }
+
+        #endregion
+
+        #region Properties
+
+        public static readonly DependencyProperty StreamStateProperty = DependencyProperty.Register(
+            nameof(StreamState), typeof(OutputState), typeof(MultiviewOverlay),
+            new PropertyMetadata(default(OutputState)));
+
+        public OutputState StreamState {
+            get { return (OutputState) GetValue(StreamStateProperty); }
+            set { SetValue(StreamStateProperty, value); }
         }
 
         public static readonly DependencyProperty KBitsProperty = DependencyProperty.Register(
@@ -184,14 +210,48 @@ namespace StreamDeck {
             set { SetValue(FPSProperty, value); }
         }
 
-    public MultiviewOverlay(Settings settings, ProfileSettings profile, ObsService obs) {
+        #endregion
+
+        #region Commands
+
+        public static RoutedUICommand ObsStreamCommand { get; set; }
+
+        #endregion
+
+        public MultiviewOverlay(Settings settings, ProfileSettings profile, ObsService obs, YoutubeService youtube) {
             _settings = settings;
             _obs = obs;
             _profile = profile;
+            _youtube = youtube;
+
+            ObsStreamCommand = new RoutedUICommand();
 
             InitializeComponent();
             InitializeMultiviewHook();
             InitializeOBS();
+            InitializeYoutube();
+        }
+
+        private void ObsStream_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = StreamState != OutputState.Stopping;
+        }
+
+        private void ObsStream_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+            switch (StreamState) {
+                case OutputState.Started:
+                case OutputState.Starting:
+                    _obs.Api.StopStreaming();
+                    break;
+                case OutputState.Stopped:
+                    _obs.Api.StartStreaming();
+                    break;
+            }
+        }
+
+        private void ActiveLivestream_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if(ActiveLivestream.SelectedItem is LiveStream ls) {
+                MonitoringPreview.NavigateToString(ls.MonitorHTML);
+            }
         }
     }
 }

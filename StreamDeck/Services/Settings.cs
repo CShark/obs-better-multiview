@@ -13,5 +13,7 @@ namespace StreamDeck.Services {
         public string ObsPassword { get; set; } = null;
 
         public string KeyboardDevice { get; set; } = @"\Device\KeyboardClass0";
+
+        public string YoutubeOAuthKey { get; set; } = "Gv0y631pi4qeHsR9KQs4BkIq";
     }
 }

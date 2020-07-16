@@ -54,6 +54,14 @@
       <Project>{c451a00e-77f1-4f3f-b7ee-27dc712ea316}</Project>
       <Name>Interceptor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RawInput\RawInput.csproj">
+      <Project>{4143d085-38cf-4640-bb05-2fdffaf94d76}</Project>
+      <Name>RawInput</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StreamDeck\StreamDeck.csproj">
+      <Project>{8e66ba36-94a6-4a98-96b2-b0ccf93b110f}</Project>
+      <Name>StreamDeck</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="interception.dll">

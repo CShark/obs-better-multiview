@@ -21,7 +21,12 @@ namespace StreamDeck {
             builder.RegisterInstance(new Settings()).AsSelf().SingleInstance();
             builder.RegisterInstance(new ProfileSettings()).AsSelf().SingleInstance();
             builder.RegisterType<ObsService>().AsSelf().SingleInstance();
+            builder.RegisterType<YoutubeService>().AsSelf().SingleInstance();
             builder.RegisterType<KeyboardLedService>().AsSelf().SingleInstance();
+
+            builder.RegisterType<Services.Interceptor>().AsSelf().SingleInstance();
+            builder.RegisterType<RawInput>().AsSelf().SingleInstance();
+            builder.RegisterType<KeyboardService>().AsSelf().SingleInstance();
 
             builder.RegisterType<MultiviewOverlay>().AsSelf();
 
