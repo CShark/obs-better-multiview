@@ -8,6 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:obsOverlay="clr-namespace:StreamDeck.ObsOverlay"
     xmlns:youtube="clr-namespace:StreamDeck.Services.Youtube"
+    d:DesignHeight="1080"
+    d:DesignWidth="1920 "
     AllowsTransparency="True"
     Background="Transparent"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -17,6 +19,11 @@
     WindowStyle="None"
     mc:Ignorable="d">
     <Window.Resources>
+        <converter:BoolToColor
+            x:Key="TrueFalseConv"
+            FalseColor="OrangeRed"
+            TrueColor="LimeGreen" />
+
         <converter:StreamColorConverter
             x:Key="StreamingStatus"
             Started="LimeGreen"
@@ -41,12 +48,11 @@
             <converter:ColorStep Min="26" Color="Gold" />
             <converter:ColorStep Min="30" Color="LimeGreen" />
         </converter:RangeToColor>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
     <Window.CommandBindings>
-        <CommandBinding
-            CanExecute="ObsStream_OnCanExecute"
-            Command="{x:Static local:MultiviewOverlay.ObsStreamCommand}"
-            Executed="ObsStream_OnExecuted" />
+        <CommandBinding Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}" Executed="AddStreamToPlaylist_OnExecuted" />
     </Window.CommandBindings>
 
     <Grid>
@@ -124,8 +130,7 @@
                         HorizontalContentAlignment="Stretch"
                         Grid.IsSharedSizeScope="True"
                         ItemsSource="{Binding LiveStreams}"
-                        SelectedIndex="0"
-                        SelectionChanged="ActiveLivestream_OnSelectionChanged">
+                        SelectedIndex="0">
                         <ComboBox.Resources>
                             <Style TargetType="ComboBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -140,14 +145,38 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Grid Height="26" Margin="0,2">
+                    <Grid Margin="0,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="2" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="2" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Button Background="{Binding StreamState, Converter={StaticResource StreamingStatus}}" Command="{x:Static local:MultiviewOverlay.ObsStreamCommand}">OBS Stream</Button>
-                        <Button Grid.Column="2">YouTube LiveStream</Button>
+                        <Button
+                            Height="26"
+                            Background="{Binding IsPlaylisted, Converter={StaticResource TrueFalseConv}}"
+                            Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}"
+                            CommandParameter="{Binding}"
+                            DataContext="{Binding ElementName=ActiveLivestream, Path=SelectedItem}">
+                            Sonntag Playliste
+                        </Button>
+
+                        <Button
+                            Grid.Row="2"
+                            Content="{Binding PrevState}"
+                            DataContext="{Binding StreamingStatus}"
+                            IsEnabled="{Binding HasPrevState}" />
+                        <Button
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Height="26"
+                            Content="{Binding NextState}"
+                            DataContext="{Binding StreamingStatus}"
+                            IsEnabled="{Binding HasNextState}" />
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -164,7 +193,7 @@
                 </Grid.ColumnDefinitions>
 
                 <obsOverlay:VMeter x:Name="VMeter1" />
-                <WebBrowser x:Name="MonitoringPreview" Grid.Column="1" />
+
             </Grid>
         </Grid>
     </Grid>

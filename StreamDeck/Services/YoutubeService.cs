@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
@@ -17,7 +19,7 @@ namespace StreamDeck.Services {
     public class YoutubeService {
         private Settings _settings;
         private YouTubeService _youtube;
-
+        
         public ObservableCollection<LiveStream> Livestreams { get; private set; }
 
         public YoutubeService(Settings settings) {
@@ -37,27 +39,43 @@ namespace StreamDeck.Services {
                 );
             }
 
+
             _youtube = new YouTubeService(new BaseClientService.Initializer() {
                 ApplicationName = "OBS Overlay",
                 HttpClientInitializer = credential
             });
 
 
-            var request = _youtube.LiveBroadcasts.List("snippet,status,contentDetails");
+            // Playlist
+            var playlistReq = _youtube.PlaylistItems.List("snippet,id");
+            playlistReq.PlaylistId = _settings.GottesdienstPlaylist;
+            playlistReq.MaxResults = 25;
+
+            var items = await playlistReq.ExecuteAsync();
+
+            // Livestreams
+            var request = _youtube.LiveBroadcasts.List("snippet,status,contentDetails,id");
             request.Mine = true;
             var data = await request.ExecuteAsync();
 
             foreach (var stream in data.Items) {
-                var streamReq = _youtube.LiveStreams.List("snippet,cdn");
+                //if (stream.Status.LifeCycleStatus == "complete") continue;
+
+                var streamReq = _youtube.LiveStreams.List("snippet,cdn,id");
                 streamReq.Id = stream.ContentDetails.BoundStreamId;
                 var streamData = await streamReq.ExecuteAsync();
 
-                var streamObj = new LiveStream(_youtube, stream.Snippet.Title,
-                    Convert.ToDateTime(stream.Snippet.ScheduledStartTime));
+                var streamObj = new LiveStream(_youtube, _settings, stream.Id, stream.Snippet.Title);
 
-                streamObj.MonitorHTML = stream.ContentDetails.MonitorStream.EmbedHtml;
+                streamObj.Airing = Convert.ToDateTime(stream.Snippet.ScheduledStartTime);
+                streamObj.MonitorHTML = "<style>body{margin:0}</style>" + stream.ContentDetails.MonitorStream.EmbedHtml;
                 if (streamData.Items.Count > 0) {
+                    streamObj.StreamID = streamData.Items[0].Id;
                     streamObj.StreamKey = streamData.Items[0].Cdn.IngestionInfo.StreamName;
+                }
+
+                if (items.Items.Any(x => x.Snippet.Title == streamObj.Title)) {
+                    streamObj.IsPlaylisted = true;
                 }
 
                 Livestreams.Add(streamObj);

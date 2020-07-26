@@ -21,17 +21,26 @@ namespace StreamDeck {
     /// </summary>
     public partial class MainWindow : Window {
         private MultiviewOverlay _overlay;
+        private ObsService _obs;
         private Settings _settings;
 
         public MainWindow() {
             _settings = App.Container.Resolve<Settings>();
-            _overlay = App.Container.Resolve<MultiviewOverlay>();
-            
+            _obs = App.Container.Resolve<ObsService>();
+
+            _obs.Connected += () => {
+                Dispatcher.Invoke(() => {
+                    using (var scope = App.Container.BeginLifetimeScope()) {
+                        _overlay = scope.Resolve<MultiviewOverlay>();
+                    }
+                });
+            };
+
             InitializeComponent();
         }
 
         private void MainWindow_OnClosed(object sender, EventArgs e) {
-            _overlay.Close();
+            _overlay?.Close();
         }
     }
 }

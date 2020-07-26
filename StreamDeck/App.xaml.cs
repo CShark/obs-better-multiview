@@ -31,9 +31,7 @@ namespace StreamDeck {
             builder.RegisterType<MultiviewOverlay>().AsSelf();
 
             Container = builder.Build();
-
             
-
             base.OnStartup(e);
         }
     }

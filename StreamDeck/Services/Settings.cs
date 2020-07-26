@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace StreamDeck.Services {
     [JsonObject(MemberSerialization.OptOut)]
     public class Settings {
-
         public string MultiviewWindowTitle { get; set; } = "Multiview (Fenstermodus)";
 
         public string ObsServer { get; set; } = "localhost";
@@ -12,8 +12,10 @@ namespace StreamDeck.Services {
 
         public string ObsPassword { get; set; } = null;
 
+        public string ObsProcess { get; set; } = "obs64";
+
         public string KeyboardDevice { get; set; } = @"\Device\KeyboardClass0";
 
-        public string YoutubeOAuthKey { get; set; } = "Gv0y631pi4qeHsR9KQs4BkIq";
+        public string GottesdienstPlaylist { get; set; } = "PLCVjOY4dUWqcBJgw8kHL0x4uWFFdp3U_Q";
     }
 }
