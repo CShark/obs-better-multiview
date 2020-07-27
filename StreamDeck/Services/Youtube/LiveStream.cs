@@ -11,9 +11,10 @@ using System.Windows.Forms.VisualStyles;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using StreamDeck.Annotations;
+using StreamDeck.Services.Stream;
 
 namespace StreamDeck.Services.Youtube {
-    public enum StreamStatus {
+    public enum YoutubeStatus {
         Good,
         Ok,
         Bad,
@@ -26,7 +27,7 @@ namespace StreamDeck.Services.Youtube {
         private bool _isPlaylisted;
         private Timer _timer;
         private bool _isStreaming;
-        private StreamStatus _status;
+        private YoutubeStatus _status;
 
         public string Title { get; }
         public DateTime Airing { get; set; }
@@ -57,7 +58,7 @@ namespace StreamDeck.Services.Youtube {
             }
         }
 
-        public StreamStatus Status {
+        public YoutubeStatus Status {
             get => _status;
             set {
                 if (value == _status) return;
@@ -83,6 +84,7 @@ namespace StreamDeck.Services.Youtube {
                 IsPlaylisted = false;
             } else {
                 var item = new PlaylistItem();
+                item.Snippet = new PlaylistItemSnippet();
                 item.Snippet.PlaylistId = _settings.GottesdienstPlaylist;
                 item.Snippet.ResourceId = new ResourceId {VideoId = BroadcastID, Kind = "youtube#video"};
 
@@ -103,20 +105,19 @@ namespace StreamDeck.Services.Youtube {
 
         private async void UpdateStats() {
             var statReq = _youtube.LiveStreams.List("status");
-            statReq.Mine = true;
             statReq.Id = StreamID;
 
             var stats = await statReq.ExecuteAsync();
 
             try {
                 Status = stats.Items[0].Status.HealthStatus.Status switch {
-                    "good" => StreamStatus.Good,
-                    "ok" => StreamStatus.Ok,
-                    "bad" => StreamStatus.Bad,
-                    _ => StreamStatus.NoData
+                    "good" => YoutubeStatus.Good,
+                    "ok" => YoutubeStatus.Ok,
+                    "bad" => YoutubeStatus.Bad,
+                    _ => YoutubeStatus.NoData
                 };
             } catch {
-                Status = StreamStatus.NoData;
+                Status = YoutubeStatus.NoData;
             }
         }
 
@@ -132,8 +133,23 @@ namespace StreamDeck.Services.Youtube {
                 default:
                     IsStreaming = false;
                     _timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    Status = StreamStatus.NoData;
+                    Status = YoutubeStatus.NoData;
                     break;
+            }
+        }
+
+        public async Task<StreamingStatus> GetInitialState() {
+            var req = _youtube.LiveBroadcasts.List("status");
+            req.Id = BroadcastID;
+
+            var stat = await req.ExecuteAsync();
+            var status = stat.Items[0].Status.LifeCycleStatus;
+
+            switch (status) {
+                case "complete":
+                    return new CompleteState();
+                default:
+                    return new OfflineState();
             }
         }
 

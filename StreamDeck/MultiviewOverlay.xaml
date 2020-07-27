@@ -31,6 +31,8 @@
             Stopped="OrangeRed"
             Stopping="Orange" />
 
+        <converter:StatusConverter x:Key="StreamStatusConverter" />
+
         <converter:RangeToColor x:Key="KBitsConverter">
             <converter:ColorStep Min="0" Color="LightGray" />
             <converter:ColorStep Min="1" Color="OrangeRed" />
@@ -49,10 +51,26 @@
             <converter:ColorStep Min="30" Color="LimeGreen" />
         </converter:RangeToColor>
 
+        <converter:YtStatusColorConverter
+            x:Key="YtColorConverter"
+            Bad="DarkOrange"
+            Good="LimeGreen"
+            NoData="LightGray"
+            Ok="Gold" />
+        <converter:YtStatusConverter x:Key="YtConverter" />
+
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}" Executed="AddStreamToPlaylist_OnExecuted" />
+        <CommandBinding
+            CanExecute="PrevState_OnCanExecute"
+            Command="{x:Static local:MultiviewOverlay.PrevState}"
+            Executed="PrevState_OnExecuted" />
+        <CommandBinding
+            CanExecute="NextState_OnCanExecute"
+            Command="{x:Static local:MultiviewOverlay.NextState}"
+            Executed="NextState_OnExecuted" />
     </Window.CommandBindings>
 
     <Grid>
@@ -87,6 +105,7 @@
                     <TextBlock
                         Margin="0,2"
                         HorizontalAlignment="Center"
+                        FontSize="18"
                         Foreground="White">
                         OBS
                     </TextBlock>
@@ -117,9 +136,21 @@
                         </Border>
                     </Grid>
 
-                    <TextBlock HorizontalAlignment="Center" Foreground="White">YouTube</TextBlock>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="18"
+                        Foreground="White">
+                        YouTube
+                    </TextBlock>
 
+                    <Border
+                        Height="20"
+                        Margin="0,5"
+                        Background="{Binding Status, Converter={StaticResource YtColorConverter}}"
+                        DataContext="{Binding ElementName=ActiveLivestream, Path=SelectedItem}">
+                        <TextBlock HorizontalAlignment="Center" Text="{Binding Status, Converter={StaticResource YtConverter}}" />
 
+                    </Border>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Margin="2">
@@ -129,8 +160,10 @@
                         Margin="0,2"
                         HorizontalContentAlignment="Stretch"
                         Grid.IsSharedSizeScope="True"
+                        IsEnabled="{Binding StreamingStatus.StreamChangeable}"
                         ItemsSource="{Binding LiveStreams}"
-                        SelectedIndex="0">
+                        SelectedIndex="0"
+                        SelectionChanged="ActiveLivestream_OnSelectionChanged">
                         <ComboBox.Resources>
                             <Style TargetType="ComboBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -150,6 +183,8 @@
                             <RowDefinition />
                             <RowDefinition Height="2" />
                             <RowDefinition />
+                            <RowDefinition Height="2" />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -157,6 +192,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Button
+                            Grid.Row="2"
+                            Grid.ColumnSpan="3"
                             Height="26"
                             Background="{Binding IsPlaylisted, Converter={StaticResource TrueFalseConv}}"
                             Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}"
@@ -165,18 +202,29 @@
                             Sonntag Playliste
                         </Button>
 
-                        <Button
-                            Grid.Row="2"
-                            Content="{Binding PrevState}"
+                        <TextBlock
+                            Grid.ColumnSpan="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
                             DataContext="{Binding StreamingStatus}"
-                            IsEnabled="{Binding HasPrevState}" />
+                            FontSize="18"
+                            Foreground="White"
+                            Text="{Binding State, StringFormat=Status: {0}, Converter={StaticResource StreamStatusConverter}}" />
+
                         <Button
-                            Grid.Row="2"
+                            Grid.Row="4"
+                            Command="{x:Static local:MultiviewOverlay.PrevState}"
+                            CommandParameter="{Binding}"
+                            Content="{Binding PrevState}"
+                            DataContext="{Binding StreamingStatus}" />
+                        <Button
+                            Grid.Row="4"
                             Grid.Column="2"
                             Height="26"
+                            Command="{x:Static local:MultiviewOverlay.NextState}"
+                            CommandParameter="{Binding}"
                             Content="{Binding NextState}"
-                            DataContext="{Binding StreamingStatus}"
-                            IsEnabled="{Binding HasNextState}" />
+                            DataContext="{Binding StreamingStatus}" />
                     </Grid>
                 </StackPanel>
             </Grid>

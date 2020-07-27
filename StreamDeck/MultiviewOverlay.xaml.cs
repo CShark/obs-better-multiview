@@ -240,6 +240,10 @@ namespace StreamDeck {
         #region Commands
 
         public static RoutedUICommand AddStreamToPlaylist { get; set; }
+
+        public static RoutedUICommand PrevState { get; set; }
+
+        public static RoutedUICommand NextState { get; set; }
         #endregion
 
       
@@ -250,6 +254,8 @@ namespace StreamDeck {
             _youtube = youtube;
 
             AddStreamToPlaylist = new RoutedUICommand();
+            NextState = new RoutedUICommand();
+            PrevState = new RoutedUICommand();
 
             InitializeComponent();
             InitializeMultiviewHook();
@@ -263,5 +269,33 @@ namespace StreamDeck {
             }
         }
 
+        private void ActiveLivestream_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (ActiveLivestream.SelectedItem is LiveStream ls) {
+                StreamingStatus = null;
+                UpdateStream(ls);
+            }
+        }
+
+        private async void UpdateStream(LiveStream ls) {
+            StreamingStatus = await ls.GetInitialState();
+            StreamingStatus.Init(_obs, _youtube, ls);
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void PrevState_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+            StreamingStatus = StreamingStatus.GoPrev();
+        }
+
+        private void PrevState_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = StreamingStatus?.HasPrevState ?? false;
+        }
+
+        private void NextState_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+            StreamingStatus = StreamingStatus.GoNext();
+        }
+
+        private void NextState_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = StreamingStatus?.HasNextState ?? false;
+        }
     }
 }

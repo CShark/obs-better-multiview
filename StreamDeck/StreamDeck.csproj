@@ -211,8 +211,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converter\NoSizeDecorator.cs" />
+    <Compile Include="Converter\StatusConverter.cs" />
     <Compile Include="Converter\StreamStateConverter.cs" />
     <Compile Include="Converter\VuConverter.cs" />
+    <Compile Include="Converter\YtStatusColorConverter.cs" />
+    <Compile Include="Converter\YtStatusConverter.cs" />
     <Compile Include="ObsOverlay\VMeter.xaml.cs">
       <DependentUpon>VMeter.xaml</DependentUpon>
     </Compile>

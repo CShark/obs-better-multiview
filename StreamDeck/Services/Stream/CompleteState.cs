@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace StreamDeck.Services.Stream {
     class CompleteState :StreamingStatus {
-        public bool HasNextState => false;
-        public bool HasPrevState => false;
-        public string NextState => "";
-        public string PrevState => "";
-        public StreamState State => StreamState.Completed;
+        public override bool HasNextState => false;
+        public override bool HasPrevState => false;
+        public override bool StreamChangeable => true;
+        public override string NextState => "";
+        public override string PrevState => "";
+        public override StreamState State => StreamState.Completed;
 
-        public StreamingStatus GoNext() {
+        public override StreamingStatus GoNext() {
             throw new NotImplementedException();
         }
 
-        public StreamingStatus GoPrev() {
+        public override StreamingStatus GoPrev() {
             throw new NotImplementedException();
         }
 
-        public StreamingStatus Apply() {
+        public override StreamingStatus Apply() {
             return this;
         }
     }

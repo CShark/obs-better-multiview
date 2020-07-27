@@ -3,24 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Apis.YouTube.v3;
 
 namespace StreamDeck.Services.Stream {
     class ObsState :StreamingStatus {
-        public bool HasNextState => true;
-        public bool HasPrevState => true;
-        public string NextState => "Live schalten";
-        public string PrevState => "OBS stoppen";
-        public StreamState State => StreamState.Preparing;
+        public override bool HasNextState => true;
+        public override bool HasPrevState => true;
+        public override bool StreamChangeable => false;
+        public override string NextState => "Live schalten";
+        public override string PrevState => "OBS stoppen";
+        public override StreamState State => StreamState.Preparing;
 
-        public StreamingStatus GoNext() {
-            return new LiveState().Apply();
+        public override StreamingStatus GoNext() {
+            LiveStream.SetState(LiveBroadcastsResource.TransitionRequest.BroadcastStatusEnum.Live);
+            return Create<LiveState>().Apply();
         }
 
-        public StreamingStatus GoPrev() {
-            return new OfflineState().Apply();
+        public override StreamingStatus GoPrev() {
+            LiveStream.SetState(LiveBroadcastsResource.TransitionRequest.BroadcastStatusEnum.StatusUnspecified);
+            Obs.Api.StopStreaming();
+            return Create<OfflineState>().Apply();
         }
 
-        public StreamingStatus Apply() {
+        public override StreamingStatus Apply() {
             return this;
         }
     }
