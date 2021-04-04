@@ -23,9 +23,8 @@ using Google.Apis.YouTube.v3;
 using NAudio.MediaFoundation;
 using OBS.WebSocket.NET;
 using OBS.WebSocket.NET.Types;
+using Serilog;
 using StreamDeck.Services;
-using StreamDeck.Services.Stream;
-using StreamDeck.Services.Youtube;
 using Path = System.IO.Path;
 using StreamStatus = OBS.WebSocket.NET.Types.StreamStatus;
 
@@ -44,6 +43,15 @@ namespace StreamDeck {
             EVENT_SYSTEM_FOREGROUND = 0x03
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT {
+            public int X;
+            public int Y;
+            public int Width;
+            public int Height;
+        }
+
+
         [DllImport("user32.dll")]
         static extern IntPtr SetWinEventHook(SystemEvents eventMin, SystemEvents eventMax, IntPtr hmodWinEventProc,
             SystemEventHandler lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
@@ -57,6 +65,10 @@ namespace StreamDeck {
 
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
 
         delegate void SystemEventHandler(IntPtr hWinEventHook, SystemEvents @event, IntPtr hwnd, int idObject,
             int idChild,
@@ -91,7 +103,7 @@ namespace StreamDeck {
                 Left = screen.Bounds.Left;
                 Width = screen.Bounds.Width;
                 Height = screen.Bounds.Height;
-                WindowState = WindowState.Maximized;
+                //WindowState = WindowState.Maximized;
                 Show();
                 _isHidden = false;
             } else if (!multiview && !_isHidden) {
@@ -101,6 +113,7 @@ namespace StreamDeck {
         }
 
         private void InitializeMultiviewHook() {
+            _log.Debug("Initialize Window Hook");
             _winEventHookHandler = new SystemEventHandler(WinEventHook);
             _winEventHook = SetWinEventHook(SystemEvents.EVENT_SYSTEM_FOREGROUND, SystemEvents.EVENT_SYSTEM_FOREGROUND,
                 IntPtr.Zero, _winEventHookHandler, 0, 0, 0);
@@ -123,8 +136,10 @@ namespace StreamDeck {
         private ObsService _obs;
         private bool _apiVolume;
         private bool _apiMute;
+        private ILogger _log;
 
         private void InitializeOBS() {
+            _log.Debug("Initializing OBS connection");
             var state = _obs.Api.GetStreamingStatus();
             _obs.Disconnected += DeInitializeObs;
 
@@ -135,9 +150,18 @@ namespace StreamDeck {
             _obs.WebSocket.SourceVolumeChanged += ObsOnSourceVolumeChanged;
 
             var data = _obs.Api.GetSpecialSources();
+            AudioDevices = new ObservableCollection<string>(_obs.Profile.AvailableDevices());
+            var view = CollectionViewSource.GetDefaultView(AudioDevices);
+            if (AudioDevices.Contains(_profile.AudioDevice)) {
+                view.MoveCurrentTo(_profile.AudioDevice);
+            }
 
             VMeter1.Obs = _obs;
             VMeter1.AudioDevice = _obs.Profile.GetDevice(_profile.AudioDevice);
+
+            var status = _obs.Api.GetStreamingStatus();
+            _recording = status.IsRecording;
+            _streaming = status.IsStreaming;
         }
 
         private void DeInitializeObs() {
@@ -159,18 +183,19 @@ namespace StreamDeck {
             Dispatcher.Invoke(() => {
                 FPS = status.FPS;
                 KBits = status.KbitsPerSec;
+                Strain = status.Strain;
             });
         }
 
         private void ObsOnStreamingStateChanged(ObsWebSocket sender, OutputState type) {
             Dispatcher.Invoke(async () => {
                 StreamState = type;
-                
-
 
                 if (StreamState == OutputState.Stopped) {
+                    _log.Information("Stream stopped");
                     FPS = 0;
                     KBits = 0;
+                    Strain = -1;
                 }
 
                 CommandManager.InvalidateRequerySuggested();
@@ -179,25 +204,6 @@ namespace StreamDeck {
 
         #endregion
 
-        #region Youtube
-
-        private YoutubeService _youtube;
-
-        public static readonly DependencyProperty LiveStreamsProperty = DependencyProperty.Register(
-            nameof(LiveStreams), typeof(ObservableCollection<LiveStream>), typeof(MultiviewOverlay),
-            new PropertyMetadata(default(ObservableCollection<LiveStream>)));
-
-        public ObservableCollection<LiveStream> LiveStreams {
-            get { return (ObservableCollection<LiveStream>) GetValue(LiveStreamsProperty); }
-            set { SetValue(LiveStreamsProperty, value); }
-        }
-
-        private async void InitializeYoutube() {
-            await _youtube.Authenticate();
-
-            Dispatcher.Invoke(() => { LiveStreams = _youtube.Livestreams; });
-        }
-        #endregion
 
         #region Properties
 
@@ -226,14 +232,23 @@ namespace StreamDeck {
             set { SetValue(FPSProperty, value); }
         }
 
-        public static readonly DependencyProperty StreamingStatusProperty = DependencyProperty.Register(
-            nameof(StreamingStatus), typeof(StreamingStatus), typeof(MultiviewOverlay), new PropertyMetadata(default(StreamingStatus)));
 
-        public StreamingStatus StreamingStatus {
-            get { return (StreamingStatus)GetValue(StreamingStatusProperty); }
-            set { SetValue(StreamingStatusProperty, value); }
+        public static readonly DependencyProperty StrainProperty = DependencyProperty.Register(
+            nameof(Strain), typeof(float), typeof(MultiviewOverlay), new PropertyMetadata(-1f));
+
+        public float Strain {
+            get { return (float) GetValue(StrainProperty); }
+            set { SetValue(StrainProperty, value); }
         }
 
+        public static readonly DependencyProperty AudioDevicesProperty = DependencyProperty.Register(
+            nameof(AudioDevices), typeof(ObservableCollection<string>), typeof(MultiviewOverlay),
+            new PropertyMetadata(default(ObservableCollection<string>)));
+
+        public ObservableCollection<string> AudioDevices {
+            get { return (ObservableCollection<string>) GetValue(AudioDevicesProperty); }
+            set { SetValue(AudioDevicesProperty, value); }
+        }
 
         #endregion
 
@@ -241,61 +256,78 @@ namespace StreamDeck {
 
         public static RoutedUICommand AddStreamToPlaylist { get; set; }
 
-        public static RoutedUICommand PrevState { get; set; }
+        public static RoutedUICommand ObsStreaming { get; set; }
 
-        public static RoutedUICommand NextState { get; set; }
+        public static RoutedUICommand ObsRecording { get; set; }
+
+        public static readonly DependencyProperty StreamButtonProperty = DependencyProperty.Register(
+            nameof(StreamButton), typeof(string), typeof(MultiviewOverlay), new PropertyMetadata("Stream Starten"));
+
+        public string StreamButton {
+            get { return (string) GetValue(StreamButtonProperty); }
+            set { SetValue(StreamButtonProperty, value); }
+        }
+
+        public static readonly DependencyProperty RecordButtonProperty = DependencyProperty.Register(
+            nameof(RecordButton), typeof(string), typeof(MultiviewOverlay), new PropertyMetadata("Aufnahme Starten"));
+
+        public string RecordButton {
+            get { return (string) GetValue(RecordButtonProperty); }
+            set { SetValue(RecordButtonProperty, value); }
+        }
+
+        private bool _streaming, _recording;
+
         #endregion
 
-      
-        public MultiviewOverlay(Settings settings, ProfileSettings profile, ObsService obs, YoutubeService youtube) {
+
+        public MultiviewOverlay(Settings settings, ProfileSettings profile, ObsService obs, ILogger logger) {
             _settings = settings;
             _obs = obs;
             _profile = profile;
-            _youtube = youtube;
+            _log = logger;
 
             AddStreamToPlaylist = new RoutedUICommand();
-            NextState = new RoutedUICommand();
-            PrevState = new RoutedUICommand();
+            ObsStreaming = new RoutedUICommand();
+            ObsRecording = new RoutedUICommand();
 
             InitializeComponent();
             InitializeMultiviewHook();
             InitializeOBS();
-            InitializeYoutube();
         }
 
-        private void AddStreamToPlaylist_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
-            if (e.Parameter is LiveStream stream) {
-                stream.TogglePlaylisted();
+        private void Recording_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+            _log.Information("Switching Recording State");
+
+            if (!_recording) {
+                _obs.Api.StartRecording();
+                RecordButton = "Aufnahme Stoppen";
+            } else {
+                _obs.Api.StopRecording();
+                RecordButton = "Aufnahme Starten";
             }
+
+            _recording = !_recording;
         }
 
-        private void ActiveLivestream_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (ActiveLivestream.SelectedItem is LiveStream ls) {
-                StreamingStatus = null;
-                UpdateStream(ls);
+        private void Streaming_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+            _log.Information("Switching Streaming State");
+
+            if (!_streaming) {
+                _obs.Api.StartStreaming();
+                StreamButton = "Stream Stoppen";
+            } else {
+                _obs.Api.StopStreaming();
+                StreamButton = "Stream Starten";
             }
+
+            _streaming = !_streaming;
         }
 
-        private async void UpdateStream(LiveStream ls) {
-            StreamingStatus = await ls.GetInitialState();
-            StreamingStatus.Init(_obs, _youtube, ls);
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        private void PrevState_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
-            StreamingStatus = StreamingStatus.GoPrev();
-        }
-
-        private void PrevState_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = StreamingStatus?.HasPrevState ?? false;
-        }
-
-        private void NextState_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
-            StreamingStatus = StreamingStatus.GoNext();
-        }
-
-        private void NextState_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = StreamingStatus?.HasNextState ?? false;
+        private void AudioDevice_OnSelected(object sender, RoutedEventArgs e) {
+            var view = CollectionViewSource.GetDefaultView(AudioDevices);
+            VMeter1.AudioDevice = _obs.Profile.GetDevice(view.CurrentItem as string);
+            Properties.Settings.Default.AudioDevice = view.CurrentItem as string;
         }
     }
 }

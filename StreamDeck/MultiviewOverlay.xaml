@@ -7,7 +7,6 @@
     xmlns:local="clr-namespace:StreamDeck"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:obsOverlay="clr-namespace:StreamDeck.ObsOverlay"
-    xmlns:youtube="clr-namespace:StreamDeck.Services.Youtube"
     d:DesignHeight="1080"
     d:DesignWidth="1920 "
     AllowsTransparency="True"
@@ -19,19 +18,10 @@
     WindowStyle="None"
     mc:Ignorable="d">
     <Window.Resources>
-        <converter:BoolToColor
-            x:Key="TrueFalseConv"
-            FalseColor="OrangeRed"
-            TrueColor="LimeGreen" />
+        <converter:BoolToColor x:Key="TrueFalseConv" FalseColor="OrangeRed" TrueColor="LimeGreen" />
 
-        <converter:StreamColorConverter
-            x:Key="StreamingStatus"
-            Started="LimeGreen"
-            Starting="YellowGreen"
-            Stopped="OrangeRed"
-            Stopping="Orange" />
+        <converter:StreamColorConverter x:Key="StreamingStatus" Started="LimeGreen" Starting="YellowGreen" Stopped="OrangeRed" Stopping="Orange" />
 
-        <converter:StatusConverter x:Key="StreamStatusConverter" />
 
         <converter:RangeToColor x:Key="KBitsConverter">
             <converter:ColorStep Min="0" Color="LightGray" />
@@ -43,6 +33,16 @@
             <converter:ColorStep Min="4000" Color="LimeGreen" />
         </converter:RangeToColor>
 
+        <converter:RangeToColor x:Key="StrainConverter">
+            <converter:ColorStep Min="-10" Color="LightGray" />
+            <converter:ColorStep Min="0" Color="LimeGreen" />
+            <converter:ColorStep Min="0.16" Color="YellowGreen" />
+            <converter:ColorStep Min=".33" Color="Gold" />
+            <converter:ColorStep Min=".5" Color="Orange" />
+            <converter:ColorStep Min=".66" Color="DarkOrange" />
+            <converter:ColorStep Min=".83" Color="OrangeRed" />
+        </converter:RangeToColor>
+
         <converter:RangeToColor x:Key="FpsConverter">
             <converter:ColorStep Min="0" Color="LightGray" />
             <converter:ColorStep Min="1" Color="OrangeRed" />
@@ -51,26 +51,11 @@
             <converter:ColorStep Min="30" Color="LimeGreen" />
         </converter:RangeToColor>
 
-        <converter:YtStatusColorConverter
-            x:Key="YtColorConverter"
-            Bad="DarkOrange"
-            Good="LimeGreen"
-            NoData="LightGray"
-            Ok="Gold" />
-        <converter:YtStatusConverter x:Key="YtConverter" />
-
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
     <Window.CommandBindings>
-        <CommandBinding Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}" Executed="AddStreamToPlaylist_OnExecuted" />
-        <CommandBinding
-            CanExecute="PrevState_OnCanExecute"
-            Command="{x:Static local:MultiviewOverlay.PrevState}"
-            Executed="PrevState_OnExecuted" />
-        <CommandBinding
-            CanExecute="NextState_OnCanExecute"
-            Command="{x:Static local:MultiviewOverlay.NextState}"
-            Executed="NextState_OnExecuted" />
+        <CommandBinding Command="{x:Static local:MultiviewOverlay.ObsRecording}" Executed="Recording_OnExecuted" />
+        <CommandBinding Command="{x:Static local:MultiviewOverlay.ObsStreaming}" Executed="Streaming_OnExecuted" />
     </Window.CommandBindings>
 
     <Grid>
@@ -92,28 +77,17 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Grid
-                Grid.RowSpan="2"
-                Margin="5"
-                Background="Black">
+            <Grid Grid.RowSpan="2" Margin="5" Background="Black">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <StackPanel Margin="5">
-                    <TextBlock
-                        Margin="0,2"
-                        HorizontalAlignment="Center"
-                        FontSize="18"
-                        Foreground="White">
+                    <TextBlock Margin="0,2" HorizontalAlignment="Center" FontSize="18" Foreground="White">
                         OBS
                     </TextBlock>
-                    <Border
-                        Height="20"
-                        Margin="0,2"
-                        Background="{Binding StreamState, Converter={StaticResource StreamingStatus}}"
-                        BorderThickness="0">
+                    <Border Height="20" Margin="0,2" Background="{Binding StreamState, Converter={StaticResource StreamingStatus}}" BorderThickness="0">
                         <TextBlock HorizontalAlignment="Center" Text="{Binding StreamState}" />
                     </Border>
 
@@ -124,59 +98,20 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Border Height="20" Background="{Binding KBits, Converter={StaticResource KBitsConverter}}">
+                        <Border Height="20" Background="{Binding Strain, Converter={StaticResource StrainConverter}}">
                             <TextBlock HorizontalAlignment="Center" Text="{Binding KBits, StringFormat=KBits: {0}}" />
                         </Border>
 
-                        <Border
-                            Grid.Column="2"
-                            Height="20"
-                            Background="{Binding FPS, Converter={StaticResource FpsConverter}}">
+                        <Border Grid.Column="2" Height="20" Background="{Binding FPS, Converter={StaticResource FpsConverter}}">
                             <TextBlock HorizontalAlignment="Center" Text="{Binding FPS, StringFormat=FPS: {0}}" />
                         </Border>
                     </Grid>
 
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="18"
-                        Foreground="White">
-                        YouTube
-                    </TextBlock>
-
-                    <Border
-                        Height="20"
-                        Margin="0,5"
-                        Background="{Binding Status, Converter={StaticResource YtColorConverter}}"
-                        DataContext="{Binding ElementName=ActiveLivestream, Path=SelectedItem}">
-                        <TextBlock HorizontalAlignment="Center" Text="{Binding Status, Converter={StaticResource YtConverter}}" />
-
-                    </Border>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Margin="2">
-                    <TextBlock Foreground="LightGray">Livestream:</TextBlock>
-                    <ComboBox
-                        x:Name="ActiveLivestream"
-                        Margin="0,2"
-                        HorizontalContentAlignment="Stretch"
-                        Grid.IsSharedSizeScope="True"
-                        IsEnabled="{Binding StreamingStatus.StreamChangeable}"
-                        ItemsSource="{Binding LiveStreams}"
-                        SelectedIndex="0"
-                        SelectionChanged="ActiveLivestream_OnSelectionChanged">
-                        <ComboBox.Resources>
-                            <Style TargetType="ComboBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ComboBox.Resources>
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate DataType="youtube:LiveStream">
-                                <Grid>
-                                    <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
-                                </Grid>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <TextBlock Margin="5" Foreground="White">Audio Device:</TextBlock>
+                    <ComboBox ItemsSource="{Binding AudioDevices}" SelectionChanged="AudioDevice_OnSelected" />
 
                     <Grid Margin="0,2">
                         <Grid.RowDefinitions>
@@ -191,49 +126,14 @@
                             <ColumnDefinition Width="2" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Button
-                            Grid.Row="2"
-                            Grid.ColumnSpan="3"
-                            Height="26"
-                            Background="{Binding IsPlaylisted, Converter={StaticResource TrueFalseConv}}"
-                            Command="{x:Static local:MultiviewOverlay.AddStreamToPlaylist}"
-                            CommandParameter="{Binding}"
-                            DataContext="{Binding ElementName=ActiveLivestream, Path=SelectedItem}">
-                            Sonntag Playliste
-                        </Button>
 
-                        <TextBlock
-                            Grid.ColumnSpan="3"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            DataContext="{Binding StreamingStatus}"
-                            FontSize="18"
-                            Foreground="White"
-                            Text="{Binding State, StringFormat=Status: {0}, Converter={StaticResource StreamStatusConverter}}" />
-
-                        <Button
-                            Grid.Row="4"
-                            Command="{x:Static local:MultiviewOverlay.PrevState}"
-                            CommandParameter="{Binding}"
-                            Content="{Binding PrevState}"
-                            DataContext="{Binding StreamingStatus}" />
-                        <Button
-                            Grid.Row="4"
-                            Grid.Column="2"
-                            Height="26"
-                            Command="{x:Static local:MultiviewOverlay.NextState}"
-                            CommandParameter="{Binding}"
-                            Content="{Binding NextState}"
-                            DataContext="{Binding StreamingStatus}" />
+                        <Button Grid.Row="4" Command="{x:Static local:MultiviewOverlay.ObsRecording}" Content="{Binding RecordButton}" />
+                        <Button Grid.Row="4" Grid.Column="2" Height="26" Command="{x:Static local:MultiviewOverlay.ObsStreaming}" Content="{Binding StreamButton}" />
                     </Grid>
                 </StackPanel>
             </Grid>
 
-            <Grid
-                Grid.RowSpan="2"
-                Grid.Column="5"
-                Margin="5"
-                Background="Black">
+            <Grid Grid.RowSpan="2" Grid.Column="5" Margin="5" Background="Black">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -242,6 +142,17 @@
 
                 <obsOverlay:VMeter x:Name="VMeter1" />
 
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2">
+                <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Style="{StaticResource OverlayText}">
+                    Vorschau
+                </TextBlock>
+            </Grid>
+            <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Grid.ColumnSpan="2">
+                <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Style="{StaticResource OverlayText}">
+                    Live
+                </TextBlock>
             </Grid>
         </Grid>
     </Grid>

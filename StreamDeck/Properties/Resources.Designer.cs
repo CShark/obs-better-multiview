@@ -59,15 +59,5 @@ namespace StreamDeck.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
-        /// </summary>
-        internal static byte[] client_secret {
-            get {
-                object obj = ResourceManager.GetObject("client_secret", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

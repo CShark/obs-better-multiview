@@ -1,10 +1,28 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Input;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace StreamDeck.Services {
     [JsonObject(MemberSerialization.OptOut)]
     public class Settings {
-        public string MultiviewWindowTitle { get; set; } = "Multiview (Fenstermodus)";
+        private ILogger _log;
+
+        public Settings(ILogger logger) {
+            _log = logger;
+            _log.Information("Parsing Settings...");
+
+            MultiviewWindowTitle = Properties.Settings.Default.MultiviewWindowTitle;
+            ObsServer = Properties.Settings.Default.ObsServer;
+            ObsPort = Properties.Settings.Default.ObsPort;
+            ObsPassword = Properties.Settings.Default.ObsPassword;
+            ObsProcess = Properties.Settings.Default.ObsProcess;
+            KeyboardDevice = Properties.Settings.Default.KeyboardDevice;
+
+            _log.Information("Settings parsed: {Settings}", this);
+        }
+
+        public string MultiviewWindowTitle { get; set; } = "Multiview (Vollbild)";
 
         public string ObsServer { get; set; } = "localhost";
 
@@ -16,6 +34,8 @@ namespace StreamDeck.Services {
 
         public string KeyboardDevice { get; set; } = @"\Device\KeyboardClass0";
 
-        public string GottesdienstPlaylist { get; set; } = "PLCVjOY4dUWqcBJgw8kHL0x4uWFFdp3U_Q";
+        public override string ToString() {
+            return $"{nameof(MultiviewWindowTitle)}: {MultiviewWindowTitle}, {nameof(ObsServer)}: {ObsServer}, {nameof(ObsPort)}: {ObsPort}, {nameof(ObsPassword)}: {ObsPassword}, {nameof(ObsProcess)}: {ObsProcess}, {nameof(KeyboardDevice)}: {KeyboardDevice}";
+        }
     }
 }

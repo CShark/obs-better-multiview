@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using Serilog;
 using StreamDeck.Services;
 using StreamDeck.Services.Obs;
 using Math = System.Math;
@@ -28,6 +29,7 @@ namespace StreamDeck.ObsOverlay {
     public partial class VMeter : UserControl {
         private MMDevice _device;
         private DispatcherTimer _meterUpdate;
+        private ILogger _log;
 
         public static readonly DependencyProperty AudioDeviceProperty = DependencyProperty.Register(
             nameof(AudioDevice), typeof(AudioDevice), typeof(VMeter),
@@ -47,6 +49,7 @@ namespace StreamDeck.ObsOverlay {
         }
 
         private void UpdateAudioDevice() {
+            _log.Debug("Updating Audio Device");
             _device = AudioDevice.GetDevice();
             var info = Obs.Api.GetVolume(AudioDevice.Name);
             Volume = info.Volume;
@@ -71,7 +74,8 @@ namespace StreamDeck.ObsOverlay {
         }
 
         public static readonly DependencyProperty MetersProperty = DependencyProperty.Register(
-            nameof(Meters), typeof(ObservableCollection<float>), typeof(VMeter), new PropertyMetadata(default(ObservableCollection<float>)));
+            nameof(Meters), typeof(ObservableCollection<float>), typeof(VMeter),
+            new PropertyMetadata(default(ObservableCollection<float>)));
 
         public ObservableCollection<float> Meters {
             get { return (ObservableCollection<float>) GetValue(MetersProperty); }
@@ -79,12 +83,14 @@ namespace StreamDeck.ObsOverlay {
         }
 
         public VMeter() {
+            _log = Log.ForContext<VMeter>();
+            _log.Information("Initialize VMeter");
+
             Meters = new ObservableCollection<float>();
 
             _meterUpdate = new DispatcherTimer();
             _meterUpdate.Interval = TimeSpan.FromMilliseconds(50);
             _meterUpdate.Tick += (sender, args) => {
-
                 if (_device != null) {
                     var length = _device.AudioMeterInformation.PeakValues.Count;
 
@@ -102,12 +108,12 @@ namespace StreamDeck.ObsOverlay {
                 }
             };
             _meterUpdate.Start();
-            
+
             InitializeComponent();
         }
 
         private static float AudioMeterToDb(float meter) {
-            return (float)(0.098 + 8.7197 * Math.Log(meter));
+            return (float) (0.098 + 8.7197 * Math.Log(meter));
         }
     }
 }
