@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema for StreamDeck Profiles",
+
+  "type": "object",
+
+  "properties": {
+    "Profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the OBS Preset"
+          },
+          "SceneView": {
+            "type": "object",
+            "description": "Layout of the Scene View",
+            "properties": {
+              "Rows": {
+                "type": "integer",
+                "description": "Number of Rows"
+              },
+              "Columns": {
+                "type": "integer",
+                "description": "Number of Columns"
+              },
+              "Slots": {
+                "type": "array",
+                "description": "Slot configuration",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Obs": {
+                      "type": "object",
+                      "properties": {
+                        "Scene": {
+                          "type": "string",
+                          "description": "The scene bound to this slot"
+                        } 
+                      }
+                    } 
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

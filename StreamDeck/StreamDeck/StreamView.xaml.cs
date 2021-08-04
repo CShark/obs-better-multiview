@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,17 +12,102 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Autofac;
+using OBSWebsocketDotNet.Types;
+using StreamDeck.Controls;
+using StreamDeck.Data;
+using StreamDeck.Services;
+using SceneSlot = StreamDeck.Controls.SceneSlot;
 
-namespace StreamDeck
-{
+namespace StreamDeck {
     /// <summary>
     /// Interaktionslogik für StreamView.xaml
     /// </summary>
-    public partial class StreamView : Window
-    {
-        public StreamView()
-        {
+    public partial class StreamView : Window {
+        private readonly Settings _settings;
+        private readonly ProfileWatcher _watcher;
+        private readonly ObsWatchService _obs;
+
+        public StreamView() {
             InitializeComponent();
+            _settings = App.Container.Resolve<Settings>();
+            _watcher = App.Container.Resolve<ProfileWatcher>();
+            _obs = App.Container.Resolve<ObsWatchService>();
+
+            _watcher.ActiveProfileChanged += ProfileChanged;
+
+            Unloaded += (sender, args) => { _watcher.ActiveProfileChanged -= ProfileChanged; };
+
+            ProfileChanged(_watcher.ActiveProfile);
+        }
+
+        private void ProfileChanged(UserProfile.DObsProfile profile) {
+            var collection = _obs.WebSocket.GetCurrentSceneCollection();
+
+            Dispatcher.InvokeAsync(() => {
+                SlotGrid.Children.Clear();
+
+                if (profile != null) {
+                    SlotGrid.Rows = profile.SceneView.Rows;
+                    SlotGrid.Columns = profile.SceneView.Columns;
+
+                    for (int i = 0; i < SlotGrid.Rows * SlotGrid.Columns; i++) {
+                        var slot = new UserProfile.DSlot();
+                        if (profile.SceneView.Slots.Count > i) {
+                            slot = profile.SceneView.Slots[i];
+                        } else {
+                            profile.SceneView.Slots.Add(slot);
+                        }
+
+                        SlotGrid.Children.Add(new SceneSlot(slot));
+                    }
+                }
+            });
+
+            PrepareObsMultiview();
+        }
+
+        private void PrepareObsMultiview() {
+            if (!_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == "multiview")) {
+                _obs.WebSocket.CreateScene("multiview");
+            }
+
+            // clear items
+            var items = _obs.WebSocket.GetSceneItemList("multiview");
+            foreach (var item in items) {
+                _obs.WebSocket.DeleteSceneItem(new SceneItemStub {SourceName = item.SourceName, ID = item.ItemId},
+                    "multiview");
+            }
+
+            if (_watcher.ActiveProfile != null) {
+                var multiview = _obs.WebSocket.GetSceneList().Scenes.First(x => x.Name == "multiview");
+                var videoInfo = _obs.WebSocket.GetVideoInfo();
+                var offsetTop = videoInfo.BaseHeight / 3f;
+                var height = videoInfo.BaseHeight / 3f * 2f;
+                var width = (float) videoInfo.BaseWidth;
+                var rows = _watcher.ActiveProfile.SceneView.Rows;
+                var cols = _watcher.ActiveProfile.SceneView.Columns;
+
+                var scaleFromCanvas = new Vector2((float) (ActualWidth / (float) videoInfo.BaseWidth),
+                    (float) (ActualHeight / (float) videoInfo.BaseHeight));
+
+                for (var i = 0; i < _watcher.ActiveProfile.SceneView.Slots.Count; i++) {
+                    var slot = _watcher.ActiveProfile.SceneView.Slots[i];
+                    if (slot.Obs.Scene != null) {
+                        var id = _obs.WebSocket.AddSceneItem("multiview", slot.Obs.Scene);
+                        var props = _obs.WebSocket.GetSceneItemProperties(slot.Obs.Scene, "multiview");
+
+                        props.Position.X = (i % cols) * (width / cols) + (5 / scaleFromCanvas.X);
+                        props.Position.Y = (i / rows) * (height / rows) + offsetTop + (5 / scaleFromCanvas.Y);
+
+                        props.Bounds.Type = SceneItemBoundsType.OBS_BOUNDS_STRETCH;
+                        props.Bounds.Width = width / cols - (10 / scaleFromCanvas.X);
+                        props.Bounds.Height = height / rows - (10 / scaleFromCanvas.Y);
+
+                        _obs.WebSocket.SetSceneItemProperties(props);
+                    }
+                }
+            }
         }
     }
 }

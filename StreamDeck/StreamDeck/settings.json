@@ -2,6 +2,6 @@
   "$schema": "settings-schema.json",
   "Connection": {
     "IP": "127.0.0.1",
-    "Port":  4444 
-  } 
+    "Port": 4444
+  }
 }

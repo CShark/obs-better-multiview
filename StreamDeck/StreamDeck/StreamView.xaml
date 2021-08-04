@@ -8,25 +8,32 @@
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="None"
-        Background="Black"
+        AllowsTransparency="True"
+        Background="#01FFFFFF"
         Title="Stream View" Height="1080" Width="1920 ">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
-            <RowDefinition Height="25px"></RowDefinition>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="4*" />
         </Grid.RowDefinitions>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <controls:ScenePreview SceneName="(preview)" Grid.Column="1"></controls:ScenePreview>
             <controls:LivePreview Grid.Column="2"></controls:LivePreview>
         </Grid>
+
+        <UniformGrid Grid.Row="1" x:Name="SlotGrid" Margin="8,0,8,8">
+            <UniformGrid.Resources>
+                <Style TargetType="controls:SceneSlot">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </UniformGrid.Resources>
+        </UniformGrid>
     </Grid>
 </Window>

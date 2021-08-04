@@ -32,9 +32,34 @@ namespace StreamDeck
             set { SetValue(ObsRunningProperty, value); }
         }
 
+        public static readonly DependencyProperty ProfileManagerProperty = DependencyProperty.Register(
+            nameof(ProfileManager), typeof(ProfileManager), typeof(MainWindow), new PropertyMetadata(default(ProfileManager)));
+
+        public ProfileManager ProfileManager {
+            get { return (ProfileManager) GetValue(ProfileManagerProperty); }
+            set { SetValue(ProfileManagerProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedProfileProperty = DependencyProperty.Register(
+            nameof(SelectedProfile), typeof(string), typeof(MainWindow), new PropertyMetadata(default(string)));
+
+        public string SelectedProfile {
+            get { return (string) GetValue(SelectedProfileProperty); }
+            set { SetValue(SelectedProfileProperty, value); }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+            Closed += (sender, args) => _view?.Close();
+
+            ProfileManager = App.Container.Resolve<ProfileManager>();
+            ProfileManager.ProfileChanged += () => {
+                Dispatcher.Invoke(() => {
+                    SelectedProfile = ProfileManager.ActiveProfile?.Name ?? "";
+                });
+            };
+
             _watcher = App.Container.Resolve<ObsWatchService>();
             
             _watcher.ObsConnected += () => {
@@ -51,6 +76,12 @@ namespace StreamDeck
                     _view.Close();
                 });
             };
+        }
+
+        private void Profile_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (SelectedProfile != ProfileManager.ActiveProfile?.Name) {
+                ProfileManager.LoadProfile(SelectedProfile);
+            }
         }
     }
 }

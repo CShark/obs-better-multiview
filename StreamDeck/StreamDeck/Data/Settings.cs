@@ -8,12 +8,16 @@ namespace StreamDeck.Data
 {
     public class Settings
     {
-        public struct SConnection {
+        public struct DConnection {
             public string IP { get; set; }
             public int Port { get; set; }
             public string Password { get; set; }
         }
 
-        public SConnection Connection { get; set; }
+       
+
+        public DConnection Connection { get; set; }
+        
+        public string LastProfile { get; set; }
     }
 }

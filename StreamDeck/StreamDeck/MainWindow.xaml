@@ -44,7 +44,13 @@
                 </Style>
             </StackPanel.Resources>
 
-            <CheckBox IsChecked="{Binding ObsRunning}">OBS Verbunden</CheckBox>
+            <CheckBox IsChecked="{Binding ObsRunning}" IsEnabled="false">OBS Verbunden</CheckBox>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Margin="10">
+            <ComboBox Margin="5" ItemsSource="{Binding ProfileManager.Profiles}"
+                      SelectionChanged="Profile_OnSelectionChanged"
+                      SelectedItem="{Binding SelectedProfile,Mode=TwoWay}" />
         </StackPanel>
     </Grid>
 </Window>

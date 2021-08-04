@@ -31,10 +31,19 @@ namespace StreamDeck
 
             builder.Register(x => settings).AsSelf().SingleInstance();
             builder.RegisterType<ObsWatchService>().AsSelf().SingleInstance();
-            builder.RegisterType<ScenePreview>().AsSelf();
+            builder.RegisterType<ProfileManager>().AsSelf().SingleInstance();
+            builder.RegisterType<ProfileWatcher>().AsSelf().SingleInstance();
 
             Container = builder.Build();
             base.OnStartup(e);
+        }
+
+        protected override void OnExit(ExitEventArgs e) {
+            var settings = Container.Resolve<Settings>();
+            var text = JsonConvert.SerializeObject(settings);
+            File.WriteAllText("settings.json", text);
+
+            base.OnExit(e);
         }
     }
 }
