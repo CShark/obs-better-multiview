@@ -9,9 +9,12 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="obs-websocket-dotnet" Version="4.9.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
     <PackageReference Include="Vlc.DotNet.Wpf" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\obs-websocket-dotnet\obs-websocket-dotnet.csproj" />
   </ItemGroup>
 
   <ItemGroup>

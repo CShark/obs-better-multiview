@@ -20,12 +20,14 @@ namespace StreamDeck.Services
             _profile = profile;
 
             _obs.WebSocket.SceneCollectionChanged += (sender, args) => {
-                ResolveConfig();
+               ResolveConfig();
             };
 
             _profile.ProfileChanged += () => {
                 ResolveConfig();
             };
+
+            ResolveConfig();
         }
 
         private void ResolveConfig() {

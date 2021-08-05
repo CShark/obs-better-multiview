@@ -12,6 +12,8 @@ namespace StreamDeck.Data
             public string IP { get; set; }
             public int Port { get; set; }
             public string Password { get; set; }
+
+            public string Process { get; set; }
         }
 
        

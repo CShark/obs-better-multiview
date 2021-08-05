@@ -76,6 +76,10 @@ namespace StreamDeck
                     _view.Close();
                 });
             };
+
+            Dispatcher.Invoke(() => {
+                SelectedProfile = ProfileManager.ActiveProfile?.Name ?? "";
+            });
         }
 
         private void Profile_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {

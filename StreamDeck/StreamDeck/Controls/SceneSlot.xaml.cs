@@ -22,17 +22,30 @@ namespace StreamDeck.Controls {
         private readonly UserProfile.DSlot _slot;
 
         public static readonly DependencyProperty SceneNameProperty = DependencyProperty.Register(
-            nameof(SceneName), typeof(string), typeof(SceneSlot), new PropertyMetadata(default(string)));
+            nameof(SceneName), typeof(string), typeof(SceneSlot),
+            new PropertyMetadata(default(string), (o, args) => ((SceneSlot) o).SceneNameChanged()));
 
         public string SceneName {
             get { return (string) GetValue(SceneNameProperty); }
             set { SetValue(SceneNameProperty, value); }
         }
 
+        public static readonly DependencyProperty UnconfiguredProperty = DependencyProperty.Register(
+            nameof(Unconfigured), typeof(bool), typeof(SceneSlot), new PropertyMetadata(true));
+
+        public bool Unconfigured {
+            get { return (bool) GetValue(UnconfiguredProperty); }
+            set { SetValue(UnconfiguredProperty, value); }
+        }
+
         public SceneSlot(UserProfile.DSlot slot) {
             _slot = slot;
             SceneName = _slot.Obs.Scene;
             InitializeComponent();
+        }
+
+        private void SceneNameChanged() {
+            Unconfigured = string.IsNullOrEmpty(SceneName);
         }
 
         private void SceneSlot_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {

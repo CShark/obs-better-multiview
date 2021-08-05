@@ -49,6 +49,7 @@ namespace StreamDeck.Services {
                 _settings.LastProfile = name;
                 var profile = File.ReadAllText(Path.Combine("Profiles", name + ".json"));
                 ActiveProfile = JsonConvert.DeserializeObject<UserProfile>(profile);
+                ActiveProfile.Name = name;
                 OnProfileChanged();
             }
         }

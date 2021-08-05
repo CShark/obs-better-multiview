@@ -20,7 +20,11 @@
         "Password": {
           "type": "string",
           "description": "The Password for OBS WebSocket"
-        }
+        },
+        "Process": {
+          "type": "string",
+          "description": "The name of the obs process"
+        } 
       }
     },
     "LastProfile": {
