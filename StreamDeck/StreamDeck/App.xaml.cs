@@ -33,6 +33,8 @@ namespace StreamDeck
             builder.RegisterType<ObsWatchService>().AsSelf().SingleInstance();
             builder.RegisterType<ProfileManager>().AsSelf().SingleInstance();
             builder.RegisterType<ProfileWatcher>().AsSelf().SingleInstance();
+            builder.RegisterType<Win32Interop>().AsSelf().SingleInstance();
+            builder.RegisterType<SceneService>().AsSelf().SingleInstance();
 
             Container = builder.Build();
             base.OnStartup(e);

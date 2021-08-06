@@ -24,8 +24,13 @@
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-
-            <controls:LivePreview Grid.Column="2"></controls:LivePreview>
+            <Border Grid.Column="1" Background="#01FFFFFF" MouseLeftButtonUp="SwitchLive_OnMouseLeftButtonUp">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Foreground="White"  FontFamily="Segoe MDL2 Assets" FontSize="100">&#xF5B0;</TextBlock>
+                    <TextBlock Foreground="Black"  FontFamily="Segoe MDL2 Assets" FontSize="80" VerticalAlignment="Center" HorizontalAlignment="Center">&#xF5B0;</TextBlock>
+                </Grid>
+            </Border>
+            <controls:LivePreview Grid.Column="2" Margin="5" />
         </Grid>
 
         <UniformGrid Grid.Row="1" x:Name="SlotGrid" Margin="8,0,8,8">

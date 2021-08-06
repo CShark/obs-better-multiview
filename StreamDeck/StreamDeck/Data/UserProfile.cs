@@ -3,15 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 
 namespace StreamDeck.Data {
     public class UserProfile {
         public class DSlot {
+            public string Name { get; set; }
+
+            [JsonIgnore]
+            public Guid Id { get; }
+
             public DSlotObs Obs { get; set; }
 
             public DSlot() {
                 Obs = new DSlotObs();
+                Id = Guid.NewGuid();
+            }
+
+            public static bool operator ==(DSlot a, DSlot b) {
+                return a?.Id == b?.Id && a != null && b != null;
+            }
+
+            public static bool operator !=(DSlot a, DSlot b) {
+                return a?.Id != b?.Id || (a == null && b == null);
             }
         }
 

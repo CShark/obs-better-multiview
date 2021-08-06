@@ -67,6 +67,7 @@ namespace StreamDeck
                     ObsRunning = true;
                     _view = new StreamView();
                     _view.Show();
+                    
                 });
             };
 

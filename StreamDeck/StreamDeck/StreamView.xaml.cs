@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -29,33 +30,64 @@ namespace StreamDeck {
         private readonly Settings _settings;
         private readonly ProfileWatcher _watcher;
         private readonly ObsWatchService _obs;
+        private readonly Win32Interop _win32;
+        private readonly SceneService _scenes;
 
         public StreamView() {
             InitializeComponent();
             _settings = App.Container.Resolve<Settings>();
             _watcher = App.Container.Resolve<ProfileWatcher>();
             _obs = App.Container.Resolve<ObsWatchService>();
+            _win32 = App.Container.Resolve<Win32Interop>();
+            _scenes = App.Container.Resolve<SceneService>();
 
-            _watcher.ActiveProfileChanged += ProfileChanged;
-            _obs.WebSocket.PreviewSceneChanged += ObsOnPreviewSceneChanged;
+            _watcher.ActiveProfileChanged += SceneCollectionChanged;
+
+            _scenes.PreviewChanged += ObsOnPreviewSceneChanged;
 
             Unloaded += (sender, args) => {
-                _watcher.ActiveProfileChanged -= ProfileChanged;
-                _obs.WebSocket.PreviewSceneChanged -= ObsOnPreviewSceneChanged;
+                _watcher.ActiveProfileChanged -= SceneCollectionChanged;
+                _scenes.PreviewChanged -= ObsOnPreviewSceneChanged;
             };
 
             Loaded += (sender, args) => {
                 if (!DesignerProperties.GetIsInDesignMode(this)) {
-                    ProfileChanged(_watcher.ActiveProfile);
+                    SceneCollectionChanged(_watcher.ActiveProfile);
                 }
+            };
+
+            Activated += (sender, args) => ViewActivated();
+            Closed += (sender, args) => Closing();
+
+            KeyDown += (sender, args) => {
+                if (args.Key == Key.Escape)
+                    Close();
             };
         }
 
-        private void ObsOnPreviewSceneChanged(OBSWebsocket sender, string newscenename) {
+        private void ViewActivated() {
+            var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
+            if (window.handle == IntPtr.Zero) {
+                _obs.WebSocket.OpenProjector("scene", 0, null, "multiview");
+                window = _win32.GetObsWindows("- multiview").FirstOrDefault();
+                _win32.HideAltTab(window.handle);
+            }
+
+            _win32.ShowWindowBehind(window.handle, this);
+        }
+
+        private void Closing() {
+            var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
+            if (window.handle != IntPtr.Zero) {
+                _win32.CloseWindow(window.handle);
+            }
+        }
+
+        private void ObsOnPreviewSceneChanged(UserProfile.DSlot dSlot) {
             PrepareObsPreview();
         }
 
-        private void ProfileChanged(UserProfile.DObsProfile profile) {
+        private void SceneCollectionChanged(UserProfile.DObsProfile profile) {
             var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
             Dispatcher.InvokeAsync(() => {
@@ -82,20 +114,22 @@ namespace StreamDeck {
         }
 
         private void PrepareObsPreview() {
+            var slot = _scenes.ActivePreviewSlot;
+
             if (!_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == "preview")) {
                 _obs.WebSocket.CreateScene("preview");
             }
 
             var items = _obs.WebSocket.GetSceneItemList("preview").ToList();
-            var preview = _obs.WebSocket.GetPreviewScene();
-            if (items.Count != 1 || items[0].SourceName != preview.Name) {
+            var preview = slot?.Obs.Scene;
+            if (items.Count != 1 || items[0].SourceName != preview) {
                 foreach (var item in items) {
                     _obs.WebSocket.DeleteSceneItem(new SceneItemStub {SourceName = item.SourceName, ID = item.ItemId},
                         "preview");
                 }
 
-                if (preview.Name != "preview" && preview.Name != "multiview")
-                    _obs.WebSocket.AddSceneItem("preview", preview.Name);
+                if (!string.IsNullOrEmpty(preview))
+                    _obs.WebSocket.AddSceneItem("preview", preview);
             }
         }
 
@@ -160,6 +194,13 @@ namespace StreamDeck {
                     }
                 }
             }
+
+            // check for obs preview
+            ViewActivated();
+        }
+
+        private void SwitchLive_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            _scenes.SwitchLive();
         }
     }
 }

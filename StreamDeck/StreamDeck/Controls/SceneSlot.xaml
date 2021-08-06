@@ -5,12 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:StreamDeck.Controls"
              mc:Ignorable="d"
+             Background="#01FFFFFF"
              MouseRightButtonUp="SceneSlot_OnMouseRightButtonUp"
+             MouseLeftButtonDown="SceneSlot_OnMouseLeftButtonDown"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
-        <Rectangle Fill="#414682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}"/>
+        <Rectangle Fill="#254682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}"/>
+        <Rectangle Stroke="Gold" StrokeThickness="7" Margin="-1" Visibility="{Binding ActivePreview, Converter={StaticResource BoolToVis}}"></Rectangle>
+        <Rectangle StrokeThickness="7" Margin="-1" Stroke="ForestGreen" Visibility="{Binding ActiveLive, Converter={StaticResource BoolToVis}}"></Rectangle>
+
+        <Rectangle Stroke="DarkGray" StrokeThickness="6" Margin="-6"/>
     </Grid>
 </UserControl>
