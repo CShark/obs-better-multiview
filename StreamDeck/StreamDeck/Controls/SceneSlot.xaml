@@ -4,19 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:StreamDeck.Controls"
+             xmlns:converters="clr-namespace:StreamDeck.Converters"
              mc:Ignorable="d"
              Background="#01FFFFFF"
              MouseRightButtonUp="SceneSlot_OnMouseRightButtonUp"
              MouseLeftButtonDown="SceneSlot_OnMouseLeftButtonDown"
-             d:DesignHeight="450" d:DesignWidth="800" >
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:StringToVis x:Key="StringToVis" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
-        <Rectangle Fill="#254682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}"/>
-        <Rectangle Stroke="Gold" StrokeThickness="7" Margin="-1" Visibility="{Binding ActivePreview, Converter={StaticResource BoolToVis}}"></Rectangle>
-        <Rectangle StrokeThickness="7" Margin="-1" Stroke="ForestGreen" Visibility="{Binding ActiveLive, Converter={StaticResource BoolToVis}}"></Rectangle>
+        <Rectangle Fill="#254682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}" />
+        <Rectangle Stroke="Gold" StrokeThickness="7" Margin="-1"
+                   Visibility="{Binding ActivePreview, Converter={StaticResource BoolToVis}}" />
+        <Rectangle StrokeThickness="7" Margin="-1" Stroke="ForestGreen"
+                   Visibility="{Binding ActiveLive, Converter={StaticResource BoolToVis}}" />
 
-        <Rectangle Stroke="DarkGray" StrokeThickness="6" Margin="-6"/>
+        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="20" Foreground="White"
+                   Background="#83000000" VerticalAlignment="Top" Padding="5" FontSize="20"
+                   Visibility="{Binding Name, Converter={StaticResource StringToVis}}" />
+
+        <Rectangle Stroke="DarkGray" StrokeThickness="6" Margin="-6" />
     </Grid>
 </UserControl>

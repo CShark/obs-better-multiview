@@ -13,7 +13,7 @@
 		<RepositoryUrl>https://github.com/BarRaider/obs-websocket-dotnet</RepositoryUrl>
 		<Description>Official obs-websocket .NET library. Written in C#. Supports .NET Standard</Description>
 		<PackageTags>OBS obs-websocket websocket official obs-websocket-dotnet obs.websocket.net obs-websocket-net</PackageTags>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<PackageReleaseNotes>Added Events:
 `VirtualCameraStarted`
 `VirtualCameraStopped`
@@ -37,13 +37,6 @@ Added Requests:
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	  <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="..\LICENSE">
-	    <Pack>True</Pack>
-	    <PackagePath></PackagePath>
-	  </None>
 	</ItemGroup>
 
 </Project>

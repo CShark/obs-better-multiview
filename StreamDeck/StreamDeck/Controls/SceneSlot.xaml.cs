@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Autofac;
 using StreamDeck.Data;
+using StreamDeck.Dialogs;
 using StreamDeck.Services;
 
 namespace StreamDeck.Controls {
@@ -23,15 +24,7 @@ namespace StreamDeck.Controls {
     public partial class SceneSlot : UserControl {
         private readonly UserProfile.DSlot _slot;
         private readonly SceneService _scenes;
-
-        public static readonly DependencyProperty SceneNameProperty = DependencyProperty.Register(
-            nameof(SceneName), typeof(string), typeof(SceneSlot),
-            new PropertyMetadata(default(string), (o, args) => ((SceneSlot) o).SceneNameChanged()));
-
-        public string SceneName {
-            get { return (string) GetValue(SceneNameProperty); }
-            set { SetValue(SceneNameProperty, value); }
-        }
+        private readonly StreamView _owner;
 
         public static readonly DependencyProperty UnconfiguredProperty = DependencyProperty.Register(
             nameof(Unconfigured), typeof(bool), typeof(SceneSlot), new PropertyMetadata(true));
@@ -57,10 +50,19 @@ namespace StreamDeck.Controls {
             set { SetValue(ActiveLiveProperty, value); }
         }
 
-        public SceneSlot(UserProfile.DSlot slot) {
+        public static readonly DependencyProperty NameProperty = DependencyProperty.Register(
+            nameof(Name), typeof(string), typeof(SceneSlot), new PropertyMetadata(default(string)));
+
+        public string Name {
+            get { return (string) GetValue(NameProperty); }
+            set { SetValue(NameProperty, value); }
+        }
+
+        public SceneSlot(UserProfile.DSlot slot, StreamView owner) {
             _slot = slot;
-            SceneName = _slot.Obs.Scene;
+            _owner = owner;
             _scenes = App.Container.Resolve<SceneService>();
+            LoadSlot();
 
             InitializeComponent();
             Unloaded += (sender, args) => {
@@ -88,20 +90,26 @@ namespace StreamDeck.Controls {
             });
         }
 
-        private void SceneNameChanged() {
-            Unconfigured = string.IsNullOrEmpty(SceneName);
+        private void LoadSlot() {
+            Unconfigured = string.IsNullOrEmpty(_slot.Obs.Scene);
+            Name = _slot.Name;
         }
 
         private void SceneSlot_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var config = new SlotConfig();
             config.SetSlot(_slot);
             config.Owner = Window.GetWindow(this);
-            config.ShowDialog();
+
+            if (config.ShowDialog() == true) {
+                LoadSlot();
+                _owner.PrepareObsMultiview();
+            }
         }
 
         private void SceneSlot_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (!Unconfigured)
                 _scenes.ActivatePreview(_slot);
         }
+        
     }
 }

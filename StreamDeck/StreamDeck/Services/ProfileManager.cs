@@ -45,6 +45,8 @@ namespace StreamDeck.Services {
         }
 
         public void LoadProfile(string name) {
+            SaveProfile();
+
             if (_profiles.Contains(name)) {
                 _settings.LastProfile = name;
                 var profile = File.ReadAllText(Path.Combine("Profiles", name + ".json"));
@@ -54,8 +56,50 @@ namespace StreamDeck.Services {
             }
         }
 
+        public void SaveProfile() {
+            if (ActiveProfile != null) {
+                var json = JsonConvert.SerializeObject(ActiveProfile);
+                File.WriteAllText(Path.Combine("Profiles", ActiveProfile.Name + ".json"), json);
+            }
+        }
+
         protected virtual void OnProfileChanged() {
             ProfileChanged?.Invoke();
+        }
+
+        public void DeleteActiveProfile() {
+            if (ActiveProfile != null) {
+                File.Delete(Path.Combine("Profiles", ActiveProfile.Name + ".json"));
+                ActiveProfile = null;
+                OnProfileChanged();
+            }
+        }
+
+        public bool CreateProfile(string name) {
+            if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
+                File.Create(Path.Combine("Profiles", name + ".json"));
+                SaveProfile();
+                ActiveProfile = new UserProfile {Name = name};
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RenameActiveProfile(string name) {
+            if (ActiveProfile != null) {
+                if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
+                    File.Move(Path.Combine("Profiles", ActiveProfile.Name + ".json"),
+                        Path.Combine("Profiles", name + ".json"));
+                    _profiles.Remove(ActiveProfile.Name);
+                    _profiles.Add(name);
+                    ActiveProfile.Name = name;
+                    _settings.LastProfile = name;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

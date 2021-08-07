@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Autofac;
 using Newtonsoft.Json;
-using OBSWebsocketDotNet;
 using StreamDeck.Data;
 using StreamDeck.Services;
 
-namespace StreamDeck {
+namespace StreamDeck.Dialogs {
     /// <summary>
     /// Interaktionslogik für SlotConfig.xaml
     /// </summary>
@@ -56,6 +46,32 @@ namespace StreamDeck {
             var scenes = _obs.WebSocket.GetSceneList().Scenes.Select(x => x.Name)
                 .Where(x => x != "multiview" && x != "preview");
             AvailableScenes = new ObservableCollection<string>(scenes);
+
+            input.Focus();
+        }
+
+        private void Ok_OnClick(object sender, RoutedEventArgs e) {
+            DialogResult = true;
+            Close();
+        }
+
+        private void Cancel_OnClick(object sender, RoutedEventArgs e) {
+            DialogResult = false;
+            JsonConvert.PopulateObject(_originalConfig, Slot);
+            Close();
+        }
+
+        private void SlotConfig_OnClosing(object sender, CancelEventArgs e) {
+            if (DialogResult == null) {
+                DialogResult = false;
+                JsonConvert.PopulateObject(_originalConfig, Slot);
+            }
+        }
+
+        private void Unlink_OnClick(object sender, RoutedEventArgs e) {
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(new UserProfile.DSlot()), Slot);
+            DialogResult = true;
+            Close();
         }
     }
 }

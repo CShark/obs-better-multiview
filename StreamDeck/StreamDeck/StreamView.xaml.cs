@@ -52,6 +52,12 @@ namespace StreamDeck {
 
             Loaded += (sender, args) => {
                 if (!DesignerProperties.GetIsInDesignMode(this)) {
+                    foreach (var window in _win32.GetObsWindows("- multiview")) {
+                        if (window.handle != IntPtr.Zero) {
+                            _win32.CloseWindow(window.handle);
+                        }
+                    }
+
                     SceneCollectionChanged(_watcher.ActiveProfile);
                 }
             };
@@ -63,12 +69,18 @@ namespace StreamDeck {
                 if (args.Key == Key.Escape)
                     Close();
             };
+
+            var monitor = _win32.GetMonitors().ToArray()[_settings.Screen];
+            Left = monitor.Offset.X;
+            Top = monitor.Offset.Y;
+            Width = monitor.Size.X;
+            Height = monitor.Size.Y;
         }
 
         private void ViewActivated() {
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
-                _obs.WebSocket.OpenProjector("scene", 0, null, "multiview");
+                _obs.WebSocket.OpenProjector("scene", _settings.Screen, null, "multiview");
                 window = _win32.GetObsWindows("- multiview").FirstOrDefault();
                 _win32.HideAltTab(window.handle);
             }
@@ -105,11 +117,12 @@ namespace StreamDeck {
                             profile.SceneView.Slots.Add(slot);
                         }
 
-                        SlotGrid.Children.Add(new SceneSlot(slot));
+                        SlotGrid.Children.Add(new SceneSlot(slot, this));
                     }
                 }
             });
 
+            PrepareObsPreview();
             PrepareObsMultiview();
         }
 
@@ -133,12 +146,10 @@ namespace StreamDeck {
             }
         }
 
-        private void PrepareObsMultiview() {
+        public void PrepareObsMultiview() {
             if (!_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == "multiview")) {
                 _obs.WebSocket.CreateScene("multiview");
             }
-
-            PrepareObsPreview();
 
             //clear items
             var items = _obs.WebSocket.GetSceneItemList("multiview");
@@ -157,8 +168,8 @@ namespace StreamDeck {
 
             // Add preview
             {
-                _obs.WebSocket.AddSceneItem("multiview", "preview");
-                var props = _obs.WebSocket.GetSceneItemProperties("preview", "multiview");
+                var id = _obs.WebSocket.AddSceneItem("multiview", "preview");
+                var props = _obs.WebSocket.GetSceneItemProperties(id, "multiview");
 
                 props.Bounds.Height = offsetTop - (10 / scaleFromCanvas.Y);
                 props.Bounds.Width = width / 3f - (10 / scaleFromCanvas.X);
@@ -167,7 +178,7 @@ namespace StreamDeck {
                 props.Position.X = (width / 6f) + (5 / scaleFromCanvas.X);
                 props.Position.Y = 5 / scaleFromCanvas.Y;
 
-                _obs.WebSocket.SetSceneItemProperties(props, "multiview");
+                _obs.WebSocket.SetSceneItemProperties(props, id, "multiview");
             }
 
             // Add slots
@@ -181,16 +192,16 @@ namespace StreamDeck {
                     var slot = _watcher.ActiveProfile.SceneView.Slots[i];
                     if (slot.Obs.Scene != null) {
                         var id = _obs.WebSocket.AddSceneItem("multiview", slot.Obs.Scene);
-                        var props = _obs.WebSocket.GetSceneItemProperties(slot.Obs.Scene, "multiview");
+                        var props = _obs.WebSocket.GetSceneItemProperties(id, "multiview");
 
-                        props.Position.X = (i % cols) * (width / cols) + (5 / scaleFromCanvas.X);
-                        props.Position.Y = (i / rows) * (height / rows) + offsetTop + (5 / scaleFromCanvas.Y);
+                        props.Position.X = (i % cols) * (width / cols);
+                        props.Position.Y = (i / cols) * (height / rows) + offsetTop;
 
                         props.Bounds.Type = SceneItemBoundsType.OBS_BOUNDS_SCALE_INNER;
-                        props.Bounds.Width = width / cols - (10 / scaleFromCanvas.X);
-                        props.Bounds.Height = height / rows - (10 / scaleFromCanvas.Y);
+                        props.Bounds.Width = width / cols;
+                        props.Bounds.Height = height / rows;
 
-                        _obs.WebSocket.SetSceneItemProperties(props, "multiview");
+                        _obs.WebSocket.SetSceneItemProperties(props, id, "multiview");
                     }
                 }
             }

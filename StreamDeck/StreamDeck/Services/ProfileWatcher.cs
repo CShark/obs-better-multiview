@@ -48,8 +48,10 @@ namespace StreamDeck.Services
         }
 
         protected virtual void OnActiveProfileChanged(UserProfile.DObsProfile obj) {
-            ActiveProfile = obj;
-            ActiveProfileChanged?.Invoke(obj);
+            App.Current.Dispatcher.Invoke(() => {
+                ActiveProfile = obj;
+                ActiveProfileChanged?.Invoke(obj);
+            });
         }
     }
 }

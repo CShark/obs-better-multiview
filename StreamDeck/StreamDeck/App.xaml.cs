@@ -42,8 +42,11 @@ namespace StreamDeck
 
         protected override void OnExit(ExitEventArgs e) {
             var settings = Container.Resolve<Settings>();
-            var text = JsonConvert.SerializeObject(settings);
+            var text = JsonConvert.SerializeObject(settings, Formatting.Indented);
             File.WriteAllText("settings.json", text);
+
+            var profile = Container.Resolve<ProfileManager>();
+            profile.SaveProfile();
 
             base.OnExit(e);
         }
