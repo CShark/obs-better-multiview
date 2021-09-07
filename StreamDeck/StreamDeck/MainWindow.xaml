@@ -5,55 +5,115 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamDeck"
         xmlns:services="clr-namespace:StreamDeck.Services"
+        xmlns:plugins="clr-namespace:StreamDeck.Plugins;assembly=StreamDeck.Plugins"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Stream Deck" Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="10">
-            <StackPanel.Resources>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.Resources>
                 <Style TargetType="CheckBox">
                     <Setter Property="Margin" Value="5" />
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="CheckBox">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Rectangle x:Name="Indicator" />
-                                    <ContentPresenter Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"
-                                                      Content="{TemplateBinding Content}" />
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsChecked" Value="True">
-                                        <Setter TargetName="Indicator" Property="Fill" Value="Green" />
-                                    </Trigger>
-                                    <Trigger Property="IsChecked" Value="False">
-                                        <Setter TargetName="Indicator" Property="Fill" Value="OrangeRed" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
                 </Style>
-            </StackPanel.Resources>
+            </Grid.Resources>
 
-            <CheckBox IsChecked="{Binding ObsRunning}" IsEnabled="false">OBS Verbunden</CheckBox>
-        </StackPanel>
+            <CheckBox IsChecked="{Binding ObsRunning}" IsEnabled="false" Content="OBS Verbunden">
+                <CheckBox.Template>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle x:Name="Indicator" />
+                            <ContentPresenter Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"
+                                              Content="{TemplateBinding Content}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Indicator" Property="Fill" Value="Green" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="Indicator" Property="Fill" Value="OrangeRed" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </CheckBox.Template>
+            </CheckBox>
+
+            <TextBlock Grid.Row="1" Style="{StaticResource Title}" Margin="0,5">Plugins</TextBlock>
+
+            <ListBox Grid.Row="2" BorderThickness="0" ItemsSource="{Binding Plugins}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="services:PluginInfo">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="26" />
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle x:Name="Indicator" Height="16" />
+                            <TextBlock Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"
+                                       Text="{Binding Plugin.Name}" />
+                            <CheckBox Grid.Column="2" IsChecked="{Binding Active}" />
+                            <Button FontFamily="Segoe MDL2 Assets" Grid.Column="3" FontSize="16" Click="PluginSettings_OnClick"
+                                    Visibility="{Binding Plugin.HasSettings, Converter={StaticResource BoolToVis}}">
+                                &#xF8B0;
+                            </Button>
+                        </Grid>
+
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Plugin.State}"
+                                         Value="{x:Static plugins:PluginState.Disabled}">
+                                <Setter TargetName="Indicator" Property="Fill" Value="DarkGray" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Plugin.State}"
+                                         Value="{x:Static plugins:PluginState.Active}">
+                                <Setter TargetName="Indicator" Property="Fill" Value="Green" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Plugin.State}"
+                                         Value="{x:Static plugins:PluginState.Warning}">
+                                <Setter TargetName="Indicator" Property="Fill" Value="Gold" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Plugin.State}"
+                                         Value="{x:Static plugins:PluginState.Faulted}">
+                                <Setter TargetName="Indicator" Property="Fill" Value="OrangeRed" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListBox.Resources>
+            </ListBox>
+        </Grid>
 
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock>Monitor</TextBlock>
-            <ComboBox Margin="5" ItemsSource="{Binding Screens}" SelectedIndex="{Binding ActiveScreen}" SelectionChanged="Selector_OnSelectionChanged">
+            <ComboBox Margin="5" ItemsSource="{Binding Screens}" SelectedIndex="{Binding ActiveScreen}"
+                      SelectionChanged="Selector_OnSelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="services:MonitorInfo">
-                        <TextBlock Text="{Binding Name}"></TextBlock>
+                        <TextBlock Text="{Binding Name}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
@@ -65,7 +125,7 @@
                 <Button Margin="2" Padding="2" Click="CreateProfile_OnClick">Neues Profil</Button>
                 <Button Margin="2" Padding="2" Click="RenameProfile_OnClick">Umbenennen</Button>
                 <Button Margin="2" Padding="2" Click="DeleteProfile_OnClick">Profil Löschen</Button>
-                </UniformGrid>
+            </UniformGrid>
         </StackPanel>
     </Grid>
 </Window>

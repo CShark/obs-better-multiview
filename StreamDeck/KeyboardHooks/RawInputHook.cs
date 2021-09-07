@@ -109,7 +109,7 @@ namespace KeyboardHooks {
                         var vk = Helpers.FixVirtualKeyCode(input.Keyboard.VKey, input.Keyboard.MakeCode,
                             (input.Keyboard.Flags & RI_KEY_E0) != 0);
 
-                        var args = new RawKeyEvent(vk, (input.Keyboard.Flags & RI_KEY_BREAK) != 0,
+                        var args = new RawKeyEvent(vk, (input.Keyboard.Flags & RI_KEY_BREAK) == 0,
                             _deviceNames[input.Header.hDevice]);
                         OnKeyEvent(args);
                     } else {

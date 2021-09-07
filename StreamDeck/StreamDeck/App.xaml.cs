@@ -35,6 +35,7 @@ namespace StreamDeck
             builder.RegisterType<ProfileWatcher>().AsSelf().SingleInstance();
             builder.RegisterType<Win32Interop>().AsSelf().SingleInstance();
             builder.RegisterType<SceneService>().AsSelf().SingleInstance();
+            builder.RegisterType<PluginService>().AsSelf().SingleInstance();
 
             Container = builder.Build();
             base.OnStartup(e);

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Autofac;
 using Newtonsoft.Json;
@@ -33,6 +34,7 @@ namespace StreamDeck.Dialogs {
 
         private string _originalConfig;
         private readonly ObsWatchService _obs;
+        private readonly PluginService _plugins;
 
         public void SetSlot(UserProfile.DSlot slot) {
             _originalConfig = JsonConvert.SerializeObject(slot);
@@ -43,9 +45,19 @@ namespace StreamDeck.Dialogs {
             InitializeComponent();
 
             _obs = App.Container.Resolve<ObsWatchService>();
+            _plugins = App.Container.Resolve<PluginService>();
+
             var scenes = _obs.WebSocket.GetSceneList().Scenes.Select(x => x.Name)
                 .Where(x => x != "multiview" && x != "preview");
             AvailableScenes = new ObservableCollection<string>(scenes);
+
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings)) {
+                var title = new TextBlock();
+                title.Text = plugin.Plugin.Name;
+                title.Style = TryFindResource("Title") as Style;
+                ConfigPanel.Children.Add(title);
+                ConfigPanel.Children.Add(plugin.Plugin.GetSlotSettings());
+            }
 
             input.Focus();
         }

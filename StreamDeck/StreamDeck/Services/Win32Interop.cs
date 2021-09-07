@@ -19,82 +19,10 @@ namespace StreamDeck.Services {
         private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
 
 
-        #region Query Monitors
+        #region Win32: Query Monitors
 
         private const uint QDC_ONLY_ACTIVE_PATHS = 0x00000002;
-
-        private enum DisplayconfigVideoOutputTechnology : uint {
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER = 0xFFFFFFFF,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HD15 = 0,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO = 1,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO = 2,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO = 3,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DVI = 4,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HDMI = 5,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS = 6,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN = 8,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDI = 9,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL = 10,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED = 11,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL = 12,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED = 13,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = 0x80000000,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = 0xFFFFFFFF
-        }
-
-        private enum DisplayconfigScanlineOrdering : uint {
-            DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED = 0,
-            DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE = 1,
-            DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED = 2,
-            DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST = DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED,
-            DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3,
-            DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32 = 0xFFFFFFFF
-        }
-
-        private enum DisplayconfigRotation : uint {
-            DISPLAYCONFIG_ROTATION_IDENTITY = 1,
-            DISPLAYCONFIG_ROTATION_ROTATE90 = 2,
-            DISPLAYCONFIG_ROTATION_ROTATE180 = 3,
-            DISPLAYCONFIG_ROTATION_ROTATE270 = 4,
-            DISPLAYCONFIG_ROTATION_FORCE_UINT32 = 0xFFFFFFFF
-        }
-
-        private enum DisplayconfigScaling : uint {
-            DISPLAYCONFIG_SCALING_IDENTITY = 1,
-            DISPLAYCONFIG_SCALING_CENTERED = 2,
-            DISPLAYCONFIG_SCALING_STRETCHED = 3,
-            DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX = 4,
-            DISPLAYCONFIG_SCALING_CUSTOM = 5,
-            DISPLAYCONFIG_SCALING_PREFERRED = 128,
-            DISPLAYCONFIG_SCALING_FORCE_UINT32 = 0xFFFFFFFF
-        }
-
-        private enum DisplayconfigPixelformat : uint {
-            DISPLAYCONFIG_PIXELFORMAT_8BPP = 1,
-            DISPLAYCONFIG_PIXELFORMAT_16BPP = 2,
-            DISPLAYCONFIG_PIXELFORMAT_24BPP = 3,
-            DISPLAYCONFIG_PIXELFORMAT_32BPP = 4,
-            DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5,
-            DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = 0xffffffff
-        }
-
-        private enum DisplayconfigModeInfoType : uint {
-            DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
-            DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
-            DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = 0xFFFFFFFF
-        }
-
-        private enum DisplayconfigDeviceInfoType : uint {
-            DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME = 1,
-            DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME = 2,
-            DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_PREFERRED_MODE = 3,
-            DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME = 4,
-            DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE = 5,
-            DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE = 6,
-            DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = 0xFFFFFFFF
-        }
+        private const uint DDI_GET_TARGET_NAME = 2;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct Luid {
@@ -115,11 +43,11 @@ namespace StreamDeck.Services {
             public Luid adapterId;
             public uint id;
             public uint modeInfoIdx;
-            private DisplayconfigVideoOutputTechnology outputTechnology;
-            private DisplayconfigRotation rotation;
-            private DisplayconfigScaling scaling;
+            private uint outputTechnology;
+            private uint rotation;
+            private uint scaling;
             private DisplayconfigRational refreshRate;
-            private DisplayconfigScanlineOrdering scanLineOrdering;
+            private uint scanLineOrdering;
             public bool targetAvailable;
             public uint statusFlags;
         }
@@ -151,7 +79,7 @@ namespace StreamDeck.Services {
             public Displayconfig2Dregion activeSize;
             public Displayconfig2Dregion totalSize;
             public uint videoStandard;
-            public DisplayconfigScanlineOrdering scanLineOrdering;
+            public uint scanLineOrdering;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -169,7 +97,7 @@ namespace StreamDeck.Services {
         private struct DisplayconfigSourceMode {
             public uint width;
             public uint height;
-            public DisplayconfigPixelformat pixelFormat;
+            public uint pixelFormat;
             public POINTL position;
         }
 
@@ -184,7 +112,7 @@ namespace StreamDeck.Services {
 
         [StructLayout(LayoutKind.Sequential)]
         private struct DisplayconfigModeInfo {
-            public DisplayconfigModeInfoType infoType;
+            public uint infoType;
             public uint id;
             public Luid adapterId;
             public DisplayconfigModeInfoUnion modeInfo;
@@ -197,7 +125,7 @@ namespace StreamDeck.Services {
 
         [StructLayout(LayoutKind.Sequential)]
         private struct DisplayconfigDeviceInfoHeader {
-            public DisplayconfigDeviceInfoType type;
+            public uint type;
             public uint size;
             public Luid adapterId;
             public uint id;
@@ -207,7 +135,7 @@ namespace StreamDeck.Services {
         private struct DisplayconfigTargetDeviceName {
             public DisplayconfigDeviceInfoHeader header;
             public DisplayconfigTargetDeviceNameFlags flags;
-            public DisplayconfigVideoOutputTechnology outputTechnology;
+            public uint outputTechnology;
             public ushort edidManufactureId;
             public ushort edidProductCodeId;
             public uint connectorInstance;
@@ -243,6 +171,8 @@ namespace StreamDeck.Services {
 
         #endregion
 
+        #region Win32: Window Manipulation
+
         private const uint WM_GETTEXT = 0x000D;
         private const uint WM_CLOSE = 0x0010;
         private const uint WS_EX_TOOLWINDOW = 0x00000080;
@@ -251,7 +181,6 @@ namespace StreamDeck.Services {
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_NOSIZE = 0x0001;
         private const uint SWP_NOMOVE = 0x0002;
-
 
         [DllImport("user32.dll")]
         private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
@@ -269,9 +198,13 @@ namespace StreamDeck.Services {
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr insertAfter, int x, int y, int cx, int cy,
             uint flags);
 
+        #endregion
+
         public Win32Interop(Settings settings) {
             _settings = settings;
         }
+
+        #region Window Manupulation
 
         public IEnumerable<(IntPtr handle, string title)> GetObsWindows(string titlePart) {
             var procs = Process.GetProcessesByName(_settings.Connection.Process);
@@ -297,7 +230,6 @@ namespace StreamDeck.Services {
         }
 
         public void CloseWindow(IntPtr window) {
-            //DestroyWindow(window);
             SendMessage(window, WM_CLOSE, 0, null);
         }
 
@@ -311,6 +243,10 @@ namespace StreamDeck.Services {
             style |= WS_EX_TOOLWINDOW;
             SetWindowLongPtr(window, GWL_EXSTYLE, (IntPtr) style);
         }
+
+        #endregion
+
+        #region Monitor Info
 
         public IEnumerable<MonitorInfo> GetMonitors() {
             var list = new List<MonitorInfo>();
@@ -329,7 +265,7 @@ namespace StreamDeck.Services {
                 deviceName.header.size = (uint) Marshal.SizeOf<DisplayconfigTargetDeviceName>();
                 deviceName.header.id = target.id;
                 deviceName.header.adapterId = target.adapterId;
-                deviceName.header.type = DisplayconfigDeviceInfoType.DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+                deviceName.header.type = DDI_GET_TARGET_NAME;
                 DisplayConfigGetDeviceInfo(ref deviceName);
 
                 list.Add(new MonitorInfo(deviceName.monitorFriendlyDeviceName,
@@ -340,5 +276,7 @@ namespace StreamDeck.Services {
 
             return list;
         }
+
+        #endregion
     }
 }

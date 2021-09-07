@@ -32,9 +32,7 @@ namespace KeyboardHooks {
 
         public bool Hook() {
             if (_hook == IntPtr.Zero) {
-                var proc = Process.GetCurrentProcess();
-                var mod = proc.MainModule.ModuleName;
-                var modPtr = GetModuleHandle(mod);
+                var modPtr = GetModuleHandle(null);
 
                 _hook = SetWindowsHookEx(WH_KEYBOARD_LL, (code, param, lParam) => {
                     if (code >= 0) {

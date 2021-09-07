@@ -4,6 +4,10 @@
              xmlns:local="clr-namespace:StreamDeck"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style TargetType="TextBlock" x:Key="Title">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Foreground" Value="#636363" />
+        </Style>
     </Application.Resources>
 </Application>

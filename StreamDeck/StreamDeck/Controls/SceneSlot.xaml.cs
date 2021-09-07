@@ -72,9 +72,11 @@ namespace StreamDeck.Controls {
 
             _scenes.PreviewChanged += ActiveScenesChanged;
             _scenes.LiveChanged += ActiveScenesChanged;
+
+            ActiveScenesChanged(_slot.Id);
         }
 
-        private void ActiveScenesChanged(UserProfile.DSlot slot) {
+        private void ActiveScenesChanged(Guid slot) {
             Dispatcher.Invoke(() => {
                 if (_scenes.ActivePreviewSlot == _slot) {
                     ActivePreview = true;

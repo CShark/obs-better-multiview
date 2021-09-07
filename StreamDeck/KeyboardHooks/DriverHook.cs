@@ -16,6 +16,9 @@ namespace KeyboardHooks {
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint code, uint mapping);
 
+
+        public bool IsEnabled => _context != IntPtr.Zero;
+
         public bool Hook() {
             if (_context == IntPtr.Zero) {
                 try {
@@ -27,6 +30,7 @@ namespace KeyboardHooks {
                         _callback.Start();
                     }
                 } catch (DllNotFoundException ex) {
+                    return false;
                     throw;
                 }
             }
@@ -55,23 +59,25 @@ namespace KeyboardHooks {
             }
         }
 
-        public void InjectKey(int device, ushort scanCode) {
+        public void InjectKey(int device, ushort scanCode, bool noRelease = false) {
             var stroke = new Stroke();
             stroke.Key.State = KeyState.Down;
             stroke.Key.Code = scanCode;
             InterceptionDriver.Send(_context, device, ref stroke, 1);
 
-            stroke.Key.State = KeyState.Up;
-            InterceptionDriver.Send(_context, device, ref stroke, 1);
+            if (!noRelease) {
+                stroke.Key.State = KeyState.Up;
+                InterceptionDriver.Send(_context, device, ref stroke, 1);
+            }
         }
 
-    public void Unhook() {
+        public void Unhook() {
             if (_context != IntPtr.Zero) {
                 InterceptionDriver.DestroyContext(_context);
                 _context = IntPtr.Zero;
             }
         }
-        
+
         protected virtual void OnKeyEvent(InterceptionKeyEvent obj) {
             KeyEvent?.Invoke(obj);
         }

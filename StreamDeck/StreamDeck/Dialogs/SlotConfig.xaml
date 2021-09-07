@@ -27,12 +27,6 @@
             <Style TargetType="ComboBox">
                 <Setter Property="Margin" Value="2" />
             </Style>
-
-            <Style TargetType="TextBlock" x:Key="Title">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-                <Setter Property="FontSize" Value="15" />
-                <Setter Property="Foreground" Value="#636363" />
-            </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -40,7 +34,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="5">
+            <StackPanel Margin="5" x:Name="ConfigPanel">
                 <TextBlock>Name</TextBlock>
                 <TextBox Text="{Binding Slot.Name}" x:Name="input"/>
                 <Rectangle Height="2" Fill="LightGray" />

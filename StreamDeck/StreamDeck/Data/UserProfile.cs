@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace StreamDeck.Data {
     public class UserProfile {
@@ -15,6 +16,8 @@ namespace StreamDeck.Data {
             public Guid Id { get; }
 
             public DSlotObs Obs { get; set; }
+
+            public Dictionary<string, JObject> PluginConfigs { get; set; }
 
             public DSlot() {
                 Obs = new DSlotObs();

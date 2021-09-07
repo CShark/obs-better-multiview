@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace StreamDeck.Data {
     public class Settings {
@@ -19,5 +20,9 @@ namespace StreamDeck.Data {
         public DConnection Connection { get; set; }
 
         public string LastProfile { get; set; }
+
+        public HashSet<string> ActivePlugins { get; set; } = new();
+
+        public Dictionary<string, JObject> PluginSettings { get; set; } = new();
     }
 }

@@ -15,10 +15,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Autofac;
+using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Types;
 using StreamDeck.Controls;
 using StreamDeck.Data;
+using StreamDeck.Dialogs;
 using StreamDeck.Services;
 using SceneSlot = StreamDeck.Controls.SceneSlot;
 
@@ -33,8 +35,12 @@ namespace StreamDeck {
         private readonly Win32Interop _win32;
         private readonly SceneService _scenes;
 
+        public bool IsClosed { get; private set; }
+
         public StreamView() {
             InitializeComponent();
+            Closed += (sender, args) => IsClosed = true;
+
             _settings = App.Container.Resolve<Settings>();
             _watcher = App.Container.Resolve<ProfileWatcher>();
             _obs = App.Container.Resolve<ObsWatchService>();
@@ -95,7 +101,7 @@ namespace StreamDeck {
             }
         }
 
-        private void ObsOnPreviewSceneChanged(UserProfile.DSlot dSlot) {
+        private void ObsOnPreviewSceneChanged(Guid dSlot) {
             PrepareObsPreview();
         }
 
@@ -212,6 +218,23 @@ namespace StreamDeck {
 
         private void SwitchLive_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             _scenes.SwitchLive();
+        }
+
+        private void ProfileSettings_OnClick(object sender, RoutedEventArgs e) {
+            var settings = JObject.FromObject(_watcher.ActiveProfile.SceneView);
+            var id = _watcher.ActiveProfile.Id;
+
+            var config = new ProfileConfig();
+            config.Config = _watcher.ActiveProfile.SceneView;
+            config.Owner = this;
+            if (config.ShowDialog() == true) {
+                SceneCollectionChanged(_watcher.ActiveProfile);
+
+            } else {
+                if (_watcher.ActiveProfile.Id == id) {
+                    _watcher.ActiveProfile.SceneView = settings.ToObject<UserProfile.DSceneViewConfig>();
+                }
+            }
         }
     }
 }

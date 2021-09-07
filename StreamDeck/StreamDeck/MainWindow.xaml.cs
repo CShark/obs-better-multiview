@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Autofac;
+using Newtonsoft.Json.Linq;
 using StreamDeck.Data;
 using StreamDeck.Dialogs;
 using StreamDeck.Services;
@@ -27,6 +28,7 @@ namespace StreamDeck {
         private readonly Settings _settings;
         private readonly Win32Interop _win32;
         private StreamView _view;
+        private readonly PluginService _plugins;
 
         public static readonly DependencyProperty ObsRunningProperty = DependencyProperty.Register(
             nameof(ObsRunning), typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
@@ -54,7 +56,8 @@ namespace StreamDeck {
         }
 
         public static readonly DependencyProperty ScreensProperty = DependencyProperty.Register(
-            nameof(Screens), typeof(ObservableCollection<MonitorInfo>), typeof(MainWindow), new PropertyMetadata(default(ObservableCollection<MonitorInfo>)));
+            nameof(Screens), typeof(ObservableCollection<MonitorInfo>), typeof(MainWindow),
+            new PropertyMetadata(default(ObservableCollection<MonitorInfo>)));
 
         public ObservableCollection<MonitorInfo> Screens {
             get { return (ObservableCollection<MonitorInfo>) GetValue(ScreensProperty); }
@@ -67,6 +70,15 @@ namespace StreamDeck {
         public int ActiveScreen {
             get { return (int) GetValue(ActiveScreenProperty); }
             set { SetValue(ActiveScreenProperty, value); }
+        }
+
+        public static readonly DependencyProperty PluginsProperty = DependencyProperty.Register(
+            nameof(Plugins), typeof(IReadOnlyCollection<PluginInfo>), typeof(MainWindow),
+            new PropertyMetadata(default(IReadOnlyCollection<PluginInfo>)));
+
+        public IReadOnlyCollection<PluginInfo> Plugins {
+            get { return (IReadOnlyCollection<PluginInfo>) GetValue(PluginsProperty); }
+            set { SetValue(PluginsProperty, value); }
         }
 
         public MainWindow() {
@@ -101,6 +113,14 @@ namespace StreamDeck {
             _win32 = App.Container.Resolve<Win32Interop>();
             ActiveScreen = _settings.Screen;
             Screens = new ObservableCollection<MonitorInfo>(_win32.GetMonitors());
+            if (ActiveScreen >= Screens.Count) {
+                ActiveScreen = 0;
+                _settings.Screen = 0;
+            }
+
+            _plugins = App.Container.Resolve<PluginService>();
+            _plugins.Scan();
+            Plugins = _plugins.Plugins;
         }
 
         private void Profile_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -146,6 +166,41 @@ namespace StreamDeck {
             _settings.Screen = ActiveScreen;
             if (_view != null) {
                 _view.Close();
+                _view = new StreamView();
+                _view.Show();
+            }
+        }
+
+        private void PluginSettings_OnClick(object sender, RoutedEventArgs e) {
+            var info = ((Button) sender).DataContext as PluginInfo;
+            var ctrl = info.Plugin.GetGlobalSettings();
+            var config = new JObject();
+
+            if (_settings.PluginSettings.ContainsKey(info.Plugin.Name)) {
+                config = _settings.PluginSettings[info.Plugin.Name];
+            }
+
+            if (ctrl != null) {
+                bool active = info.Active;
+                if (info.Active) {
+                    info.Plugin.OnDisabled();
+                }
+
+                ctrl.FetchSettings();
+                var window = new PluginConfig(ctrl);
+                window.Owner = this;
+                if (window.ShowDialog() == true) {
+                    ctrl.WriteSettings();
+                }
+
+                if (active) {
+                    info.Plugin.OnEnabled();
+                }
+            }
+        }
+
+        private void ShowWindow_OnClick(object sender, RoutedEventArgs e) {
+            if (_view.IsClosed) {
                 _view = new StreamView();
                 _view.Show();
             }
