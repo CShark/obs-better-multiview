@@ -181,9 +181,8 @@ namespace StreamDeck {
             }
 
             if (ctrl != null) {
-                bool active = info.Active;
                 if (info.Active) {
-                    info.Plugin.OnDisabled();
+                    info.Plugin.PausePlugin(true);
                 }
 
                 ctrl.FetchSettings();
@@ -193,8 +192,8 @@ namespace StreamDeck {
                     ctrl.WriteSettings();
                 }
 
-                if (active) {
-                    info.Plugin.OnEnabled();
+                if (info.Active) {
+                    info.Plugin.PausePlugin(false);
                 }
             }
         }

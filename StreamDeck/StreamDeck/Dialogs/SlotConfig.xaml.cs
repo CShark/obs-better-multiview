@@ -1,12 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using Autofac;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StreamDeck.Data;
+using StreamDeck.Plugins;
 using StreamDeck.Services;
 
 namespace StreamDeck.Dialogs {
@@ -35,13 +39,12 @@ namespace StreamDeck.Dialogs {
         private string _originalConfig;
         private readonly ObsWatchService _obs;
         private readonly PluginService _plugins;
+        private readonly List<(PluginBase plugin, SlotSettingsControl settings)> _pluginSettings = new();
 
-        public void SetSlot(UserProfile.DSlot slot) {
+        public SlotConfig(UserProfile.DSlot slot) {
             _originalConfig = JsonConvert.SerializeObject(slot);
             Slot = slot;
-        }
 
-        public SlotConfig() {
             InitializeComponent();
 
             _obs = App.Container.Resolve<ObsWatchService>();
@@ -51,12 +54,20 @@ namespace StreamDeck.Dialogs {
                 .Where(x => x != "multiview" && x != "preview");
             AvailableScenes = new ObservableCollection<string>(scenes);
 
+            if (Slot.PluginConfigs == null)
+                Slot.PluginConfigs = new Dictionary<string, JObject>();
+
             foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings)) {
                 var title = new TextBlock();
                 title.Text = plugin.Plugin.Name;
                 title.Style = TryFindResource("Title") as Style;
                 ConfigPanel.Children.Add(title);
-                ConfigPanel.Children.Add(plugin.Plugin.GetSlotSettings());
+
+                var slotSettings = plugin.Plugin.GetSlotSettings(slot.Id);
+                slotSettings.FetchSettings();
+
+                _pluginSettings.Add((plugin.Plugin, slotSettings));
+                ConfigPanel.Children.Add(slotSettings);
             }
 
             input.Focus();
@@ -64,6 +75,11 @@ namespace StreamDeck.Dialogs {
 
         private void Ok_OnClick(object sender, RoutedEventArgs e) {
             DialogResult = true;
+
+            foreach (var item in _pluginSettings) {
+                item.settings.WriteSettings();
+            }
+
             Close();
         }
 

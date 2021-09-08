@@ -18,12 +18,10 @@ namespace StreamDeck.Plugins.Keyboard {
     /// Interaktionslogik für SlotSettings.xaml
     /// </summary>
     public partial class SlotSettings : SlotSettingsControl<KeyboardSlotSettings> {
-        private readonly PluginManagement _management;
 
-        public SlotSettings(PluginManagement management) {
-            _management = management;
+        public SlotSettings(PluginManagement pluginManagement, Guid slotID) : base(pluginManagement, slotID) {
             InitializeComponent();
-            Grabber.SetPluginManagement(management);
+            Grabber.SetPluginManagement(pluginManagement);
         }
     }
 }

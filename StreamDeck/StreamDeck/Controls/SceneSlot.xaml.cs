@@ -25,6 +25,7 @@ namespace StreamDeck.Controls {
         private readonly UserProfile.DSlot _slot;
         private readonly SceneService _scenes;
         private readonly StreamView _owner;
+        private readonly PluginService _plugins;
 
         public static readonly DependencyProperty UnconfiguredProperty = DependencyProperty.Register(
             nameof(Unconfigured), typeof(bool), typeof(SceneSlot), new PropertyMetadata(true));
@@ -62,6 +63,7 @@ namespace StreamDeck.Controls {
             _slot = slot;
             _owner = owner;
             _scenes = App.Container.Resolve<SceneService>();
+            _plugins = App.Container.Resolve<PluginService>();
             LoadSlot();
 
             InitializeComponent();
@@ -98,13 +100,20 @@ namespace StreamDeck.Controls {
         }
 
         private void SceneSlot_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            var config = new SlotConfig();
-            config.SetSlot(_slot);
+            var config = new SlotConfig(_slot);
             config.Owner = Window.GetWindow(this);
+
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active)) {
+                plugin.Plugin.PausePlugin(true);
+            }
 
             if (config.ShowDialog() == true) {
                 LoadSlot();
                 _owner.PrepareObsMultiview();
+            }
+
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active)) {
+                plugin.Plugin.PausePlugin(false);
             }
         }
 
@@ -112,6 +121,5 @@ namespace StreamDeck.Controls {
             if (!Unconfigured)
                 _scenes.ActivatePreview(_slot);
         }
-        
     }
 }

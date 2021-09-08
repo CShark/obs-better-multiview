@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using Newtonsoft.Json.Linq;
 using StreamDeck.Annotations;
 using StreamDeck.Data;
@@ -40,11 +41,29 @@ namespace StreamDeck.Services {
     public class PluginService {
         private List<PluginInfo> _availablePlugins = new();
         private readonly Settings _settings;
+        private readonly ProfileWatcher _profile;
+        private readonly ObsWatchService _obs;
 
         public IReadOnlyCollection<PluginInfo> Plugins => _availablePlugins.AsReadOnly();
 
-        public PluginService(Settings settings) {
+        public PluginService(Settings settings, ProfileWatcher profile, ObsWatchService obs) {
             _settings = settings;
+            _profile = profile;
+            _obs = obs;
+
+            _obs.ObsInitialized += () => {
+                App.Current.Dispatcher.Invoke(() => {
+                    foreach (var plugin in Plugins.Where(x => x.Active))
+                        plugin.Plugin.OnEnabled();
+                });
+            };
+
+            _obs.ObsDisconnected += () => {
+                App.Current.Dispatcher.Invoke(() => {
+                    foreach (var plugin in Plugins.Where(x => x.Active))
+                        plugin.Plugin.OnDisabled();
+                });
+            };
         }
 
         public void Scan() {
@@ -57,33 +76,28 @@ namespace StreamDeck.Services {
                 if (typeof(PluginBase).IsAssignableFrom(type) && !type.IsAbstract) {
                     try {
                         var plugin = Activator.CreateInstance(type) as PluginBase;
-                        var management = new PluginManagement(s => {
-                            s = string.IsNullOrWhiteSpace(s) ? "" : "." + s;
-                            var key = plugin.Name + s;
-                            if (_settings.PluginSettings.ContainsKey(key)) {
-                                return _settings.PluginSettings[key];
-                            } else {
-                                return null;
-                            }
-                        }, (s, o) => {
-                            s = string.IsNullOrWhiteSpace(s) ? "" : "." + s;
-                            var key = plugin.Name + s;
-                            _settings.PluginSettings[key] = o;
-                        });
+                        var management = new PluginManagementBound(plugin);
 
                         plugin.SetPluginManagement(management);
 
                         if (plugin != null) {
                             var info = new PluginInfo(plugin);
-                            
+
                             info.PropertyChanged += (sender, args) => {
                                 var obj = sender as PluginInfo;
+
                                 if (obj.Active) {
                                     _settings.ActivePlugins.Add(obj.Plugin.Name);
-                                    obj.Plugin.OnEnabled();
+
+                                    if (_obs.IsInitialized) {
+                                        plugin.OnEnabled();
+                                    }
                                 } else {
                                     _settings.ActivePlugins.Remove(obj.Plugin.Name);
-                                    obj.Plugin.OnDisabled();
+
+                                    if (_obs.IsInitialized) {
+                                        plugin.OnDisabled();
+                                    }
                                 }
                             };
 
@@ -92,6 +106,71 @@ namespace StreamDeck.Services {
                         }
                     } catch {
                     }
+                }
+            }
+        }
+
+        private class PluginManagementBound : PluginManagement {
+            private readonly PluginBase _plugin;
+            private readonly Settings _settings;
+            private readonly ProfileWatcher _profile;
+            private readonly SceneService _scenes;
+
+            public PluginManagementBound(PluginBase plugin) {
+                _plugin = plugin;
+                _settings = App.Container.Resolve<Settings>();
+                _profile = App.Container.Resolve<ProfileWatcher>();
+                _scenes = App.Container.Resolve<SceneService>();
+            }
+
+            public override void ActivateScene(Guid scene) {
+                _scenes.ActivatePreview(scene);
+            }
+
+            public override void SwitchLive() {
+                _scenes.SwitchLive();
+            }
+
+            protected override JObject RequestSettings(string subtype = null) {
+                subtype = string.IsNullOrWhiteSpace(subtype) ? "" : "." + subtype;
+                var key = _plugin.Name + subtype;
+                if (_settings.PluginSettings.ContainsKey(key)) {
+                    return _settings.PluginSettings[key];
+                } else {
+                    return null;
+                }
+            }
+
+            protected override void WriteSettings(JObject settings, string subtype = null) {
+                subtype = string.IsNullOrWhiteSpace(subtype) ? "" : "." + subtype;
+                var key = _plugin.Name + subtype;
+                _settings.PluginSettings[key] = settings;
+            }
+
+            protected override JObject RequestSlotSetting(Guid guid) {
+                var slot = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == guid);
+
+                if (slot != null && slot.PluginConfigs != null) {
+                    return slot.PluginConfigs.FirstOrDefault(x => x.Key == _plugin.Name).Value;
+                } else {
+                    return new JObject();
+                }
+            }
+
+            protected override IEnumerable<(Guid id, JObject config)> RequestSlotSettings() {
+                return _profile.ActiveProfile.SceneView.Slots.Select(x => (x.Id,
+                        x.PluginConfigs?.FirstOrDefault(y => y.Key == _plugin.Name).Value))
+                    .Where(x => x.Value != null);
+            }
+
+            protected override void WriteSlotSettings(Guid guid, JObject config) {
+                var slot = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == guid);
+
+                if (slot != null) {
+                    if (slot.PluginConfigs == null)
+                        slot.PluginConfigs = new Dictionary<string, JObject>();
+
+                    slot.PluginConfigs[_plugin.Name] = config;
                 }
             }
         }

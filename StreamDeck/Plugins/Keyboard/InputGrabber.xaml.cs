@@ -37,7 +37,7 @@ namespace StreamDeck.Plugins.Keyboard {
 
         public static readonly DependencyProperty KeyboardProperty = DependencyProperty.Register(
             nameof(Keyboard), typeof(string), typeof(InputGrabber),
-            new PropertyMetadata(default(string), (o, args) => ((InputGrabber) o).ToReadableKeyboard()));
+            new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (o, args) => ((InputGrabber) o).ToReadableKeyboard()));
 
         public string Keyboard {
             get { return (string) GetValue(KeyboardProperty); }
@@ -58,6 +58,15 @@ namespace StreamDeck.Plugins.Keyboard {
         public string Key {
             get { return (string) GetValue(KeyProperty); }
             set { SetValue(KeyProperty, value); }
+        }
+
+        public static readonly DependencyProperty VirtualKeyProperty = DependencyProperty.Register(
+            nameof(VirtualKey), typeof(int), typeof(InputGrabber),
+            new FrameworkPropertyMetadata(default(int), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (o, args) => ((InputGrabber) o).ToReadableKey()));
+
+        public int VirtualKey {
+            get { return (int) GetValue(VirtualKeyProperty); }
+            set { SetValue(VirtualKeyProperty, value); }
         }
 
         public static readonly DependencyProperty DriverModeProperty = DependencyProperty.Register(
@@ -89,8 +98,8 @@ namespace StreamDeck.Plugins.Keyboard {
             _keyboard.KeyEvent += evt => {
                 Dispatcher.Invoke(() => {
                     Keyboard = evt.Keyboard;
+                    VirtualKey = evt.VirtualKey;
 
-                    Key = KeyInterop.KeyFromVirtualKey(evt.VirtualKey).ToString();
                     Capturing = false;
                     _keyboard.Disable();
                 });
@@ -116,10 +125,18 @@ namespace StreamDeck.Plugins.Keyboard {
             Keyboard = null;
         }
 
+        private void ToReadableKey() {
+            Key = KeyInterop.KeyFromVirtualKey(VirtualKey).ToString();
+        }
+
         private void ToReadableKeyboard() {
-            ReadableKeyboard = _settings.KeyboardLabels.ContainsKey(Keyboard)
-                ? _settings.KeyboardLabels[Keyboard]
-                : Keyboard;
+            if (Keyboard != null) {
+                ReadableKeyboard = _settings.KeyboardLabels.ContainsKey(Keyboard)
+                    ? _settings.KeyboardLabels[Keyboard]
+                    : Keyboard;
+            } else {
+                ReadableKeyboard = "";
+            }
         }
     }
 }

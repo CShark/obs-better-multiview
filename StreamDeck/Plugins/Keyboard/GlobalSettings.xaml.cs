@@ -23,6 +23,7 @@ namespace StreamDeck.Plugins.Keyboard
         public GlobalSettings(PluginManagement management) : base(management) {
             InitializeComponent();
             InputGrabber.SetPluginManagement(management);
+            InputGrabber2.SetPluginManagement(management);
         }
     }
 }

@@ -73,7 +73,8 @@
                             <TextBlock Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"
                                        Text="{Binding Plugin.Name}" />
                             <CheckBox Grid.Column="2" IsChecked="{Binding Active}" />
-                            <Button FontFamily="Segoe MDL2 Assets" Grid.Column="3" FontSize="16" Click="PluginSettings_OnClick"
+                            <Button FontFamily="Segoe MDL2 Assets" Grid.Column="3" FontSize="16"
+                                    Click="PluginSettings_OnClick"
                                     Visibility="{Binding Plugin.HasSettings, Converter={StaticResource BoolToVis}}">
                                 &#xF8B0;
                             </Button>
@@ -109,14 +110,23 @@
 
         <StackPanel Grid.Column="1" Margin="10">
             <TextBlock>Monitor</TextBlock>
-            <ComboBox Margin="5" ItemsSource="{Binding Screens}" SelectedIndex="{Binding ActiveScreen}"
-                      SelectionChanged="Selector_OnSelectionChanged">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate DataType="services:MonitorInfo">
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ComboBox Margin="5" ItemsSource="{Binding Screens}" SelectedIndex="{Binding ActiveScreen}"
+                          SelectionChanged="Selector_OnSelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="services:MonitorInfo">
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Grid.Column="1" Margin="0,5" FontFamily="Segoe MDL2 Assets" Width="24" Click="ShowWindow_OnClick">&#xe727;</Button>
+            </Grid>
             <TextBlock>Profil</TextBlock>
             <ComboBox Margin="5" ItemsSource="{Binding ProfileManager.Profiles}"
                       SelectionChanged="Profile_OnSelectionChanged"

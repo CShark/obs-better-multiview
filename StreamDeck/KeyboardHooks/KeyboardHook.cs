@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace KeyboardHooks {
     public class KeyboardHook {
@@ -25,32 +26,48 @@ namespace KeyboardHooks {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
 
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpFileName);
+
 
         private IntPtr _hook;
+        private LowLevelKeyboardProc _handler;
+        private GCHandle _gcHandler;
 
         public event Action<HookKeyEvent> KeyEvent;
+
+        public KeyboardHook() {
+            _handler = Handler;
+            _gcHandler = GCHandle.Alloc(_handler);
+        }
+
+        ~KeyboardHook() {
+            _gcHandler.Free();
+        }
 
         public bool Hook() {
             if (_hook == IntPtr.Zero) {
                 var modPtr = GetModuleHandle(null);
 
-                _hook = SetWindowsHookEx(WH_KEYBOARD_LL, (code, param, lParam) => {
-                    if (code >= 0) {
-                        var args = new HookKeyEvent(Marshal.ReadInt32(lParam),
-                            param == (IntPtr) WM_KEYDOWN || param == (IntPtr) WM_SYSKEYDOWN);
-
-                        OnKeyEvent(args);
-
-                        if (args.Intercept) {
-                            return (IntPtr) (-1);
-                        }
-                    }
-
-                    return CallNextHookEx(_hook, code, param, lParam);
-                }, modPtr, 0);
+                _hook = SetWindowsHookEx(WH_KEYBOARD_LL, _handler, modPtr, 0);
             }
 
             return _hook != IntPtr.Zero;
+        }
+
+        private IntPtr Handler(int code, IntPtr param, IntPtr lParam) {
+            if (code >= 0) {
+                var args = new HookKeyEvent(Marshal.ReadInt32(lParam),
+                    param == (IntPtr) WM_KEYDOWN || param == (IntPtr) WM_SYSKEYDOWN);
+
+                OnKeyEvent(args);
+
+                if (args.Intercept) {
+                    return (IntPtr) (-1);
+                }
+            }
+
+            return CallNextHookEx(_hook, code, param, lParam);
         }
 
         public void Unhook() {

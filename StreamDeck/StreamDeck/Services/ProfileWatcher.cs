@@ -23,11 +23,17 @@ namespace StreamDeck.Services
                ResolveConfig();
             };
 
+            _obs.WebSocket.Connected += (sender, args) => {
+                ResolveConfig();
+            };
+
             _profile.ProfileChanged += () => {
                 ResolveConfig();
             };
 
-            ResolveConfig();
+            try {
+                ResolveConfig();
+            }catch{}
         }
 
         private void ResolveConfig() {

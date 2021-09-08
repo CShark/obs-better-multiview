@@ -58,7 +58,7 @@ namespace StreamDeck.Services {
 
         public void SaveProfile() {
             if (ActiveProfile != null) {
-                var json = JsonConvert.SerializeObject(ActiveProfile);
+                var json = JsonConvert.SerializeObject(ActiveProfile, Formatting.Indented);
                 File.WriteAllText(Path.Combine("Profiles", ActiveProfile.Name + ".json"), json);
             }
         }

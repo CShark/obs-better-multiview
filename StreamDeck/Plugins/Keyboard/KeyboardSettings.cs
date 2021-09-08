@@ -11,6 +11,9 @@ namespace StreamDeck.Plugins.Keyboard {
         public bool InterceptKeystrokes { get; set; } = true;
 
         public string NumberKeyboard { get; set; } = null;
+
+        public int SwitchKey { get; set; } = 0;
+        public string SwitchKeyboard { get; set; } = "";
     }
 
     public class KeyboardCoreSettings {
@@ -20,6 +23,9 @@ namespace StreamDeck.Plugins.Keyboard {
     }
 
     public class KeyboardSlotSettings {
-
+        public bool NumpadMode { get; set; } = false;
+        public int NumpadNumber { get; set; } = 0;
+        public int ShortcutKey { get; set; } = 0;
+        public string KeyboardId { get; set; } = "";
     }
 }

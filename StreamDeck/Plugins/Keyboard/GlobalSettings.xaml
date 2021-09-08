@@ -29,6 +29,12 @@
             <TextBlock>Tastatur für Nummernfolgen:</TextBlock>
             <local:InputGrabber IsEnabled="{Binding MultipleKeyboardSupport}" DriverMode="True" x:Name="InputGrabber"
                                 Keyboard="{Binding NumberKeyboard, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock>Taste für Szenenwechsel:</TextBlock>
+            <local:InputGrabber x:Name="InputGrabber2"
+                                DriverMode="{Binding MultipleKeyboardSupport}"
+                                Keyboard="{Binding SwitchKeyboard, UpdateSourceTrigger=PropertyChanged}"
+                                VirtualKey="{Binding SwitchKey, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
     </Grid>
 </plugins:SettingsControl>

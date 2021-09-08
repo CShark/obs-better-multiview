@@ -17,7 +17,7 @@ namespace StreamDeck.Data {
 
             public DSlotObs Obs { get; set; }
 
-            public Dictionary<string, JObject> PluginConfigs { get; set; }
+            public Dictionary<string, JObject> PluginConfigs { get; set; } = new();
 
             public DSlot() {
                 Obs = new DSlotObs();

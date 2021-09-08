@@ -17,8 +17,11 @@ namespace StreamDeck.Services {
 
         public event Action ObsConnected;
         public event Action ObsDisconnected;
+        public event Action ObsInitialized;
 
         public bool IsObsConnected => _socket.IsConnected;
+        public bool IsInitialized { get; private set; }
+
         public OBSWebsocket WebSocket => _socket;
 
         public ObsWatchService(Settings settings) {
@@ -62,10 +65,17 @@ namespace StreamDeck.Services {
 
         protected virtual void OnObsConnected() {
             ObsConnected?.Invoke();
+            OnObsInitialized();
         }
 
         protected virtual void OnObsDisconnected() {
+            IsInitialized = false;
             ObsDisconnected?.Invoke();
+        }
+
+        protected virtual void OnObsInitialized() {
+            IsInitialized = true;
+            ObsInitialized?.Invoke();
         }
     }
 }
