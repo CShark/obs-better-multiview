@@ -6,7 +6,11 @@
                          xmlns:local="clr-namespace:StreamDeck.Plugins.Keyboard"
                          xmlns:plugins="clr-namespace:StreamDeck.Plugins"
                          xmlns:converters="clr-namespace:StreamDeck.Plugins.Converters"
+                         xmlns:lex="http://wpflocalizeextension.codeplex.com"
                          mc:Ignorable="d"
+                         lex:LocalizeDictionary.DesignCulture="en"
+                         lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+                         lex:ResxLocalizationProvider.DefaultDictionary="Keyboard"
                          Background="White"
                          DataContext="{Binding RelativeSource={RelativeSource Self}}"
                          Height="250" Width="355">
@@ -23,14 +27,14 @@
         </Grid.Resources>
 
         <StackPanel>
-            <CheckBox IsChecked="{Binding MultipleKeyboardSupport}">Mehrere Tastaturen unterscheiden</CheckBox>
-            <CheckBox IsChecked="{Binding InterceptKeystrokes}">Eingaben Abfangen</CheckBox>
+            <CheckBox IsChecked="{Binding MultipleKeyboardSupport}" Content="{lex:Loc MultipleKeyboards}"></CheckBox>
+            <CheckBox IsChecked="{Binding InterceptKeystrokes}" Content="{lex:Loc InterceptInputs}"></CheckBox>
 
-            <TextBlock>Tastatur für Nummernfolgen:</TextBlock>
+            <TextBlock Text="{lex:Loc NumberKeyboard}"></TextBlock>
             <local:InputGrabber IsEnabled="{Binding MultipleKeyboardSupport}" DriverMode="True" x:Name="InputGrabber"
                                 Keyboard="{Binding NumberKeyboard, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock>Taste für Szenenwechsel:</TextBlock>
+            <TextBlock Text="{lex:Loc SwitchKey}"></TextBlock>
             <local:InputGrabber x:Name="InputGrabber2"
                                 DriverMode="{Binding MultipleKeyboardSupport}"
                                 Keyboard="{Binding SwitchKeyboard, UpdateSourceTrigger=PropertyChanged}"

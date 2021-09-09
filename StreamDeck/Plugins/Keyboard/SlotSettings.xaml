@@ -6,7 +6,11 @@
                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                              xmlns:local="clr-namespace:StreamDeck.Plugins.Keyboard"
                              xmlns:plugins="clr-namespace:StreamDeck.Plugins"
+                             lex:LocalizeDictionary.DesignCulture="en"
+                             lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+                             lex:ResxLocalizationProvider.DefaultDictionary="Keyboard"
                              xmlns:converters="clr-namespace:StreamDeck.Plugins.Converters"
+                             xmlns:lex="http://wpflocalizeextension.codeplex.com"
                              DataContext="{Binding RelativeSource={RelativeSource Self}, Path=Settings}"
                              mc:Ignorable="d"
                              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,7 +20,7 @@
             <converters:BoolConverter x:Key="BoolToVisInv" True="{x:Static Visibility.Collapsed}" False="{x:Static Visibility.Visible}" />
         </StackPanel.Resources>
 
-        <CheckBox Margin="2" IsChecked="{Binding NumpadMode}">Zahlencode</CheckBox>
+        <CheckBox Margin="2" IsChecked="{Binding NumpadMode}" Content="{lex:Loc NumberMode}"></CheckBox>
         <local:InputGrabber Margin="2" x:Name="Grabber" Visibility="{Binding NumpadMode, Converter={StaticResource BoolToVisInv}}" Keyboard="{Binding KeyboardId}" VirtualKey="{Binding ShortcutKey}"/>
         <TextBox Margin="2" Visibility="{Binding NumpadMode, Converter={StaticResource BoolToVis}}" Text="{Binding NumpadNumber, UpdateSourceTrigger=PropertyChanged}"></TextBox>
     </StackPanel>

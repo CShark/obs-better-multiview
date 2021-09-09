@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Documents;
 using Newtonsoft.Json.Linq;
+using WPFLocalizeExtension.Engine;
 
 namespace StreamDeck.Plugins.Keyboard {
     /// <summary>

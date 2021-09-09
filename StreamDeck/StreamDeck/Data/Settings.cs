@@ -25,6 +25,11 @@ namespace StreamDeck.Data {
         }
 
         /// <summary>
+        /// The language of the application. Defaults to system language
+        /// </summary>
+        public string Language { get; set; }
+
+        /// <summary>
         /// The index of the screen on which to show the custom multiview
         /// </summary>
         public int Screen { get; set; }

@@ -4,11 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamDeck.Dialogs"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}, Path=Config}"
-        Title="Profil Einstellungen" Height="185" Width="307">
+        Title="{lex:Loc ProfileConfig}" Height="185" Width="307">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -37,15 +41,15 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock>Zeilen:</TextBlock>
-            <TextBlock Grid.Row="1">Spalten:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Rows}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Columns}"/>
+            <TextBlock Text="{lex:Loc Rows}" />
+            <TextBlock Grid.Row="1" Text="{lex:Loc Columns}"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding Rows}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Columns}" />
         </Grid>
 
         <UniformGrid Columns="2" Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Margin="2" IsDefault="True" Click="Ok_OnClick">OK</Button>
-            <Button Margin="2" Padding="3" IsCancel="True" Click="Cancel_OnClick">Abbrechen</Button>
+            <Button Margin="2" IsDefault="True" Padding="7,3" Click="Ok_OnClick" Content="{lex:Loc Ok}" />
+            <Button Margin="2" Padding="7,3" IsCancel="True" Click="Cancel_OnClick" Content="{lex:Loc Cancel}" />
         </UniformGrid>
     </Grid>
 </Window>

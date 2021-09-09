@@ -7,12 +7,16 @@
         xmlns:services="clr-namespace:StreamDeck.Services"
         xmlns:plugins="clr-namespace:StreamDeck.Plugins;assembly=StreamDeck.Plugins"
         xmlns:converters="clr-namespace:StreamDeck.Converters"
+        xmlns:loc="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
+        loc:LocalizeDictionary.DesignCulture="en"
+        loc:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        loc:ResxLocalizationProvider.DefaultDictionary="MainWindow"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Stream Deck" Height="450" Width="800">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <converters:StringToVis x:Key="StringToVis"/>
+        <converters:StringToVis x:Key="StringToVis" />
     </Window.Resources>
 
     <Grid>
@@ -33,7 +37,7 @@
                 </Style>
             </Grid.Resources>
 
-            <CheckBox IsChecked="{Binding ObsRunning}" IsEnabled="false" Content="OBS Verbunden">
+            <CheckBox IsChecked="{Binding ObsRunning}" IsEnabled="false" Content="{loc:Loc ObsConnected}">
                 <CheckBox.Template>
                     <ControlTemplate TargetType="CheckBox">
                         <Grid>
@@ -58,7 +62,7 @@
                 </CheckBox.Template>
             </CheckBox>
 
-            <TextBlock Grid.Row="1" Style="{StaticResource Title}" Margin="0,5">Plugins</TextBlock>
+            <TextBlock Grid.Row="1" Style="{StaticResource Title}" Margin="0,5" Text="{loc:Loc Plugins}"></TextBlock>
 
             <ListBox Grid.Row="2" BorderThickness="0" ItemsSource="{Binding Plugins}">
                 <ListBox.ItemTemplate>
@@ -71,10 +75,11 @@
                                 <ColumnDefinition Width="26" />
                             </Grid.ColumnDefinitions>
 
-                            <Rectangle x:Name="Indicator" Height="16" >
+                            <Rectangle x:Name="Indicator" Height="16">
                                 <Rectangle.ToolTip>
-                                    <ToolTip Visibility="{Binding Plugin.InfoMessage, Converter={StaticResource StringToVis}}">
-                                        <TextBlock Text="{Binding Plugin.InfoMessage}"/>
+                                    <ToolTip
+                                        Visibility="{Binding Plugin.InfoMessage, Converter={StaticResource StringToVis}}">
+                                        <TextBlock Text="{Binding Plugin.InfoMessage}" />
                                     </ToolTip>
                                 </Rectangle.ToolTip>
                             </Rectangle>
@@ -117,7 +122,7 @@
         </Grid>
 
         <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock>Monitor</TextBlock>
+            <TextBlock Text="{loc:Loc Monitor}"></TextBlock>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -133,16 +138,19 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <Button Grid.Column="1" Margin="0,5" FontFamily="Segoe MDL2 Assets" Width="24" Click="ShowWindow_OnClick">&#xe727;</Button>
+                <Button Grid.Column="1" Margin="0,5" FontFamily="Segoe MDL2 Assets" Width="24"
+                        Click="ShowWindow_OnClick">
+                    &#xe727;
+                </Button>
             </Grid>
-            <TextBlock>Profil</TextBlock>
+            <TextBlock Text="{loc:Loc Profile}"></TextBlock>
             <ComboBox Margin="5" ItemsSource="{Binding ProfileManager.Profiles}"
                       SelectionChanged="Profile_OnSelectionChanged"
                       SelectedItem="{Binding SelectedProfile,Mode=TwoWay}" />
             <UniformGrid Columns="3" Margin="3">
-                <Button Margin="2" Padding="2" Click="CreateProfile_OnClick">Neues Profil</Button>
-                <Button Margin="2" Padding="2" Click="RenameProfile_OnClick">Umbenennen</Button>
-                <Button Margin="2" Padding="2" Click="DeleteProfile_OnClick">Profil Löschen</Button>
+                <Button Margin="2" Padding="2" Click="CreateProfile_OnClick" Content="{loc:Loc CreateProfile}"></Button>
+                <Button Margin="2" Padding="2" Click="RenameProfile_OnClick" Content="{loc:Loc RenameProfile}"></Button>
+                <Button Margin="2" Padding="2" Click="DeleteProfile_OnClick" Content="{loc:Loc DeleteProfile}"></Button>
             </UniformGrid>
         </StackPanel>
     </Grid>

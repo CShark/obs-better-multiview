@@ -4,9 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamDeck.Dialogs"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="{Binding DialogTitle}" Height="207" Width="800">
     <Grid>
@@ -20,8 +24,8 @@
         <TextBox Grid.Row="1" Margin="10" VerticalAlignment="Top" x:Name="input" Text="{Binding Value, Mode=TwoWay}" />
 
         <UniformGrid Grid.Row="2" HorizontalAlignment="Right" Columns="2" Margin="5">
-            <Button Margin="2" IsDefault="True" Click="Confirm_OnClick">OK</Button>
-            <Button Margin="2" Padding="3" IsCancel="True" Click="Cancel_OnClick">Abbrechen</Button>
+            <Button Margin="2" IsDefault="True" Padding="7,3" Click="Confirm_OnClick" Content="{lex:Loc Ok}"></Button>
+            <Button Margin="2" Padding="7,3" IsCancel="True" Click="Cancel_OnClick" Content="{lex:Loc Cancel}"></Button>
         </UniformGrid>
     </Grid>
 </Window>
