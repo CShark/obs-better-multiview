@@ -22,20 +22,15 @@ namespace StreamDeck.Controls {
     /// </summary>
     public partial class LivePreview : UserControl {
         private readonly ObsWatchService _obs;
-
-        private struct SVirtualCamStatus {
-            public bool isVirtualCam { get; set; }
-            public string virtualCamTimecode { get; set; }
-        }
-
+        
         public LivePreview() {
             // Display live feed using OBS' virtual camera and VLC
             InitializeComponent();
             _obs = App.Container.Resolve<ObsWatchService>();
 
-            var status = _obs.WebSocket.SendRequest("GetVirtualCamStatus").ToObject<SVirtualCamStatus>();
-            if (!status.isVirtualCam) {
-                _obs.WebSocket.SendRequest("StartVirtualCam");
+            var status = _obs.WebSocket.GetVirtualCamStatus();
+            if (!status.IsActive) {
+                _obs.WebSocket.StartVirtualCam();
             }
 
 

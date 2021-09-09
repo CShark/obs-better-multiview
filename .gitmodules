@@ -1,0 +1,3 @@
+[submodule "obs-websocket-dotnet"]
+	path = obs-websocket-dotnet
+	url = git@github.com:CShark/obs-websocket-dotnet.git
