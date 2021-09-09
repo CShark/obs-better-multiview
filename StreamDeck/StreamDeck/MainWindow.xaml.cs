@@ -162,7 +162,7 @@ namespace StreamDeck {
             }
         }
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void ScreenSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             _settings.Screen = ActiveScreen;
             if (_view != null) {
                 _view.Close();

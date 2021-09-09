@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:StreamDeck.Plugins.Keyboard"
+             xmlns:converters="clr-namespace:StreamDeck.Plugins.Converters"
              mc:Ignorable="d"
              MouseLeftButtonDown="InputGrabber_OnMouseLeftButtonDown"
              MouseRightButtonUp="InputGrabber_OnMouseRightButtonUp"
@@ -11,6 +12,7 @@
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
         <Grid.Resources>
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <converters:BoolConverter x:Key="BoolToVisInv" False="{x:Static Visibility.Visible}" True="{x:Static Visibility.Collapsed}"/>
         </Grid.Resources>
         <Rectangle Margin="0" Stroke="DimGray" StrokeThickness="10"/>
         <Rectangle Margin="0" Stroke="LightGray" StrokeThickness="10" Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVis}}" />
@@ -21,7 +23,8 @@
         <Rectangle Margin="10" Stroke="DarkGray" />
         <StackPanel VerticalAlignment="Center" Margin="15">
             <TextBlock Text="{Binding Key}" HorizontalAlignment="Center" />
-            <TextBlock Text="{Binding ReadableKeyboard}" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding ReadableKeyboard}" HorizontalAlignment="Center" Visibility="{Binding EditKeyboardLabel, Converter={StaticResource BoolToVisInv}}" MouseLeftButtonUp="KeyboardLabel_OnMouseLeftButtonUp" PreviewMouseLeftButtonDown="KeyboardLabel_OnPreviewMouseLeftButtonDown"/>
+            <TextBox Text="{Binding ReadableKeyboard, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding EditKeyboardLabel, Converter={StaticResource BoolToVis}}" x:Name="KeyboardLabelText" LostFocus="KeyboardLabelText_OnLostFocus"/>
         </StackPanel>
     </Grid>
 </UserControl>
