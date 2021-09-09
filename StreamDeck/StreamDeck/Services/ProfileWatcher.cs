@@ -46,7 +46,7 @@ namespace StreamDeck.Services {
         /// Try to load the current obs profile based on the active scene collection or create a new obs profile
         /// </summary>
         private void ResolveConfig() {
-            if (_profile.ActiveProfile != null) {
+            if (_profile.ActiveProfile != null && _obs.IsObsConnected) {
                 _logger.LogInformation("Resolving active scene collection configuration");
                 var collection = _obs.WebSocket.GetCurrentSceneCollection();
 

@@ -5,6 +5,12 @@
     <UseWpf>True</UseWpf>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants />
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.9" />
