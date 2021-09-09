@@ -1,83 +1,44 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace KeyboardHooks {
-    public class KeyboardHook {
-        private const int WH_KEYBOARD_LL = 13;
-        private const int WM_KEYDOWN = 0x0100;
-        private const int WM_SYSKEYDOWN = 0x0104;
 
-        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+    /// <summary>
+    /// Base class for Keyboard Hooks
+    /// </summary>
+    public abstract class KeyboardHook {
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod,
-            uint dwThreadId);
+        /// <summary>
+        /// Fired, when a key gets pressed or released
+        /// </summary>
+        public event Action<KeyEventArgs> KeyEvent;
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+        /// <summary>
+        /// Whether this hook can intercept keystrokes
+        /// </summary>
+        public abstract bool CanIntercept { get; }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
-            IntPtr wParam, IntPtr lParam);
+        /// <summary>
+        /// Whether this hook can distinguish between multiple Keyboards
+        /// </summary>
+        /// <remarks>Keyboard naming convention will vary between different methods</remarks>
+        public abstract bool MultipleKeyboards { get; }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        /// <summary>
+        /// Enable the Keyboard Hook
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool Hook();
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
-        static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpFileName);
+        /// <summary>
+        /// Disable the Keyboard hook
+        /// </summary>
+        public abstract void Unhook();
 
-
-        private IntPtr _hook;
-        private LowLevelKeyboardProc _handler;
-        private GCHandle _gcHandler;
-
-        public event Action<HookKeyEvent> KeyEvent;
-
-        public KeyboardHook() {
-            _handler = Handler;
-            _gcHandler = GCHandle.Alloc(_handler);
-        }
-
-        ~KeyboardHook() {
-            _gcHandler.Free();
-        }
-
-        public bool Hook() {
-            if (_hook == IntPtr.Zero) {
-                var modPtr = GetModuleHandle(null);
-
-                _hook = SetWindowsHookEx(WH_KEYBOARD_LL, _handler, modPtr, 0);
-            }
-
-            return _hook != IntPtr.Zero;
-        }
-
-        private IntPtr Handler(int code, IntPtr param, IntPtr lParam) {
-            if (code >= 0) {
-                var args = new HookKeyEvent(Marshal.ReadInt32(lParam),
-                    param == (IntPtr) WM_KEYDOWN || param == (IntPtr) WM_SYSKEYDOWN);
-
-                OnKeyEvent(args);
-
-                if (args.Intercept) {
-                    return (IntPtr) (-1);
-                }
-            }
-
-            return CallNextHookEx(_hook, code, param, lParam);
-        }
-
-        public void Unhook() {
-            if (_hook != IntPtr.Zero) {
-                UnhookWindowsHookEx(_hook);
-                _hook = IntPtr.Zero;
-            }
-        }
-
-        protected virtual void OnKeyEvent(HookKeyEvent obj) {
+        protected virtual void OnKeyEvent(KeyEventArgs obj) {
             KeyEvent?.Invoke(obj);
         }
     }

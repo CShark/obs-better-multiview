@@ -23,12 +23,12 @@ namespace StreamDeck.Plugins.Keyboard {
     }
 
     internal sealed class KeyboardCore {
-        private static Dictionary<int, string> _keyboardMap = new();
+        private static Dictionary<string, string> _keyboardMap = new();
         private static int _currentDriverId = -1;
 
         private readonly DriverHook _driver;
         private readonly RawInputHook _rawInput;
-        private readonly KeyboardHook _lowLevel;
+        private readonly LowLevelHook _lowLevel;
         private KeyboardCoreSettings _settings;
         private readonly PluginManagement _management;
 
@@ -39,7 +39,7 @@ namespace StreamDeck.Plugins.Keyboard {
         public KeyboardCore(PluginManagement management) {
             _driver = new DriverHook();
             _rawInput = new RawInputHook();
-            _lowLevel = new KeyboardHook();
+            _lowLevel = new LowLevelHook();
 
             _management = management;
             _management.SettingsChanged += s => {
@@ -51,7 +51,7 @@ namespace StreamDeck.Plugins.Keyboard {
 
             _rawInput.KeyEvent += evt => {
                 if (_currentDriverId >= 0) {
-                    _keyboardMap[_currentDriverId] = evt.Keyboard;
+                    _keyboardMap[_currentDriverId.ToString()] = evt.Keyboard;
                 }
             };
 

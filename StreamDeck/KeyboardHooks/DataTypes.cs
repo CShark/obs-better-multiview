@@ -6,41 +6,41 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace KeyboardHooks {
-    public class KeyEvent {
+    /// <summary>
+    /// A Key Event from a Keyboard Hook
+    /// </summary>
+    public sealed class KeyEventArgs {
+        /// <summary>
+        /// The Virtual Key Code of the Key Event
+        /// </summary>
         public int KeyCode { get; }
 
+        /// <summary>
+        /// Whether the Key is pressed or released
+        /// </summary>
         public bool IsDown { get; }
 
-        public KeyEvent(int keyCode, bool isDown) {
+        /// <summary>
+        /// The Keyboard which fired the event if applicable
+        /// </summary>
+        public string Keyboard { get; }
+
+        /// <summary>
+        /// Whether to intercept the keystroke. If null, keystroke cannot be intercepted
+        /// </summary>
+        public bool? Intercept { get; set; }
+
+        public KeyEventArgs(int keyCode, bool isDown, string keyboard, bool canIntercept) {
             KeyCode = keyCode;
             IsDown = isDown;
-        }
-    }
-
-    public class HookKeyEvent : KeyEvent {
-        public HookKeyEvent(int keyCode, bool isDown) : base(keyCode, isDown) {
-        }
-
-        public bool Intercept { get; set; } = false;
-    }
-
-    public class RawKeyEvent : KeyEvent {
-        public RawKeyEvent(int keyCode, bool isDown, string keyboard) : base(keyCode, isDown) {
             Keyboard = keyboard;
+            Intercept = canIntercept ? false : null;
         }
-
-        public string Keyboard { get; }
     }
-
-    public class InterceptionKeyEvent : KeyEvent {
-        public InterceptionKeyEvent(int keyCode, bool isDown, int keyboard) : base(keyCode, isDown) {
-            Keyboard = keyboard;
-        }
-
-        public int Keyboard { get; }
-        public bool Intercept { get; set; }
-    }
-
+    
+    /// <summary>
+    /// Some Helpers for processing Key information
+    /// </summary>
     internal static class Helpers {
         public static int FixVirtualKeyCode(int vk, int scanCode, bool e0) {
             switch (vk) {

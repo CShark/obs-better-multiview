@@ -9,7 +9,11 @@ using System.Threading.Tasks;
 using KeyboardHooks.RawInput;
 
 namespace KeyboardHooks {
-    public class RawInputHook {
+    /// <summary>
+    /// A Keyboard Hook using the RawInput API
+    /// </summary>
+    public sealed class RawInputHook : KeyboardHook {
+        #region Win32 API
         private static readonly IntPtr HWND_MESSAGE = new IntPtr(-3);
         private const uint WM_DESTROY = 2;
         private const uint WM_QUIT = 18;
@@ -56,15 +60,17 @@ namespace KeyboardHooks {
 
         [DllImport("user32.dll")]
         private static extern uint GetRawInputDeviceInfo(IntPtr device, uint command, IntPtr name, ref int size);
-
-        public event Action<RawKeyEvent> KeyEvent;
+        #endregion
 
         private IntPtr _window;
         private Thread _messagePump;
 
-        private Dictionary<IntPtr, string> _deviceNames = new Dictionary<IntPtr, string>();
+        private Dictionary<IntPtr, string> _deviceNames = new();
 
-        public bool Hook() {
+        public override bool CanIntercept => false;
+        public override bool MultipleKeyboards => true;
+
+        public override bool Hook() {
             if (_window == IntPtr.Zero) {
                 _messagePump = new Thread(MessagePump);
                 _messagePump.IsBackground = true;
@@ -74,6 +80,9 @@ namespace KeyboardHooks {
             return true;
         }
 
+        /// <summary>
+        /// A custom message pump, as we need to filter for specific messages
+        /// </summary>
         private void MessagePump() {
             var proc = Process.GetCurrentProcess();
             var modId = proc.MainModule.ModuleName;
@@ -109,8 +118,8 @@ namespace KeyboardHooks {
                         var vk = Helpers.FixVirtualKeyCode(input.Keyboard.VKey, input.Keyboard.MakeCode,
                             (input.Keyboard.Flags & RI_KEY_E0) != 0);
 
-                        var args = new RawKeyEvent(vk, (input.Keyboard.Flags & RI_KEY_BREAK) == 0,
-                            _deviceNames[input.Header.hDevice]);
+                        var args = new KeyEventArgs(vk, (input.Keyboard.Flags & RI_KEY_BREAK) == 0,
+                            _deviceNames[input.Header.hDevice], false);
                         OnKeyEvent(args);
                     } else {
                         // Broken message
@@ -124,9 +133,13 @@ namespace KeyboardHooks {
             }
         }
 
+        /// <summary>
+        /// Update the list of keyboards and map the to "readable-ish" names (their device-IDs)
+        /// </summary>
         private void EnumerateDevices() {
             _deviceNames.Clear();
 
+            // Global Keyboard is anoying, as most keys fire from here and make distinguishing between keyboards impossible
             _deviceNames.Add(IntPtr.Zero, "Global Keyboard");
 
             uint devices = 0;
@@ -152,15 +165,11 @@ namespace KeyboardHooks {
             }
         }
 
-        public void Unhook() {
+        public override void Unhook() {
             if (_window != IntPtr.Zero) {
                 DestroyWindow(_window);
                 _window = IntPtr.Zero;
             }
-        }
-
-        protected virtual void OnKeyEvent(RawKeyEvent obj) {
-            KeyEvent?.Invoke(obj);
         }
     }
 }

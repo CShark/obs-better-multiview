@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+// Contains some helpers for the RawInput hook
+
 namespace KeyboardHooks.RawInput {
     internal enum HidUsagePage : ushort {
         UNDEFINED = 0x00, // Unknown usage page

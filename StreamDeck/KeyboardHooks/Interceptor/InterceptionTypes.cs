@@ -2,6 +2,8 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
+// Contains some Helper enums and dll imports for the driver hook
+
 namespace KeyboardHooks.Interceptor {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate int Predicate(int device);
