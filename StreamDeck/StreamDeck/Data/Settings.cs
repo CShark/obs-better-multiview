@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Serilog.Events;
 
 namespace StreamDeck.Data {
     /// <summary>
@@ -23,6 +26,12 @@ namespace StreamDeck.Data {
             /// </summary>
             public string Process { get; set; }
         }
+
+        /// <summary>
+        /// The minimum log level
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
 
         /// <summary>
         /// The language of the application. Defaults to system language

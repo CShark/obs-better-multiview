@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OBSWebsocketDotNet;
 using StreamDeck.Data;
 
@@ -17,6 +18,7 @@ namespace StreamDeck.Services {
         private readonly Settings _settings;
         private readonly Thread _watcher;
         private readonly OBSWebsocket _socket;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Fired after OBS is connected
@@ -42,8 +44,9 @@ namespace StreamDeck.Services {
 
         public OBSWebsocket WebSocket => _socket;
 
-        public ObsWatchService(Settings settings) {
+        public ObsWatchService(Settings settings, ILogger<ObsWatchService> logger) {
             _settings = settings;
+            _logger = logger;
             _socket = new OBSWebsocket();
             _watcher = new Thread(Watcher) {IsBackground = true};
             _watcher.Start();
@@ -56,6 +59,7 @@ namespace StreamDeck.Services {
         }
 
         private void WaitProcess() {
+            _logger.LogDebug("Trying to connect to OBS Websocket...");
             // Try to connect. If it fails 10 times, recheck port
             while (true) {
                 _socket.Connect($"ws://{_settings.Connection.IP}:{_settings.Connection.Port}", _settings.Connection.Password);
@@ -82,16 +86,19 @@ namespace StreamDeck.Services {
         }
 
         protected virtual void OnObsConnected() {
+            _logger.LogInformation("OBS Websocket connected");
             ObsConnected?.Invoke();
             OnObsInitialized();
         }
 
         protected virtual void OnObsDisconnected() {
+            _logger.LogError("OBS Websocket connection lost");
             IsInitialized = false;
             ObsDisconnected?.Invoke();
         }
 
         protected virtual void OnObsInitialized() {
+            _logger.LogInformation("OBS Websocket initialized");
             IsInitialized = true;
             ObsInitialized?.Invoke();
         }

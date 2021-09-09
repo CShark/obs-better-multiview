@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Autofac;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using StreamDeck.Data;
 using StreamDeck.Dialogs;
@@ -29,6 +30,7 @@ namespace StreamDeck {
         private readonly Win32Interop _win32;
         private StreamView _view;
         private readonly PluginService _plugins;
+        private readonly ILogger _logger;
 
         public static readonly DependencyProperty ObsRunningProperty = DependencyProperty.Register(
             nameof(ObsRunning), typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
@@ -84,8 +86,10 @@ namespace StreamDeck {
         public MainWindow() {
             InitializeComponent();
             Closed += (sender, args) => _view?.Close();
+            _logger = App.Container.Resolve<ILogger<MainWindow>>();
 
             ProfileManager = App.Container.Resolve<ProfileManager>();
+
             ProfileManager.ProfileChanged += () => {
                 Dispatcher.Invoke(() => { SelectedProfile = ProfileManager.ActiveProfile?.Name ?? ""; });
             };

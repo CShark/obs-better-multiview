@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup.Localizer;
 using System.Windows.Media.Media3D;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StreamDeck.Data;
 
@@ -18,6 +19,7 @@ namespace StreamDeck.Services {
         private ObservableCollection<string> _profiles;
         private ReadOnlyObservableCollection<string> _profilesRO;
         private readonly Settings _settings;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// List of all available profiles
@@ -34,10 +36,11 @@ namespace StreamDeck.Services {
         /// </summary>
         public event Action ProfileChanged;
 
-        public ProfileManager(Settings settings) {
+        public ProfileManager(Settings settings, ILogger<ProfileManager> logger) {
             _settings = settings;
             _profiles = new ObservableCollection<string>();
             _profilesRO = new ReadOnlyObservableCollection<string>(_profiles);
+            _logger = logger;
 
             if (!Directory.Exists("Profiles")) {
                 Directory.CreateDirectory("Profiles");
@@ -52,11 +55,14 @@ namespace StreamDeck.Services {
         /// Refresh the list of available profiles
         /// </summary>
         public void Refresh() {
+            _logger.LogInformation("Updating list of available profiles");
             _profiles.Clear();
             var profiles = Directory.EnumerateFiles("Profiles", "*.json", SearchOption.TopDirectoryOnly);
             foreach (var profile in profiles) {
                 _profiles.Add(Path.GetFileNameWithoutExtension(profile));
             }
+
+            _logger.LogDebug("Available profiles: " + string.Join(',', _profiles));
         }
 
         /// <summary>
@@ -64,6 +70,7 @@ namespace StreamDeck.Services {
         /// </summary>
         /// <param name="name">Name of the profile</param>
         public void LoadProfile(string name) {
+            _logger.LogInformation($"Loading profile {name}");
             SaveProfile();
 
             if (_profiles.Contains(name)) {
@@ -80,6 +87,7 @@ namespace StreamDeck.Services {
         /// </summary>
         public void SaveProfile() {
             if (ActiveProfile != null) {
+                _logger.LogInformation("Saving active profile");
                 var json = JsonConvert.SerializeObject(ActiveProfile, Formatting.Indented);
                 File.WriteAllText(Path.Combine("Profiles", ActiveProfile.Name + ".json"), json);
             }
@@ -94,6 +102,7 @@ namespace StreamDeck.Services {
         /// </summary>
         public void DeleteActiveProfile() {
             if (ActiveProfile != null) {
+                _logger.LogInformation("Deleting active profile");
                 File.Delete(Path.Combine("Profiles", ActiveProfile.Name + ".json"));
                 ActiveProfile = null;
                 OnProfileChanged();
@@ -106,12 +115,15 @@ namespace StreamDeck.Services {
         /// <param name="name">Name of the profile</param>
         /// <returns></returns>
         public bool CreateProfile(string name) {
+            _logger.LogInformation($"Creating new profile {name}");
             if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
                 File.Create(Path.Combine("Profiles", name + ".json"));
                 SaveProfile();
                 ActiveProfile = new UserProfile {Name = name};
                 return true;
             }
+
+            _logger.LogError($"Profile could not be created");
 
             return false;
         }
@@ -123,6 +135,7 @@ namespace StreamDeck.Services {
         /// <returns></returns>
         public bool RenameActiveProfile(string name) {
             if (ActiveProfile != null) {
+                _logger.LogInformation($"Renaming active profile to {name}");
                 if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
                     File.Move(Path.Combine("Profiles", ActiveProfile.Name + ".json"),
                         Path.Combine("Profiles", name + ".json"));
@@ -132,6 +145,7 @@ namespace StreamDeck.Services {
                     _settings.LastProfile = name;
                     return true;
                 }
+                _logger.LogError($"Renaming profile failed");
             }
 
             return false;

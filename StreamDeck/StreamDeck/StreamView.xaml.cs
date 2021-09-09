@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Autofac;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
 using OBSWebsocketDotNet.Types;
@@ -34,6 +35,7 @@ namespace StreamDeck {
         private readonly ObsWatchService _obs;
         private readonly Win32Interop _win32;
         private readonly SceneService _scenes;
+        private readonly ILogger _logger;
 
         public bool IsClosed { get; private set; }
 
@@ -46,6 +48,7 @@ namespace StreamDeck {
             _obs = App.Container.Resolve<ObsWatchService>();
             _win32 = App.Container.Resolve<Win32Interop>();
             _scenes = App.Container.Resolve<SceneService>();
+            _logger = App.Container.Resolve<ILogger<StreamView>>();
 
             _watcher.ActiveProfileChanged += SceneCollectionChanged;
 
@@ -88,6 +91,7 @@ namespace StreamDeck {
         /// </summary>
         private void WindowActivated() {
             // also activate the OBS custom multiview behind this window
+            _logger.LogDebug("Activating OBS scene projector");
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
                 _obs.WebSocket.OpenProjector("scene", _settings.Screen, null, "multiview");
@@ -100,6 +104,7 @@ namespace StreamDeck {
 
         private void Closing() {
             // close the obs multiview as well as this window
+            _logger.LogDebug("Closing OBS scene projector");
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle != IntPtr.Zero) {
                 _win32.CloseWindow(window.handle);
@@ -115,6 +120,7 @@ namespace StreamDeck {
             var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
             Dispatcher.InvokeAsync(() => {
+                _logger.LogInformation("Recalculating slot layout");
                 SlotGrid.Children.Clear();
 
                 if (profile != null) {
@@ -139,6 +145,7 @@ namespace StreamDeck {
         }
 
         private void PrepareObsPreview() {
+            _logger.LogInformation("Building OBS Preview scene");
             var slot = _scenes.ActivePreviewSlot;
 
             if (!_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == "preview")) {
@@ -159,6 +166,8 @@ namespace StreamDeck {
         }
 
         public void PrepareObsMultiview() {
+            _logger.LogInformation("Building OBS multiview scene");
+
             if (!_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == "multiview")) {
                 _obs.WebSocket.CreateScene("multiview");
             }

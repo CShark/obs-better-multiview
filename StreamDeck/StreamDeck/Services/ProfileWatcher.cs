@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using StreamDeck.Data;
 
 namespace StreamDeck.Services {
@@ -12,6 +13,7 @@ namespace StreamDeck.Services {
     public class ProfileWatcher {
         private readonly ObsWatchService _obs;
         private readonly ProfileManager _profile;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Fired when the currently active obs profile changes
@@ -23,9 +25,10 @@ namespace StreamDeck.Services {
         /// </summary>
         public UserProfile.DObsProfile ActiveProfile { get; private set; }
 
-        public ProfileWatcher(ObsWatchService obs, ProfileManager profile) {
+        public ProfileWatcher(ObsWatchService obs, ProfileManager profile, ILogger<ProfileWatcher> logger) {
             _obs = obs;
             _profile = profile;
+            _logger = logger;
 
             _obs.WebSocket.SceneCollectionChanged += (sender, args) => { ResolveConfig(); };
 
@@ -44,6 +47,7 @@ namespace StreamDeck.Services {
         /// </summary>
         private void ResolveConfig() {
             if (_profile.ActiveProfile != null) {
+                _logger.LogInformation("Resolving active scene collection configuration");
                 var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
                 var profile =

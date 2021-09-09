@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace StreamDeck.Plugins {
@@ -115,6 +116,11 @@ namespace StreamDeck.Plugins {
     public abstract class PluginBase : INotifyPropertyChanged {
         private PluginState _state = PluginState.Disabled;
         private string _infoMessage;
+        
+        /// <summary>
+        /// The logging instance for this plugin
+        /// </summary>
+        protected ILogger Logger { get; private set; }
 
         /// <summary>
         /// Name of the Plugin
@@ -204,8 +210,9 @@ namespace StreamDeck.Plugins {
         /// Set the command facade for this plugin. Can only be set once (during initialization)
         /// </summary>
         /// <param name="management"></param>
-        public void SetCommandFacade(CommandFacade management) {
+        public void SetCommandFacade(CommandFacade management, ILogger logger) {
             if (CommandFacade == null) {
+                Logger = logger;
                 CommandFacade = management;
                 Initialize();
             }
@@ -238,6 +245,11 @@ namespace StreamDeck.Plugins {
         /// Fired when a slot config has changed
         /// </summary>
         public event Action<Guid> SlotConfigChanged;
+
+        /// <summary>
+        /// The logging instance for this plugin
+        /// </summary>
+        public ILogger Logger { get; protected set; }
 
         /// <summary>
         /// Request settings

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using StreamDeck.Data;
 
 namespace StreamDeck.Services {
@@ -12,6 +13,7 @@ namespace StreamDeck.Services {
     public class SceneService {
         private readonly ObsWatchService _obs;
         private readonly ProfileWatcher _profile;
+        private readonly ILogger _logger;
 
         private UserProfile.DSlot _previewScene;
         private UserProfile.DSlot _liveScene;
@@ -36,9 +38,10 @@ namespace StreamDeck.Services {
         /// </summary>
         public UserProfile.DSlot ActiveLiveSlot => _liveScene;
 
-        public SceneService(ObsWatchService obs, ProfileWatcher profile) {
+        public SceneService(ObsWatchService obs, ProfileWatcher profile, ILogger<SceneService> logger) {
             _obs = obs;
             _profile = profile;
+            _logger = logger;
 
             _profile.ActiveProfileChanged += obsProfile => { OnPreviewChanged(null); };
         }
@@ -47,6 +50,7 @@ namespace StreamDeck.Services {
         /// Switch the preview and live scenes
         /// </summary>
         public void SwitchLive() {
+            _logger.LogDebug("Switching preview to live");
             var temp = _liveScene;
 
             UnapplyScene(_liveScene, _previewScene);
@@ -60,6 +64,7 @@ namespace StreamDeck.Services {
         /// </summary>
         /// <param name="id"></param>
         public void ActivatePreview(Guid id) {
+            _logger.LogDebug($"Activating preview {id}");
             var scene = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == id);
 
             if (scene != null) {
@@ -83,6 +88,7 @@ namespace StreamDeck.Services {
         /// <param name="slot"></param>
         /// <param name="next"></param>
         private void UnapplyScene(UserProfile.DSlot slot, UserProfile.DSlot next) {
+            _logger.LogDebug($"Unapplying scene {slot.Id} to {next.Id}");
         }
 
         /// <summary>
@@ -90,6 +96,7 @@ namespace StreamDeck.Services {
         /// </summary>
         /// <param name="slot"></param>
         private void ApplyScene(UserProfile.DSlot slot) {
+            _logger.LogDebug($"Applying scene {slot.Id}");
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
                 _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
             }

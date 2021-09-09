@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Printing;
 using System.Windows.Documents;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WPFLocalizeExtension.Engine;
 
@@ -28,6 +30,7 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         protected override void Initialize() {
+            Logger.LogInformation("Initializing Plugin");
             _core = new KeyboardCore(CommandFacade);
 
             _core.KeyEvent += evt => {
@@ -94,11 +97,13 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         public override void OnEnabled() {
+            Logger.LogInformation($"Enabling plugin, DriverMode={_settings.MultipleKeyboardSupport}");
             State = PluginState.Active;
             InfoMessage = "";
             _slots = CommandFacade.RequestSlotSettings<KeyboardSlotSettings>().ToList();
             _settings = CommandFacade.RequestSettings<KeyboardSettings>();
             if (!_core.Enable(_settings.MultipleKeyboardSupport)) {
+                Logger.LogError("Failed to enable keyboard hook");
                 State = PluginState.Faulted;
                 InfoMessage = "Failed to enable keyboard hook" +
                               (_settings.MultipleKeyboardSupport ? " in driver mode" : " in hook mode");
@@ -106,6 +111,7 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         public override void OnDisabled() {
+            Logger.LogInformation("Disabling plugin");
             State = PluginState.Disabled;
             InfoMessage = "";
             _core.Disable();
