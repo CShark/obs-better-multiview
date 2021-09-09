@@ -13,6 +13,10 @@ namespace StreamDeck.Services {
     public record MonitorInfo(string Name, Point Size, Point Offset) {
     }
 
+    /// <summary>
+    /// Some Win32 interop functions
+    /// </summary>
+
     public class Win32Interop {
         private readonly Settings _settings;
 

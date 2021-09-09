@@ -84,7 +84,7 @@ namespace StreamDeck.Plugins.Keyboard {
             InitializeComponent();
         }
 
-        public void SetPluginManagement(CommandFacade management) {
+        public void SetCommandFacade(CommandFacade management) {
             Unloaded += (sender, args) => { _keyboard.Disable(); };
 
             management.SettingsChanged += s => {

@@ -10,16 +10,34 @@ using OBSWebsocketDotNet;
 using StreamDeck.Data;
 
 namespace StreamDeck.Services {
+    /// <summary>
+    /// Interaction with OBS WebSocket
+    /// </summary>
     public class ObsWatchService {
         private readonly Settings _settings;
         private readonly Thread _watcher;
         private readonly OBSWebsocket _socket;
 
+        /// <summary>
+        /// Fired after OBS is connected
+        /// </summary>
         public event Action ObsConnected;
+        /// <summary>
+        /// Fired when connection is lost
+        /// </summary>
         public event Action ObsDisconnected;
+        /// <summary>
+        /// Fired after <see cref="ObsConnected"/> has finished
+        /// </summary>
         public event Action ObsInitialized;
 
+        /// <summary>
+        /// Whether OBS is connected
+        /// </summary>
         public bool IsObsConnected => _socket.IsConnected;
+        /// <summary>
+        /// Whether all initialization calls have been executed after connecting
+        /// </summary>
         public bool IsInitialized { get; private set; }
 
         public OBSWebsocket WebSocket => _socket;

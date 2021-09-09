@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace StreamDeck.Converters
-{
-    public class BoolToColorConverter:IValueConverter
-    {
+namespace StreamDeck.Converters {
+    /// <summary>
+    /// Convert a boolean to a color
+    /// </summary>
+    public class BoolToColorConverter : IValueConverter {
         public Brush Default { get; set; }
         public Brush True { get; set; }
         public Brush False { get; set; }

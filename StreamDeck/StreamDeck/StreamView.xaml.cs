@@ -68,7 +68,7 @@ namespace StreamDeck {
                 }
             };
 
-            Activated += (sender, args) => ViewActivated();
+            Activated += (sender, args) => WindowActivated();
             Closed += (sender, args) => Closing();
 
             KeyDown += (sender, args) => {
@@ -83,7 +83,11 @@ namespace StreamDeck {
             Height = monitor.Size.Y;
         }
 
-        private void ViewActivated() {
+        /// <summary>
+        /// Called when this window is activated
+        /// </summary>
+        private void WindowActivated() {
+            // also activate the OBS custom multiview behind this window
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
                 _obs.WebSocket.OpenProjector("scene", _settings.Screen, null, "multiview");
@@ -95,6 +99,7 @@ namespace StreamDeck {
         }
 
         private void Closing() {
+            // close the obs multiview as well as this window
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle != IntPtr.Zero) {
                 _win32.CloseWindow(window.handle);
@@ -106,6 +111,7 @@ namespace StreamDeck {
         }
 
         private void SceneCollectionChanged(UserProfile.DObsProfile profile) {
+            // Reconfigure view
             var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
             Dispatcher.InvokeAsync(() => {
@@ -213,7 +219,7 @@ namespace StreamDeck {
             }
 
             // check for obs preview
-            ViewActivated();
+            WindowActivated();
         }
 
         private void SwitchLive_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -229,7 +235,6 @@ namespace StreamDeck {
             config.Owner = this;
             if (config.ShowDialog() == true) {
                 SceneCollectionChanged(_watcher.ActiveProfile);
-
             } else {
                 if (_watcher.ActiveProfile.Id == id) {
                     _watcher.ActiveProfile.SceneView = settings.ToObject<UserProfile.DSceneViewConfig>();

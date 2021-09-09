@@ -125,7 +125,7 @@
                 </Grid.ColumnDefinitions>
 
                 <ComboBox Margin="5" ItemsSource="{Binding Screens}" SelectedIndex="{Binding ActiveScreen}"
-                          SelectionChanged="Selector_OnSelectionChanged">
+                          SelectionChanged="ScreenSelector_OnSelectionChanged">
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="services:MonitorInfo">
                             <TextBlock Text="{Binding Name}" />

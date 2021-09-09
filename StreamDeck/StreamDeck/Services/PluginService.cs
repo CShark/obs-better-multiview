@@ -7,16 +7,26 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
-using StreamDeck.Annotations;
 using StreamDeck.Data;
 using StreamDeck.Plugins;
 
 namespace StreamDeck.Services {
+    /// <summary>
+    /// Contains information about a plugin
+    /// </summary>
     public class PluginInfo : INotifyPropertyChanged {
         private bool _active;
+
+        /// <summary>
+        /// Plugin reference
+        /// </summary>
         public PluginBase Plugin { get; }
 
+        /// <summary>
+        /// Whether this Plugin is activated
+        /// </summary>
         public bool Active {
             get => _active;
             set {
@@ -38,6 +48,9 @@ namespace StreamDeck.Services {
         }
     }
 
+    /// <summary>
+    /// Manages Plugins and their Activation
+    /// </summary>
     public class PluginService {
         private List<PluginInfo> _availablePlugins = new();
         private readonly Settings _settings;
@@ -51,6 +64,7 @@ namespace StreamDeck.Services {
             _profile = profile;
             _obs = obs;
 
+            // plugins only get enabled when OBS is connected & finished initializing
             _obs.ObsInitialized += () => {
                 App.Current.Dispatcher.Invoke(() => {
                     foreach (var plugin in Plugins.Where(x => x.Active))
@@ -66,6 +80,9 @@ namespace StreamDeck.Services {
             };
         }
 
+        /// <summary>
+        /// Scan for Plugin implementations
+        /// </summary>
         public void Scan() {
             var assembly = Assembly.GetAssembly(typeof(PluginBase));
             ScanAssembly(assembly);
@@ -110,6 +127,9 @@ namespace StreamDeck.Services {
             }
         }
 
+        /// <summary>
+        /// A custom command handler for plugins to access functionality of the main program
+        /// </summary>
         private class CommandFacadeBound : CommandFacade {
             private readonly PluginBase _plugin;
             private readonly Settings _settings;

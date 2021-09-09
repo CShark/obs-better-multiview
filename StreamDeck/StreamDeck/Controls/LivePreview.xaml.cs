@@ -18,7 +18,7 @@ using StreamDeck.Services;
 
 namespace StreamDeck.Controls {
     /// <summary>
-    /// Interaktionslogik für LivePreview.xaml
+    /// Displays the live feed from OBS
     /// </summary>
     public partial class LivePreview : UserControl {
         private readonly ObsWatchService _obs;
@@ -29,6 +29,7 @@ namespace StreamDeck.Controls {
         }
 
         public LivePreview() {
+            // Display live feed using OBS' virtual camera and VLC
             InitializeComponent();
             _obs = App.Container.Resolve<ObsWatchService>();
 

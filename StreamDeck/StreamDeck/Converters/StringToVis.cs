@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace StreamDeck.Converters
-{
-    public class StringToVis:IValueConverter
-    {
+namespace StreamDeck.Converters {
+
+    /// <summary>
+    /// Convert a string to visibility (null or whitespace => hidden)
+    /// </summary>
+    public class StringToVis : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value is string s) {
                 return string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible;
-            }else if (value == null) {
+            } else if (value == null) {
                 return Visibility.Collapsed;
             }
 

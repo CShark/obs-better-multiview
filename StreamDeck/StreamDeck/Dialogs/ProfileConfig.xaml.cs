@@ -15,7 +15,7 @@ using StreamDeck.Data;
 
 namespace StreamDeck.Dialogs {
     /// <summary>
-    /// Interaktionslogik für ProfileConfig.xaml
+    /// Config Dialog for a profile / scene collection
     /// </summary>
     public partial class ProfileConfig : Window {
         public static readonly DependencyProperty ConfigProperty = DependencyProperty.Register(

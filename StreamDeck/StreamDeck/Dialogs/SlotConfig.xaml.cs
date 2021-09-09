@@ -15,7 +15,7 @@ using StreamDeck.Services;
 
 namespace StreamDeck.Dialogs {
     /// <summary>
-    /// Interaktionslogik für SlotConfig.xaml
+    /// Config Dialog for a scene slot
     /// </summary>
     public partial class SlotConfig : Window {
         public static readonly DependencyProperty SlotProperty = DependencyProperty.Register(
@@ -57,6 +57,7 @@ namespace StreamDeck.Dialogs {
             if (Slot.PluginConfigs == null)
                 Slot.PluginConfigs = new Dictionary<string, JObject>();
 
+            // load config controls for all active plugins
             foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings)) {
                 var title = new TextBlock();
                 title.Text = plugin.Plugin.Name;
@@ -97,6 +98,7 @@ namespace StreamDeck.Dialogs {
         }
 
         private void Unlink_OnClick(object sender, RoutedEventArgs e) {
+            // Reset this slot & delete all configs
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(new UserProfile.DSlot()), Slot);
             DialogResult = true;
             Close();

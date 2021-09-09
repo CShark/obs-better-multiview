@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using StreamDeck.Data;
 
 namespace StreamDeck.Services {
+    /// <summary>
+    /// Interacts with scenes in OBS
+    /// </summary>
     public class SceneService {
         private readonly ObsWatchService _obs;
         private readonly ProfileWatcher _profile;
@@ -13,10 +16,24 @@ namespace StreamDeck.Services {
         private UserProfile.DSlot _previewScene;
         private UserProfile.DSlot _liveScene;
 
+        /// <summary>
+        /// Fired when the active preview changes
+        /// </summary>
+        /// <remarks>Internal only, not synced with OBS because one scene in OBS can be associated with multiple slots</remarks>
         public event Action<Guid> PreviewChanged;
+
+        /// <summary>
+        /// Fired when the live scene changes
+        /// </summary>
         public event Action<Guid> LiveChanged;
 
+        /// <summary>
+        /// Currently active preview slot
+        /// </summary>
         public UserProfile.DSlot ActivePreviewSlot => _previewScene;
+        /// <summary>
+        /// Currently active live slot
+        /// </summary>
         public UserProfile.DSlot ActiveLiveSlot => _liveScene;
 
         public SceneService(ObsWatchService obs, ProfileWatcher profile) {
@@ -26,6 +43,9 @@ namespace StreamDeck.Services {
             _profile.ActiveProfileChanged += obsProfile => { OnPreviewChanged(null); };
         }
 
+        /// <summary>
+        /// Switch the preview and live scenes
+        /// </summary>
         public void SwitchLive() {
             var temp = _liveScene;
 
@@ -35,16 +55,16 @@ namespace StreamDeck.Services {
             ApplyScene(_liveScene);
         }
 
+        /// <summary>
+        /// Activate a scene for preview based on its guid
+        /// </summary>
+        /// <param name="id"></param>
         public void ActivatePreview(Guid id) {
             var scene = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == id);
 
             if (scene != null) {
                 OnPreviewChanged(scene);
             }
-        }
-
-        public void ActivatePreview(UserProfile.DSlot slot) {
-            OnPreviewChanged(slot);
         }
 
         protected virtual void OnPreviewChanged(UserProfile.DSlot obj) {
@@ -57,9 +77,18 @@ namespace StreamDeck.Services {
             LiveChanged?.Invoke(obj?.Id ?? Guid.Empty);
         }
 
+        /// <summary>
+        /// Called to unload & clean up in preparation for a scene change
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="next"></param>
         private void UnapplyScene(UserProfile.DSlot slot, UserProfile.DSlot next) {
         }
 
+        /// <summary>
+        /// Called to apply a scene config
+        /// </summary>
+        /// <param name="slot"></param>
         private void ApplyScene(UserProfile.DSlot slot) {
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
                 _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);

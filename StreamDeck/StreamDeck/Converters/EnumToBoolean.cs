@@ -7,14 +7,17 @@ using System.Windows;
 using System.Windows.Data;
 
 namespace StreamDeck.Converters {
+    /// <summary>
+    /// convert an enum value to a boolean
+    /// </summary>
     public class EnumToBoolean : IValueConverter {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture) {
             return value?.Equals(parameter);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture) {
             return value?.Equals(true) == true ? parameter : Binding.DoNothing;
         }
     }

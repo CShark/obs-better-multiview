@@ -15,7 +15,7 @@ using StreamDeck.Plugins;
 
 namespace StreamDeck.Dialogs {
     /// <summary>
-    /// Interaktionslogik für PluginConfig.xaml
+    /// Configuration Dialog for global plugin settings
     /// </summary>
     public partial class PluginConfig : Window {
 

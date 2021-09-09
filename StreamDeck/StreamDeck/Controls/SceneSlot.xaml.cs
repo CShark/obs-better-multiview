@@ -19,7 +19,7 @@ using StreamDeck.Services;
 
 namespace StreamDeck.Controls {
     /// <summary>
-    /// Interaktionslogik für SceneSlot.xaml
+    /// Control for a single slot in the stream view
     /// </summary>
     public partial class SceneSlot : UserControl {
         private readonly UserProfile.DSlot _slot;
@@ -78,6 +78,10 @@ namespace StreamDeck.Controls {
             ActiveScenesChanged(_slot.Id);
         }
 
+        /// <summary>
+        /// Update highlights when active & live changes
+        /// </summary>
+        /// <param name="slot"></param>
         private void ActiveScenesChanged(Guid slot) {
             Dispatcher.Invoke(() => {
                 if (_scenes.ActivePreviewSlot == _slot) {
@@ -94,6 +98,9 @@ namespace StreamDeck.Controls {
             });
         }
 
+        /// <summary>
+        /// Populate settings based on slot config
+        /// </summary>
         private void LoadSlot() {
             Unconfigured = string.IsNullOrEmpty(_slot.Obs.Scene);
             Name = _slot.Name;
@@ -119,7 +126,7 @@ namespace StreamDeck.Controls {
 
         private void SceneSlot_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (!Unconfigured)
-                _scenes.ActivatePreview(_slot);
+                _scenes.ActivatePreview(_slot.Id);
         }
     }
 }
