@@ -116,7 +116,7 @@ namespace StreamDeck.Plugins {
     public abstract class PluginBase : INotifyPropertyChanged {
         private PluginState _state = PluginState.Disabled;
         private string _infoMessage;
-        
+
         /// <summary>
         /// The logging instance for this plugin
         /// </summary>
@@ -191,6 +191,21 @@ namespace StreamDeck.Plugins {
         /// </summary>
         /// <param name="pause"></param>
         public virtual void PausePlugin(bool pause) {
+        }
+
+        /// <summary>
+        /// Called before transitioning to a new live-slot
+        /// </summary>
+        /// <param name="slot">The currently active live-slot</param>
+        /// <param name="next">The next active live-slot</param>
+        public virtual void UnapplySlot(Guid slot, Guid? next) {
+        }
+
+        /// <summary>
+        /// Called after transitioning to a new live-slot
+        /// </summary>
+        /// <param name="slot">The now active live-slot</param>
+        public virtual void ApplySlot(Guid slot) {
         }
 
         /// <summary>

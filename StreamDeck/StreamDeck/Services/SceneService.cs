@@ -14,6 +14,7 @@ namespace StreamDeck.Services {
         private readonly ObsWatchService _obs;
         private readonly ProfileWatcher _profile;
         private readonly ILogger _logger;
+        private readonly PluginService _plugins;
 
         private UserProfile.DSlot _previewScene;
         private UserProfile.DSlot _liveScene;
@@ -33,15 +34,18 @@ namespace StreamDeck.Services {
         /// Currently active preview slot
         /// </summary>
         public UserProfile.DSlot ActivePreviewSlot => _previewScene;
+
         /// <summary>
         /// Currently active live slot
         /// </summary>
         public UserProfile.DSlot ActiveLiveSlot => _liveScene;
 
-        public SceneService(ObsWatchService obs, ProfileWatcher profile, ILogger<SceneService> logger) {
+        public SceneService(ObsWatchService obs, ProfileWatcher profile, ILogger<SceneService> logger,
+            PluginService plugins) {
             _obs = obs;
             _profile = profile;
             _logger = logger;
+            _plugins = plugins;
 
             _profile.ActiveProfileChanged += obsProfile => { OnPreviewChanged(null); };
         }
@@ -88,7 +92,12 @@ namespace StreamDeck.Services {
         /// <param name="slot"></param>
         /// <param name="next"></param>
         private void UnapplyScene(UserProfile.DSlot slot, UserProfile.DSlot next) {
-            _logger.LogDebug($"Unapplying scene {slot.Id} to {next.Id}");
+            _logger.LogDebug($"Unapplying scene {slot?.Id} to {next?.Id}");
+
+            foreach (var plugin in
+                _plugins.Plugins.Where(x => slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)) {
+                plugin.Plugin.UnapplySlot(slot.Id, next?.Id);
+            }
         }
 
         /// <summary>
@@ -96,9 +105,14 @@ namespace StreamDeck.Services {
         /// </summary>
         /// <param name="slot"></param>
         private void ApplyScene(UserProfile.DSlot slot) {
-            _logger.LogDebug($"Applying scene {slot.Id}");
+            _logger.LogDebug($"Applying scene {slot?.Id}");
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
                 _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
+            }
+
+            foreach (var plugin in
+                _plugins.Plugins.Where(x => slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)) {
+                plugin.Plugin.ApplySlot(slot.Id);
             }
         }
     }
