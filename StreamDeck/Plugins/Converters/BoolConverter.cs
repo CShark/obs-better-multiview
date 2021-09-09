@@ -8,6 +8,9 @@ using System.Windows.Data;
 
 namespace StreamDeck.Plugins.Converters
 {
+    /// <summary>
+    /// Convert a boolean to arbitrary values
+    /// </summary>
     class BoolConverter:IValueConverter
     {
         public object True { get; set; }

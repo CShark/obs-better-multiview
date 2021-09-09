@@ -19,9 +19,9 @@ namespace StreamDeck.Plugins.Keyboard {
     /// </summary>
     public partial class SlotSettings : SlotSettingsControl<KeyboardSlotSettings> {
 
-        public SlotSettings(PluginManagement pluginManagement, Guid slotID) : base(pluginManagement, slotID) {
+        public SlotSettings(CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
             InitializeComponent();
-            Grabber.SetPluginManagement(pluginManagement);
+            Grabber.SetCommandFacade(commandFacade);
         }
     }
 }

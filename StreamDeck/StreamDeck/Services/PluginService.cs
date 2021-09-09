@@ -76,9 +76,9 @@ namespace StreamDeck.Services {
                 if (typeof(PluginBase).IsAssignableFrom(type) && !type.IsAbstract) {
                     try {
                         var plugin = Activator.CreateInstance(type) as PluginBase;
-                        var management = new PluginManagementBound(plugin);
+                        var management = new CommandFacadeBound(plugin);
 
-                        plugin.SetPluginManagement(management);
+                        plugin.SetCommandFacade(management);
 
                         if (plugin != null) {
                             var info = new PluginInfo(plugin);
@@ -110,13 +110,13 @@ namespace StreamDeck.Services {
             }
         }
 
-        private class PluginManagementBound : PluginManagement {
+        private class CommandFacadeBound : CommandFacade {
             private readonly PluginBase _plugin;
             private readonly Settings _settings;
             private readonly ProfileWatcher _profile;
             private readonly SceneService _scenes;
 
-            public PluginManagementBound(PluginBase plugin) {
+            public CommandFacadeBound(PluginBase plugin) {
                 _plugin = plugin;
                 _settings = App.Container.Resolve<Settings>();
                 _profile = App.Container.Resolve<ProfileWatcher>();

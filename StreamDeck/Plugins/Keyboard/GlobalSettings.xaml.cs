@@ -20,10 +20,10 @@ namespace StreamDeck.Plugins.Keyboard
     /// </summary>
     public partial class GlobalSettings : SettingsControl<KeyboardSettings>
     {
-        public GlobalSettings(PluginManagement management) : base(management) {
+        public GlobalSettings(CommandFacade management) : base(management) {
             InitializeComponent();
-            InputGrabber.SetPluginManagement(management);
-            InputGrabber2.SetPluginManagement(management);
+            InputGrabber.SetCommandFacade(management);
+            InputGrabber2.SetCommandFacade(management);
         }
     }
 }

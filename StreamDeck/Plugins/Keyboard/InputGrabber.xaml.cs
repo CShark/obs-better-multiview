@@ -16,7 +16,7 @@ using KeyboardHooks;
 
 namespace StreamDeck.Plugins.Keyboard {
     /// <summary>
-    /// Interaktionslogik für InputGrabber.xaml
+    /// Records a keystroke for later use in a Keyboard Hook
     /// </summary>
     public partial class InputGrabber : UserControl {
         public static readonly DependencyProperty CapturingProperty = DependencyProperty.Register(
@@ -84,7 +84,7 @@ namespace StreamDeck.Plugins.Keyboard {
             InitializeComponent();
         }
 
-        public void SetPluginManagement(PluginManagement management) {
+        public void SetPluginManagement(CommandFacade management) {
             Unloaded += (sender, args) => { _keyboard.Disable(); };
 
             management.SettingsChanged += s => {

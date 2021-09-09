@@ -6,11 +6,13 @@
         xmlns:local="clr-namespace:StreamDeck"
         xmlns:services="clr-namespace:StreamDeck.Services"
         xmlns:plugins="clr-namespace:StreamDeck.Plugins;assembly=StreamDeck.Plugins"
+        xmlns:converters="clr-namespace:StreamDeck.Converters"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Stream Deck" Height="450" Width="800">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:StringToVis x:Key="StringToVis"/>
     </Window.Resources>
 
     <Grid>
@@ -69,7 +71,13 @@
                                 <ColumnDefinition Width="26" />
                             </Grid.ColumnDefinitions>
 
-                            <Rectangle x:Name="Indicator" Height="16" />
+                            <Rectangle x:Name="Indicator" Height="16" >
+                                <Rectangle.ToolTip>
+                                    <ToolTip Visibility="{Binding Plugin.InfoMessage, Converter={StaticResource StringToVis}}">
+                                        <TextBlock Text="{Binding Plugin.InfoMessage}"/>
+                                    </ToolTip>
+                                </Rectangle.ToolTip>
+                            </Rectangle>
                             <TextBlock Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"
                                        Text="{Binding Plugin.Name}" />
                             <CheckBox Grid.Column="2" IsChecked="{Binding Active}" />

@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using KeyboardHooks;
 
 namespace StreamDeck.Plugins.Keyboard {
-    public class KeyboardEvent {
+
+    /// <summary>
+    /// Parameters of a Keyboard event
+    /// </summary>
+    public class KeyboardEventArgs {
         public bool IsDown { get; }
         public bool Cancel { get; set; }
 
@@ -15,13 +19,16 @@ namespace StreamDeck.Plugins.Keyboard {
 
         public int VirtualKey { get; }
 
-        public KeyboardEvent(string keyboard, int virtualKey, bool isDown) {
+        public KeyboardEventArgs(string keyboard, int virtualKey, bool isDown) {
             IsDown = isDown;
             Keyboard = keyboard;
             VirtualKey = virtualKey;
         }
     }
 
+    /// <summary>
+    /// Bundles Hook processing and keyboard mappings
+    /// </summary>
     internal sealed class KeyboardCore {
         private static Dictionary<string, string> _keyboardMap = new();
         private static int _currentDriverId = -1;
@@ -30,13 +37,19 @@ namespace StreamDeck.Plugins.Keyboard {
         private readonly RawInputHook _rawInput;
         private readonly LowLevelHook _lowLevel;
         private KeyboardCoreSettings _settings;
-        private readonly PluginManagement _management;
+        private readonly CommandFacade _management;
 
+        /// <summary>
+        /// Whether this instance is currently capturing key events
+        /// </summary>
         public bool IsEnabled { get; private set; }
 
-        public event Action<KeyboardEvent> KeyEvent;
+        /// <summary>
+        /// Fired on a key event
+        /// </summary>
+        public event Action<KeyboardEventArgs> KeyEvent;
 
-        public KeyboardCore(PluginManagement management) {
+        public KeyboardCore(CommandFacade management) {
             _driver = new DriverHook();
             _rawInput = new RawInputHook();
             _lowLevel = new LowLevelHook();
@@ -49,6 +62,7 @@ namespace StreamDeck.Plugins.Keyboard {
             };
             _settings = management.RequestSettings<KeyboardCoreSettings>("core");
 
+            // only use raw input to map driver keyboard numbers to device id
             _rawInput.KeyEvent += evt => {
                 if (_currentDriverId >= 0) {
                     _keyboardMap[_currentDriverId.ToString()] = evt.Keyboard;
@@ -70,6 +84,11 @@ namespace StreamDeck.Plugins.Keyboard {
             };
         }
 
+        /// <summary>
+        /// Enable key capturing
+        /// </summary>
+        /// <param name="useDriver">Whether to try using the driver for capture</param>
+        /// <returns></returns>
         public bool Enable(bool useDriver) {
             if (IsEnabled) return false;
 
@@ -89,6 +108,10 @@ namespace StreamDeck.Plugins.Keyboard {
             }
         }
 
+        /// <summary>
+        /// Update the driver keyboard mapping
+        /// </summary>
+        /// <param name="force">Force reevaluation of the mapping</param>
         private void VerifyMapping(bool force = false) {
             if (_driver.IsEnabled) {
                 if (_keyboardMap.Count == 0 || force) {
@@ -133,6 +156,9 @@ namespace StreamDeck.Plugins.Keyboard {
             }
         }
 
+        /// <summary>
+        /// Disable key capturing
+        /// </summary>
         public void Disable() {
             _driver.Unhook();
             _lowLevel.Unhook();
@@ -145,7 +171,7 @@ namespace StreamDeck.Plugins.Keyboard {
                 keyboard = _settings.KeyboardGuid[keyboard];
             }
 
-            var args = new KeyboardEvent(keyboard, virtualKey, isDown);
+            var args = new KeyboardEventArgs(keyboard, virtualKey, isDown);
 
             KeyEvent?.Invoke(args);
 

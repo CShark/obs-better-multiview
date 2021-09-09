@@ -49,9 +49,13 @@ namespace KeyboardHooks {
             _gcHandler.Free();
         }
 
+        /// <inheritdoc/>
         public override bool CanIntercept => true;
-        public override bool MultipleKeyboards => false;
 
+        /// <inheritdoc/>
+        public override bool MultipleKeyboards => false;
+        
+        /// <inheritdoc/>
         public override bool Hook() {
             if (_hook == IntPtr.Zero) {
                 var modPtr = GetModuleHandle(null);
@@ -61,7 +65,7 @@ namespace KeyboardHooks {
 
             return _hook != IntPtr.Zero;
         }
-
+        
         private IntPtr Handler(int code, IntPtr param, IntPtr lParam) {
             if (code >= 0) {
                 var args = new KeyEventArgs(Marshal.ReadInt32(lParam),
@@ -77,6 +81,7 @@ namespace KeyboardHooks {
             return CallNextHookEx(_hook, code, param, lParam);
         }
 
+        /// <inheritdoc/>
         public override void Unhook() {
             if (_hook != IntPtr.Zero) {
                 UnhookWindowsHookEx(_hook);

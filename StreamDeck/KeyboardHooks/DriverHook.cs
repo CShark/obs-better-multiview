@@ -23,9 +23,13 @@ namespace KeyboardHooks {
 
         public bool IsEnabled => _context != IntPtr.Zero;
 
+        /// <inheritdoc/>
         public override bool CanIntercept => true;
+
+        /// <inheritdoc/>
         public override bool MultipleKeyboards => true;
 
+        /// <inheritdoc/>
         public override bool Hook() {
             if (_context == IntPtr.Zero) {
                 try {
@@ -88,6 +92,7 @@ namespace KeyboardHooks {
             }
         }
 
+        /// <inheritdoc/>
         public override void Unhook() {
             if (_context != IntPtr.Zero) {
                 InterceptionDriver.DestroyContext(_context);

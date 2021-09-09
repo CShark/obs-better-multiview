@@ -39,7 +39,7 @@ namespace StreamDeck.Dialogs {
         private string _originalConfig;
         private readonly ObsWatchService _obs;
         private readonly PluginService _plugins;
-        private readonly List<(PluginBase plugin, SlotSettingsControl settings)> _pluginSettings = new();
+        private readonly List<(PluginBase plugin, SettingsControl settings)> _pluginSettings = new();
 
         public SlotConfig(UserProfile.DSlot slot) {
             _originalConfig = JsonConvert.SerializeObject(slot);

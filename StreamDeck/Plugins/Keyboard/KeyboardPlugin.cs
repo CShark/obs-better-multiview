@@ -6,6 +6,9 @@ using System.Windows.Documents;
 using Newtonsoft.Json.Linq;
 
 namespace StreamDeck.Plugins.Keyboard {
+    /// <summary>
+    /// Plugin to handle keyboard shortcuts
+    /// </summary>
     public class KeyboardPlugin : PluginBase {
         private KeyboardCore _core;
         private KeyboardSettings _settings;
@@ -24,7 +27,7 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         protected override void Initialize() {
-            _core = new KeyboardCore(PluginManagement);
+            _core = new KeyboardCore(CommandFacade);
 
             _core.KeyEvent += evt => {
                 if (_slots == null) return;
@@ -32,13 +35,15 @@ namespace StreamDeck.Plugins.Keyboard {
 
                 bool hit = false;
 
+                // first catch if we are switching to live
                 if (evt.VirtualKey == _settings.SwitchKey) {
                     if (!_settings.MultipleKeyboardSupport || evt.Keyboard == _settings.SwitchKeyboard) {
                         hit = true;
-                        PluginManagement.SwitchLive();
+                        CommandFacade.SwitchLive();
                     }
                 }
 
+                // then catch numbers
                 if (!hit && (evt.VirtualKey & 0x60) == 0x60) {
                     var num = evt.VirtualKey & 0x0F;
                     if (num >= 0 && num <= 9) {
@@ -52,11 +57,12 @@ namespace StreamDeck.Plugins.Keyboard {
 
                         if (slot.config != null) {
                             hit = true;
-                            PluginManagement.ActivateScene(slot.slot);
+                            CommandFacade.ActivateScene(slot.slot);
                         }
                     }
                 }
 
+                // at last, catch direct shortcut keys
                 if (!hit) {
                     var slots = _slots.Where(x => !x.config.NumpadMode);
                     slots = slots.Where(x => x.config.ShortcutKey == evt.VirtualKey);
@@ -69,7 +75,7 @@ namespace StreamDeck.Plugins.Keyboard {
 
                     if (slot.config != null) {
                         hit = true;
-                        PluginManagement.ActivateScene(slot.slot);
+                        CommandFacade.ActivateScene(slot.slot);
                     }
                 }
 
@@ -77,28 +83,35 @@ namespace StreamDeck.Plugins.Keyboard {
                 evt.Cancel = _settings.InterceptKeystrokes && hit;
             };
 
-            PluginManagement.SettingsChanged += s => {
-                _settings = PluginManagement.RequestSettings<KeyboardSettings>();
+            CommandFacade.SettingsChanged += s => {
+                _settings = CommandFacade.RequestSettings<KeyboardSettings>();
             };
 
-            PluginManagement.SlotConfigChanged += guid => {
-                _slots = PluginManagement.RequestSlotSettings<KeyboardSlotSettings>().ToList();
+            CommandFacade.SlotConfigChanged += guid => {
+                _slots = CommandFacade.RequestSlotSettings<KeyboardSlotSettings>().ToList();
             };
         }
 
         public override void OnEnabled() {
             State = PluginState.Active;
-            _slots = PluginManagement.RequestSlotSettings<KeyboardSlotSettings>().ToList();
-            _settings = PluginManagement.RequestSettings<KeyboardSettings>();
-            _core.Enable(_settings.MultipleKeyboardSupport);
+            InfoMessage = "";
+            _slots = CommandFacade.RequestSlotSettings<KeyboardSlotSettings>().ToList();
+            _settings = CommandFacade.RequestSettings<KeyboardSettings>();
+            if (!_core.Enable(_settings.MultipleKeyboardSupport)) {
+                State = PluginState.Faulted;
+                InfoMessage = "Failed to enable keyboard hook" +
+                              (_settings.MultipleKeyboardSupport ? " in driver mode" : " in hook mode");
+            }
         }
 
         public override void OnDisabled() {
             State = PluginState.Disabled;
+            InfoMessage = "";
             _core.Disable();
         }
 
         public override void PausePlugin(bool pause) {
+            // Pause keyboard capture during an active plugin settings dialog
             if (State == PluginState.Active) {
                 if (pause) {
                     _core.Disable();
@@ -109,11 +122,11 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         public override SettingsControl GetGlobalSettings() {
-            return new GlobalSettings(PluginManagement);
+            return new GlobalSettings(CommandFacade);
         }
 
-        public override SlotSettingsControl GetSlotSettings(Guid id) {
-            return new SlotSettings(PluginManagement, id);
+        public override SettingsControl GetSlotSettings(Guid id) {
+            return new SlotSettings(CommandFacade, id);
         }
     }
 }

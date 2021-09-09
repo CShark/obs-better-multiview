@@ -67,9 +67,13 @@ namespace KeyboardHooks {
 
         private Dictionary<IntPtr, string> _deviceNames = new();
 
+        /// <inheritdoc/>
         public override bool CanIntercept => false;
+
+        /// <inheritdoc/>
         public override bool MultipleKeyboards => true;
 
+        /// <inheritdoc/>
         public override bool Hook() {
             if (_window == IntPtr.Zero) {
                 _messagePump = new Thread(MessagePump);
@@ -165,6 +169,7 @@ namespace KeyboardHooks {
             }
         }
 
+        /// <inheritdoc/>
         public override void Unhook() {
             if (_window != IntPtr.Zero) {
                 DestroyWindow(_window);
