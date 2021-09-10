@@ -37,6 +37,7 @@ namespace StreamDeck.Plugins.qlc {
         }
 
         public override void OnEnabled() {
+            // QLC+ communicates via Websocket
             Logger.LogInformation("Enabling QLC+");
             var settings = CommandFacade.RequestSettings<QlcSettings>();
             _activeSettings = settings;
@@ -82,6 +83,7 @@ namespace StreamDeck.Plugins.qlc {
             Logger.LogDebug("QLC Message: " + e.Data);
             var data = e.Data.Split('|');
 
+            // Parse function / widget response and populate list
             if (data[0] == "QLC+API" && data.Length > 1) {
                 switch (data[1]) {
                     case "getFunctionsList":
@@ -111,6 +113,7 @@ namespace StreamDeck.Plugins.qlc {
         }
 
         private void FetchInfo() {
+            // Grab a list of all available functions and widgets
             try {
                 _functions.Clear();
                 _webSocket.Send("QLC+API|getFunctionsList");
@@ -121,6 +124,7 @@ namespace StreamDeck.Plugins.qlc {
 
         public override void PausePlugin(bool pause) {
             if (pause == false) {
+                // when settings change, check for different IP / port and reload if necessary
                 var settings = CommandFacade.RequestSettings<QlcSettings>();
                 if (_activeSettings.IP != settings.IP || _activeSettings.Port != settings.Port) {
                     OnDisabled();
@@ -140,8 +144,8 @@ namespace StreamDeck.Plugins.qlc {
 
         public override void UnapplySlot(Guid slot, Guid? next) {
             var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
-            if (!settings.Reset) return;
-
+            
+            // only reset functions that are not referenced in the next slot to avoid jitter
             QlcSlotSettings nextSettings = new QlcSlotSettings();
             if (next != null) {
                 nextSettings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(next.Value);
