@@ -105,6 +105,12 @@ namespace StreamDeck.Services {
                         
                         if (plugin != null) {
                             _logger.LogDebug("Found Plugin " + plugin.Name);
+
+                            if (_settings.HiddenPlugins.Contains(plugin.Name)) {
+                                _logger.LogDebug("Plugin is hidden");
+                                continue;
+                            }
+
                             var logger = logFactory.CreateLogger(type);
                             var management = new CommandFacadeBound(plugin, logger);
                             plugin.SetCommandFacade(management, logger);

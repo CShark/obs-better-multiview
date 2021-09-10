@@ -59,6 +59,11 @@ namespace StreamDeck.Data {
         public HashSet<string> ActivePlugins { get; set; } = new();
 
         /// <summary>
+        /// a list of plugins to be hidden & deactivated
+        /// </summary>
+        public HashSet<string> HiddenPlugins { get; set; } = new();
+
+        /// <summary>
         /// A list of global plugin settings
         /// </summary>
         public Dictionary<string, JObject> PluginSettings { get; set; } = new();
