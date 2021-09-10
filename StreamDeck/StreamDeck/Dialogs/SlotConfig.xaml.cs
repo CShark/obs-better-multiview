@@ -59,16 +59,24 @@ namespace StreamDeck.Dialogs {
 
             // load config controls for all active plugins
             foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings)) {
+                var expander = new Expander();
+
                 var title = new TextBlock();
                 title.Text = plugin.Plugin.Name;
                 title.Style = TryFindResource("Title") as Style;
-                ConfigPanel.Children.Add(title);
-
+                title.HorizontalAlignment = HorizontalAlignment.Stretch;
+                expander.Header = title;
+                
                 var slotSettings = plugin.Plugin.GetSlotSettings(slot.Id);
+                if (slotSettings == null) return;
+
                 slotSettings.FetchSettings();
+                slotSettings.Margin = new Thickness(0, 0, 0, 10);
 
                 _pluginSettings.Add((plugin.Plugin, slotSettings));
-                ConfigPanel.Children.Add(slotSettings);
+                expander.Content = slotSettings;
+
+                ConfigPanel.Children.Add(expander);
             }
 
             input.Focus();

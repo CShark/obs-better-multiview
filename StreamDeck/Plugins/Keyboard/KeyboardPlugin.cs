@@ -98,11 +98,12 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         public override void OnEnabled() {
+            _settings = CommandFacade.RequestSettings<KeyboardSettings>();
             Logger.LogInformation($"Enabling plugin, DriverMode={_settings.MultipleKeyboardSupport}");
             State = PluginState.Active;
             InfoMessage = "";
             _slots = CommandFacade.RequestSlotSettings<KeyboardSlotSettings>().ToList();
-            _settings = CommandFacade.RequestSettings<KeyboardSettings>();
+
             if (!_core.Enable(_settings.MultipleKeyboardSupport)) {
                 Logger.LogError("Failed to enable keyboard hook");
                 State = PluginState.Faulted;

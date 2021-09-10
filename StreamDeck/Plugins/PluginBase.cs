@@ -40,7 +40,7 @@ namespace StreamDeck.Plugins {
     /// <typeparam name="T">The Global Settings class for this plugin</typeparam>
     public abstract class SettingsControl<T> : SettingsControl {
         public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-            nameof(Settings), typeof(T), typeof(SettingsControl), new PropertyMetadata(default(T)));
+            nameof(Settings), typeof(T), typeof(SettingsControl<T>), new PropertyMetadata(default(T)));
 
         /// <summary>
         /// The global settings of this plugin
@@ -76,7 +76,7 @@ namespace StreamDeck.Plugins {
     /// <typeparam name="T">The Slot Settings class for this plugin</typeparam>
     public abstract class SlotSettingsControl<T> : SettingsControl {
         public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-            nameof(Settings), typeof(T), typeof(SettingsControl), new PropertyMetadata(default(T)));
+            nameof(Settings), typeof(T), typeof(SlotSettingsControl<T>), new PropertyMetadata(default(T)));
 
         public T Settings {
             get { return (T) GetValue(SettingsProperty); }
