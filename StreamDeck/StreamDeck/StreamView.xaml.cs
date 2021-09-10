@@ -84,6 +84,10 @@ namespace StreamDeck {
             Top = monitor.Offset.Y;
             Width = monitor.Size.X;
             Height = monitor.Size.Y;
+
+            if (LivePreview.Faulted) {
+                LivePreview.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>

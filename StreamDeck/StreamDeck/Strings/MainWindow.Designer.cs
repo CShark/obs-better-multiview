@@ -97,6 +97,33 @@ namespace StreamDeck.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Error authenticating OBS. Please check your password in the config. ähnelt.
+        /// </summary>
+        internal static string ObsError_Auth {
+            get {
+                return ResourceManager.GetString("ObsError.Auth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Unknown error with OBS, please check the logs. ähnelt.
+        /// </summary>
+        internal static string ObsError_Generic {
+            get {
+                return ResourceManager.GetString("ObsError.Generic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die OBS Error ähnelt.
+        /// </summary>
+        internal static string ObsError_Title {
+            get {
+                return ResourceManager.GetString("ObsError.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Plugins ähnelt.
         /// </summary>
         internal static string Plugins {
@@ -120,6 +147,15 @@ namespace StreamDeck.Strings {
         internal static string RenameProfile {
             get {
                 return ResourceManager.GetString("RenameProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Could not load VLC ähnelt.
+        /// </summary>
+        internal static string VlcNotFound {
+            get {
+                return ResourceManager.GetString("VlcNotFound", resourceCulture);
             }
         }
     }

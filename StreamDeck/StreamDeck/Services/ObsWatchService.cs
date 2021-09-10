@@ -34,6 +34,11 @@ namespace StreamDeck.Services {
         public event Action ObsInitialized;
 
         /// <summary>
+        /// Triggered when the obs connection encounters an error
+        /// </summary>
+        public event Action<Exception> ObsConnectionError;
+
+        /// <summary>
         /// Whether OBS is connected
         /// </summary>
         public bool IsObsConnected => _socket.IsConnected;
@@ -60,29 +65,40 @@ namespace StreamDeck.Services {
 
         private void WaitProcess() {
             _logger.LogDebug("Trying to connect to OBS Websocket...");
-            // Try to connect. If it fails 10 times, recheck port
-            while (true) {
-                _socket.Connect($"ws://{_settings.Connection.IP}:{_settings.Connection.Port}", _settings.Connection.Password);
+            // Try to connect.
+            try {
+                while (true) {
+                    _socket.Connect($"ws://{_settings.Connection.IP}:{_settings.Connection.Port}",
+                        _settings.Connection.Password);
 
-                if (_socket.IsConnected) {
-                    break;
-                } else {
-                    Thread.Sleep(500);
+                    if (_socket.IsConnected) {
+                        break;
+                    } else {
+                        Thread.Sleep(500);
+                    }
                 }
+
+                if (!_socket.IsConnected) {
+                    return;
+                }
+
+                OnObsConnected();
+
+                //wait till websocket looses connection
+                while (_socket.IsConnected) {
+                    Thread.Sleep(1000);
+                }
+
+                OnObsDisconnected();
+            } catch (AuthFailureException ex) {
+                _logger.LogError(ex,"Wrong credentials");
+                OnObsConnectionError(ex);
+                Thread.Sleep(10000);
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Unknown exception with OBS");
+                OnObsConnectionError(ex);
+                Thread.Sleep(10000);
             }
-
-            if (!_socket.IsConnected) {
-                return;
-            }
-
-            OnObsConnected();
-
-            //wait till websocket looses connection
-            while (_socket.IsConnected) {
-                Thread.Sleep(1000);
-            }
-
-            OnObsDisconnected();
         }
 
         protected virtual void OnObsConnected() {
@@ -101,6 +117,10 @@ namespace StreamDeck.Services {
             _logger.LogInformation("OBS Websocket initialized");
             IsInitialized = true;
             ObsInitialized?.Invoke();
+        }
+
+        protected virtual void OnObsConnectionError(Exception obj) {
+            ObsConnectionError?.Invoke(obj);
         }
     }
 }

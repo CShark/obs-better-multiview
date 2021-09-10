@@ -61,6 +61,33 @@ namespace StreamDeck.Plugins.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Failed to enable keyboard hook ähnelt.
+        /// </summary>
+        internal static string Hook_Failed {
+            get {
+                return ResourceManager.GetString("Hook.Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  in driver mode ähnelt.
+        /// </summary>
+        internal static string Hook_FailedDriver {
+            get {
+                return ResourceManager.GetString("Hook.FailedDriver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  in hook mode ähnelt.
+        /// </summary>
+        internal static string Hook_FailedHook {
+            get {
+                return ResourceManager.GetString("Hook.FailedHook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Intercept Keystrokes ähnelt.
         /// </summary>
         internal static string InterceptInputs {

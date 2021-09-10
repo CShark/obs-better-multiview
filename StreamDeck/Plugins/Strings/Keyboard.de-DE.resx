@@ -132,4 +132,13 @@
   <data name="NumberMode" xml:space="preserve">
     <value>Zahlenfolge</value>
   </data>
+  <data name="Hook.Failed" xml:space="preserve">
+    <value>Konnte die Shortcuts im</value>
+  </data>
+  <data name="Hook.FailedDriver" xml:space="preserve">
+    <value> Treibermodus nicht aktivieren</value>
+  </data>
+  <data name="Hook.FailedHook" xml:space="preserve">
+    <value> Hook-Modus nicht aktivieren</value>
+  </data>
 </root>

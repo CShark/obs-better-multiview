@@ -79,6 +79,24 @@ namespace StreamDeck.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Please enter a name for the new profile: ähnelt.
+        /// </summary>
+        internal static string CreateProfile_Message {
+            get {
+                return ResourceManager.GetString("CreateProfile.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create New Profile ähnelt.
+        /// </summary>
+        internal static string CreateProfile_Title {
+            get {
+                return ResourceManager.GetString("CreateProfile.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
         /// </summary>
         internal static string Name {
@@ -111,6 +129,42 @@ namespace StreamDeck.Strings {
         internal static string ProfileConfig {
             get {
                 return ResourceManager.GetString("ProfileConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Renaming Failed ähnelt.
+        /// </summary>
+        internal static string RenameProfile_Failed {
+            get {
+                return ResourceManager.GetString("RenameProfile.Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Profile could not be renamed, because a profile with the same name already exists. ähnelt.
+        /// </summary>
+        internal static string RenameProfile_FailedMessage {
+            get {
+                return ResourceManager.GetString("RenameProfile.FailedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Please enter a new name for the profile: ähnelt.
+        /// </summary>
+        internal static string RenameProfile_Message {
+            get {
+                return ResourceManager.GetString("RenameProfile.Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rename Profile ähnelt.
+        /// </summary>
+        internal static string RenameProfile_Title {
+            get {
+                return ResourceManager.GetString("RenameProfile.Title", resourceCulture);
             }
         }
         

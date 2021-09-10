@@ -49,6 +49,12 @@ namespace StreamDeck.Services {
             if (_profile.ActiveProfile != null && _obs.IsObsConnected) {
                 _logger.LogInformation("Resolving active scene collection configuration");
                 var collection = _obs.WebSocket.GetCurrentSceneCollection();
+                _logger.LogDebug($"Currently active scene collection: {collection}");
+                
+                if (collection == null) {
+                    OnActiveProfileChanged(null);
+                    return;
+                }
 
                 var profile =
                     _profile.ActiveProfile.Profiles.FirstOrDefault(x => x.Id.ToLower() == collection.ToLower());

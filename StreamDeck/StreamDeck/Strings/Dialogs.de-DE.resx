@@ -144,4 +144,22 @@
   <data name="Scene" xml:space="preserve">
     <value>Szene</value>
   </data>
+  <data name="CreateProfile.Title" xml:space="preserve">
+    <value>Neues Profil anlegen</value>
+  </data>
+  <data name="CreateProfile.Message" xml:space="preserve">
+    <value>Bitte gib einen Namen für das neue Profil ein:</value>
+  </data>
+  <data name="RenameProfile.Title" xml:space="preserve">
+    <value>Profil umbenennen</value>
+  </data>
+  <data name="RenameProfile.Message" xml:space="preserve">
+    <value>Gib einen neuen Namen für das Profil ein:</value>
+  </data>
+  <data name="RenameProfile.Failed" xml:space="preserve">
+    <value>Umbennen fehlgeschlagen</value>
+  </data>
+  <data name="RenameProfile.FailedMessage" xml:space="preserve">
+    <value>Das Profil kann nicht umbenannt werden, weil bereits ein Profil mit diesem Namen existiert</value>
+  </data>
 </root>

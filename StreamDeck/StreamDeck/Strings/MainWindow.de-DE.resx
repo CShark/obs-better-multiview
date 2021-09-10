@@ -138,4 +138,16 @@
   <data name="RenameProfile" xml:space="preserve">
     <value>Umbenennen</value>
   </data>
+  <data name="ObsError.Title" xml:space="preserve">
+    <value>OBS Fehler</value>
+  </data>
+  <data name="ObsError.Auth" xml:space="preserve">
+    <value>Fehler beim Autorisieren von OBS. Bitte überprüfe das Passwort in der Config.</value>
+  </data>
+  <data name="ObsError.Generic" xml:space="preserve">
+    <value>Unbekannter Fehler mit OBS, bitte Lögs prüfen.</value>
+  </data>
+  <data name="VlcNotFound" xml:space="preserve">
+    <value>VLC konnte nicht initialisiert werden</value>
+  </data>
 </root>

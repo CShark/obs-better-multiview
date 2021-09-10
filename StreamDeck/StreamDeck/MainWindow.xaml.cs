@@ -16,9 +16,12 @@ using System.Windows.Shapes;
 using Autofac;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using OBSWebsocketDotNet;
 using StreamDeck.Data;
 using StreamDeck.Dialogs;
+using StreamDeck.Extensions;
 using StreamDeck.Services;
+using WPFLocalizeExtension.Engine;
 
 namespace StreamDeck {
     /// <summary>
@@ -111,6 +114,20 @@ namespace StreamDeck {
                 });
             };
 
+            _watcher.ObsConnectionError += (ex) => {
+                Dispatcher.Invoke(() => {
+                    if (ex is AuthFailureException) {
+                        MessageBox.Show(this, Localizer.Localize<string>("MainWindow", "ObsError.Auth"),
+                            Localizer.Localize<string>("MainWindow", "ObsError.Title"), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    } else {
+                        MessageBox.Show(this, Localizer.Localize<string>("MainWindow", "ObsError.Generic"),
+                            Localizer.Localize<string>("MainWindow", "ObsError.Title"), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                    }
+                });
+            };
+
             Dispatcher.Invoke(() => { SelectedProfile = ProfileManager.ActiveProfile?.Name ?? ""; });
 
             _settings = App.Container.Resolve<Settings>();
@@ -140,7 +157,8 @@ namespace StreamDeck {
         }
 
         private void CreateProfile_OnClick(object sender, RoutedEventArgs e) {
-            var input = new TextInput("Neues Profil anlegen", "Bitte gib einen Namen für das neue Profil ein:");
+            var input = new TextInput(Localizer.Localize<string>("Dialogs", "CreateProfile.Title"),
+                Localizer.Localize<string>("Dialogs", "CreateProfile.Message"));
             input.Owner = this;
 
             if (input.ShowDialog() == true) {
@@ -150,17 +168,17 @@ namespace StreamDeck {
 
         private void RenameProfile_OnClick(object sender, RoutedEventArgs e) {
             if (SelectedProfile != null) {
-                var input = new TextInput("Profil umbenennen", "Gib einen neuen Namen für das Profil ein:",
-                    SelectedProfile);
+                var input = new TextInput(Localizer.Localize<string>("Dialogs", "RenameProfile.Title"),
+                    Localizer.Localize<string>("Dialogs", "RenameProfile.Message"), SelectedProfile);
                 input.Owner = this;
 
                 if (input.ShowDialog() == true) {
                     if (ProfileManager.RenameActiveProfile(input.Value)) {
                         SelectedProfile = input.Value;
                     } else {
-                        MessageBox.Show(this,
-                            "Das Profil kann nicht umbenannt werden, weil bereits ein Profil mit diesem Namen existiert",
-                            "Umbennen fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(this, Localizer.Localize<string>("Dialogs", "RenameProfile.FailedMessage"),
+                            Localizer.Localize<string>("Dialogs", "RenameProfile.Failed"), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
                     }
                 }
             }

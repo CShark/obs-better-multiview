@@ -77,6 +77,8 @@ namespace StreamDeck.Services {
                 _settings.LastProfile = name;
                 var profile = File.ReadAllText(Path.Combine("Profiles", name + ".json"));
                 ActiveProfile = JsonConvert.DeserializeObject<UserProfile>(profile);
+                if (ActiveProfile == null) ActiveProfile = new UserProfile();
+
                 ActiveProfile.Name = name;
                 OnProfileChanged();
             }
@@ -117,8 +119,10 @@ namespace StreamDeck.Services {
         public bool CreateProfile(string name) {
             _logger.LogInformation($"Creating new profile {name}");
             if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
-                File.Create(Path.Combine("Profiles", name + ".json"));
+                using (var file = new FileStream(Path.Combine("Profiles", name + ".json"), FileMode.Create)) {
+                }
                 SaveProfile();
+                Refresh();
                 ActiveProfile = new UserProfile {Name = name};
                 return true;
             }

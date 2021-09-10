@@ -68,12 +68,12 @@ namespace StreamDeck.Data {
             /// <summary>
             /// Number of Rows
             /// </summary>
-            public int Rows { get; set; }
+            public int Rows { get; set; } = 4;
 
             /// <summary>
             /// Number of Columns
             /// </summary>
-            public int Columns { get; set; }
+            public int Columns { get; set; } = 6;
 
             public List<DSlot> Slots { get; set; }
 
@@ -113,7 +113,7 @@ namespace StreamDeck.Data {
         /// <summary>
         /// List of configurations for different scene collections
         /// </summary>
-        public List<DObsProfile> Profiles { get; set; }
+        public List<DObsProfile> Profiles { get; set; } = new();
 
         /// <summary>
         /// Name of the profile, based on filename

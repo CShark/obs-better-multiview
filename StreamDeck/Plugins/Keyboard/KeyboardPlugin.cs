@@ -6,6 +6,7 @@ using System.Printing;
 using System.Windows.Documents;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using StreamDeck.Extensions;
 using WPFLocalizeExtension.Engine;
 
 namespace StreamDeck.Plugins.Keyboard {
@@ -54,10 +55,12 @@ namespace StreamDeck.Plugins.Keyboard {
                         if ((DateTime.Now - _lastEntry).TotalMilliseconds > 500 || _numpadEntry.Length > 3) {
                             _numpadEntry = "";
                         }
+
                         _numpadEntry += num.ToString();
 
                         var numpadSlots = _slots.Where(x => x.config.NumpadMode);
-                        var slot = numpadSlots.FirstOrDefault(x => x.config.NumpadNumber == Convert.ToInt32(_numpadEntry));
+                        var slot = numpadSlots.FirstOrDefault(x =>
+                            x.config.NumpadNumber == Convert.ToInt32(_numpadEntry));
 
                         if (slot.config != null) {
                             hit = true;
@@ -87,9 +90,7 @@ namespace StreamDeck.Plugins.Keyboard {
                 evt.Cancel = _settings.InterceptKeystrokes && hit;
             };
 
-            CommandFacade.SettingsChanged += s => {
-                _settings = CommandFacade.RequestSettings<KeyboardSettings>();
-            };
+            CommandFacade.SettingsChanged += s => { _settings = CommandFacade.RequestSettings<KeyboardSettings>(); };
 
             CommandFacade.SlotConfigChanged += guid => {
                 _slots = CommandFacade.RequestSlotSettings<KeyboardSlotSettings>().ToList();
@@ -105,8 +106,10 @@ namespace StreamDeck.Plugins.Keyboard {
             if (!_core.Enable(_settings.MultipleKeyboardSupport)) {
                 Logger.LogError("Failed to enable keyboard hook");
                 State = PluginState.Faulted;
-                InfoMessage = "Failed to enable keyboard hook" +
-                              (_settings.MultipleKeyboardSupport ? " in driver mode" : " in hook mode");
+                InfoMessage = Localizer.Localize<string>("Keyboard", "Hook.Failed") +
+                              (_settings.MultipleKeyboardSupport
+                                  ? Localizer.Localize<string>("Keyboard", "Hook.FailedDriver")
+                                  : Localizer.Localize<string>("Keyboard", "Hook.FailedHook"));
             }
         }
 

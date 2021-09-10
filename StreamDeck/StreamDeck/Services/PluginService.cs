@@ -99,7 +99,7 @@ namespace StreamDeck.Services {
             var logFactory = App.Container.Resolve<ILoggerFactory>();
 
             foreach (var type in assembly.GetExportedTypes()) {
-                if (typeof(PluginBase).IsAssignableFrom(type) && !type.IsAbstract) {
+                if (typeof(PluginBase).IsAssignableFrom(type) && !type.IsAbstract && type.IsPublic) {
                     try {
                         var plugin = Activator.CreateInstance(type) as PluginBase;
                         

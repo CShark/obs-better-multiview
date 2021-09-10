@@ -112,4 +112,13 @@
   <data name="NumberMode" xml:space="preserve">
     <value>Number Mode</value>
   </data>
+  <data name="Hook.Failed" xml:space="preserve">
+    <value>Failed to enable keyboard hook</value>
+  </data>
+  <data name="Hook.FailedDriver" xml:space="preserve">
+    <value> in driver mode</value>
+  </data>
+  <data name="Hook.FailedHook" xml:space="preserve">
+    <value> in hook mode</value>
+  </data>
 </root>

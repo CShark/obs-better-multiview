@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
@@ -30,9 +32,14 @@ namespace StreamDeck {
         protected override void OnStartup(StartupEventArgs e) {
             var builder = new ContainerBuilder();
             var settings = new Settings();
+            Exception exception = null;
 
             if (File.Exists("settings.json")) {
-                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText("settings.json"));
+                try {
+                    settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText("settings.json"));
+                } catch (Exception ex) {
+                    exception = ex;
+                }
             }
 
             var logConfig = new LoggerConfiguration()
@@ -68,16 +75,23 @@ namespace StreamDeck {
                 _logger.LogCritical(args.ExceptionObject as Exception, "Critical error, shutting down");
             };
 
+            if (exception != null) {
+                _logger.LogCritical(exception, "Failed to start up");
+                Shutdown(20);
+            }
+
             base.OnStartup(e);
         }
 
         protected override void OnExit(ExitEventArgs e) {
-            var settings = Container.Resolve<Settings>();
-            var text = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            File.WriteAllText("settings.json", text);
+            if (e.ApplicationExitCode != 20) {
+                var settings = Container.Resolve<Settings>();
+                var text = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                File.WriteAllText("settings.json", text);
 
-            var profile = Container.Resolve<ProfileManager>();
-            profile.SaveProfile();
+                var profile = Container.Resolve<ProfileManager>();
+                profile.SaveProfile();
+            }
 
             _logger.LogInformation("Shutting down");
             base.OnExit(e);
