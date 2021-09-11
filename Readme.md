@@ -8,7 +8,15 @@ OBS >= 27.0.0
 
 OBS-WebSocket >= 4.9.1
 
+## Setup
+Currently there is no config UI for the OBS settings, so you have to enter the password, port & host of obs manually in the settings.json
+
+## Removing the app
+StreamDeck adds two scenes to your OBS: multiview and preview. Just delete them. StreamDeck will recreate them if necessary.
+
 ## Available Plugins
+The available plugins come from personal use. Any ideas can be either suggested or added as a pull request.
+
 ### Keyboard
 Supports Keyboard shortcuts with key suppression, numbers and optionally multiple Keyboards.
 
