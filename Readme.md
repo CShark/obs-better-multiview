@@ -1,5 +1,5 @@
 # Stream Deck
-An enhanced version of the OBS-Streamdeck with support for controlling more than just OBS. It allows arbitrary layouting your scenes in a custom grid and adding custom actions that will trigger when activating that scene.
+An enhanced version of the OBS-Multiview with support for controlling more than just OBS. It allows arbitrary layouting your scenes in a custom grid and adding custom actions that will trigger when activating that scene.
 
 It is a standalone app that interfaces with OBS via the OBS-WebSocket Plugin.
 

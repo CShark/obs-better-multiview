@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Autofac;
 using StreamDeck.Data;
 using StreamDeck.Dialogs;
+using StreamDeck.Plugins;
 using StreamDeck.Services;
 
 namespace StreamDeck.Controls {
@@ -110,7 +111,7 @@ namespace StreamDeck.Controls {
             var config = new SlotConfig(_slot);
             config.Owner = Window.GetWindow(this);
 
-            foreach (var plugin in _plugins.Plugins.Where(x => x.Active)) {
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.State != PluginState.Disabled)) {
                 plugin.Plugin.PausePlugin(true);
             }
 
@@ -119,7 +120,7 @@ namespace StreamDeck.Controls {
                 _owner.PrepareObsMultiview();
             }
 
-            foreach (var plugin in _plugins.Plugins.Where(x => x.Active)) {
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.State != PluginState.Disabled)) {
                 plugin.Plugin.PausePlugin(false);
             }
         }

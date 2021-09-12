@@ -109,7 +109,10 @@ namespace StreamDeck.Plugins.qlc {
             _active = false;
             State = PluginState.Disabled;
             InfoMessage = "";
-            _webSocket.CloseAsync();
+
+            try {
+                _webSocket.CloseAsync();
+            }catch{}
         }
 
         private void FetchInfo() {

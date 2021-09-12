@@ -20,6 +20,7 @@ using OBSWebsocketDotNet;
 using StreamDeck.Data;
 using StreamDeck.Dialogs;
 using StreamDeck.Extensions;
+using StreamDeck.Plugins;
 using StreamDeck.Services;
 using WPFLocalizeExtension.Engine;
 
@@ -203,7 +204,7 @@ namespace StreamDeck {
             }
 
             if (ctrl != null) {
-                if (info.Active) {
+                if (info.Active && info.Plugin.State != PluginState.Disabled) {
                     info.Plugin.PausePlugin(true);
                 }
 
@@ -214,7 +215,7 @@ namespace StreamDeck {
                     ctrl.WriteSettings();
                 }
 
-                if (info.Active) {
+                if (info.Active && info.Plugin.State != PluginState.Disabled) {
                     info.Plugin.PausePlugin(false);
                 }
             }

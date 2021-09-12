@@ -13,7 +13,6 @@
                              DataContext="{Binding RelativeSource={RelativeSource Self}}"
                              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
-        <CheckBox IsChecked="{Binding Settings.Reset}" Content="{lex:Loc ResetFunctions}" Margin="5"></CheckBox>
         <TextBlock Text="{lex:Loc AddFunction}" />
         <ComboBox ItemsSource="{Binding Plugin.Functions}" SelectionChanged="AddFkt_OnSelectionChanged"
                   SelectedItem="{Binding SelectedFunction}">
