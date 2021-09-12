@@ -59,6 +59,7 @@ namespace StreamDeck.Plugins.qlc {
                 while (_active) {
                     if (State == PluginState.Disabled) break;
                     State = PluginState.Warning;
+                    InfoMessage = Localizer.Localize<string>("Qlc", "ConnectionPending");
                     while (_webSocket.ReadyState != WebSocketState.Open) {
                         try {
                             _webSocket.Connect();
@@ -69,6 +70,7 @@ namespace StreamDeck.Plugins.qlc {
 
                     if (State == PluginState.Disabled) break;
                     State = PluginState.Active;
+                    InfoMessage = "";
                     FetchInfo();
                     while (_webSocket.ReadyState == WebSocketState.Open) {
                         Thread.Sleep(1000);

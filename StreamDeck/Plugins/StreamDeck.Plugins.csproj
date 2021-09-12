@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+    <PackageReference Include="KNX.net" Version="1.1.10" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
@@ -29,6 +30,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Keyboard.resx</DependentUpon>
     </Compile>
+    <Compile Update="Strings\KNX.Designer.cs">
+      <DependentUpon>KNX.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Strings\Qlc.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -40,6 +46,10 @@
     <EmbeddedResource Update="Strings\Keyboard.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Keyboard.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings\KNX.resx">
+      <LastGenOutput>KNX.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings\Qlc.resx">
       <Generator>ResXFileCodeGenerator</Generator>

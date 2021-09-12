@@ -97,22 +97,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidIP" xml:space="preserve">
-    <value>The configured IP is invalid</value>
-  </data>
   <data name="IP" xml:space="preserve">
-    <value>IP-Address:</value>
+    <value>IP:</value>
   </data>
   <data name="Port" xml:space="preserve">
     <value>Port:</value>
   </data>
-  <data name="AddFunction" xml:space="preserve">
-    <value>Add Function:</value>
+  <data name="LocalIP" xml:space="preserve">
+    <value>Local IP:</value>
   </data>
-  <data name="ResetFunctions" xml:space="preserve">
-    <value>Reset Functions on scene switch</value>
+  <data name="LocalPort" xml:space="preserve">
+    <value>Local Port:</value>
   </data>
-  <data name="ConnectionPending" xml:space="preserve">
-    <value>Waiting for connection...</value>
+  <data name="Mode" xml:space="preserve">
+    <value>KNX/IP Mode:</value>
+  </data>
+  <data name="ThreePartGroups" xml:space="preserve">
+    <value>Use three level group addressing</value>
+  </data>
+  <data name="EditGroups" xml:space="preserve">
+    <value>Edit Groups</value>
+  </data>
+  <data name="GroupAddress" xml:space="preserve">
+    <value>Group Address</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="DatapointType" xml:space="preserve">
+    <value>Datapoint Type</value>
+  </data>
+  <data name="Datapoint.Dpt1" xml:space="preserve">
+    <value>1.* Boolean</value>
+  </data>
+  <data name="Datapoint.Dpt5" xml:space="preserve">
+    <value>5.* Relative</value>
+  </data>
+  <data name="ConnectionFailed" xml:space="preserve">
+    <value>Can't connect to KNX/IP interface</value>
   </data>
 </root>

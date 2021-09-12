@@ -22,14 +22,14 @@ namespace StreamDeck.Plugins.Strings {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Qlc {
+    internal class KNX {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Qlc() {
+        internal KNX() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace StreamDeck.Plugins.Strings {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StreamDeck.Plugins.Strings.Qlc", typeof(Qlc).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StreamDeck.Plugins.Strings.KNX", typeof(KNX).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,101 @@ namespace StreamDeck.Plugins.Strings {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Add Function: ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Can&apos;t connect to KNX/IP interface ähnelt.
         /// </summary>
-        internal static string AddFunction {
+        internal static string ConnectionFailed {
             get {
-                return ResourceManager.GetString("AddFunction", resourceCulture);
+                return ResourceManager.GetString("ConnectionFailed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Waiting for connection... ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die 1.* Boolean ähnelt.
         /// </summary>
-        internal static string ConnectionPending {
+        internal static string Datapoint_Dpt1 {
             get {
-                return ResourceManager.GetString("ConnectionPending", resourceCulture);
+                return ResourceManager.GetString("Datapoint.Dpt1", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die The configured IP is invalid ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die 5.* Relative ähnelt.
         /// </summary>
-        internal static string InvalidIP {
+        internal static string Datapoint_Dpt5 {
             get {
-                return ResourceManager.GetString("InvalidIP", resourceCulture);
+                return ResourceManager.GetString("Datapoint.Dpt5", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die IP-Address: ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datapoint Type ähnelt.
+        /// </summary>
+        internal static string DatapointType {
+            get {
+                return ResourceManager.GetString("DatapointType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Edit Groups ähnelt.
+        /// </summary>
+        internal static string EditGroups {
+            get {
+                return ResourceManager.GetString("EditGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Group Address ähnelt.
+        /// </summary>
+        internal static string GroupAddress {
+            get {
+                return ResourceManager.GetString("GroupAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die IP: ähnelt.
         /// </summary>
         internal static string IP {
             get {
                 return ResourceManager.GetString("IP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Local IP: ähnelt.
+        /// </summary>
+        internal static string LocalIP {
+            get {
+                return ResourceManager.GetString("LocalIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Local Port: ähnelt.
+        /// </summary>
+        internal static string LocalPort {
+            get {
+                return ResourceManager.GetString("LocalPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die KNX/IP Mode: ähnelt.
+        /// </summary>
+        internal static string Mode {
+            get {
+                return ResourceManager.GetString("Mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         
@@ -106,11 +169,11 @@ namespace StreamDeck.Plugins.Strings {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Reset Functions on scene switch ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use three level group addressing ähnelt.
         /// </summary>
-        internal static string ResetFunctions {
+        internal static string ThreePartGroups {
             get {
-                return ResourceManager.GetString("ResetFunctions", resourceCulture);
+                return ResourceManager.GetString("ThreePartGroups", resourceCulture);
             }
         }
     }
