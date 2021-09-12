@@ -159,6 +159,9 @@ namespace StreamDeck.Plugins.Keyboard {
                 ReadableKeyboard = _settings.KeyboardLabels.ContainsKey(Keyboard)
                     ? _settings.KeyboardLabels[Keyboard]
                     : Keyboard;
+
+                if (string.IsNullOrWhiteSpace(ReadableKeyboard))
+                    ReadableKeyboard = Keyboard;
             } else {
                 ReadableKeyboard = "";
             }

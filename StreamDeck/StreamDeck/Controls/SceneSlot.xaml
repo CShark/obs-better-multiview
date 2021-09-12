@@ -9,6 +9,7 @@
              Background="#01FFFFFF"
              MouseRightButtonUp="SceneSlot_OnMouseRightButtonUp"
              MouseLeftButtonDown="SceneSlot_OnMouseLeftButtonDown"
+             MouseDoubleClick="SceneSlot_OnMouseDoubleClick"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -16,9 +17,9 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
         <Rectangle Fill="#254682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}" />
-        <Rectangle Stroke="Gold" StrokeThickness="7" Margin="-1"
+        <Rectangle Stroke="ForestGreen" StrokeThickness="7" Margin="-1"
                    Visibility="{Binding ActivePreview, Converter={StaticResource BoolToVis}}" />
-        <Rectangle StrokeThickness="7" Margin="-1" Stroke="ForestGreen"
+        <Rectangle StrokeThickness="7" Margin="-1" Stroke="OrangeRed"
                    Visibility="{Binding ActiveLive, Converter={StaticResource BoolToVis}}" />
 
         <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="20" Foreground="White"

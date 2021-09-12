@@ -43,11 +43,11 @@ namespace StreamDeck.Data {
             }
 
             public static bool operator ==(DSlot a, DSlot b) {
-                return a?.Id == b?.Id && a != null && b != null;
+                return (a is null && b is null) || a?.Id == b?.Id;
             }
 
             public static bool operator !=(DSlot a, DSlot b) {
-                return a?.Id != b?.Id || (a == null && b == null);
+                return !(a == b);
             }
         }
 

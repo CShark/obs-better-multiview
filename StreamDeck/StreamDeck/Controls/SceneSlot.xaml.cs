@@ -129,5 +129,12 @@ namespace StreamDeck.Controls {
             if (!Unconfigured)
                 _scenes.ActivatePreview(_slot.Id);
         }
+
+        private void SceneSlot_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if (!Unconfigured) {
+                _scenes.SwitchLive();
+                e.Handled = true;
+            }
+        }
     }
 }

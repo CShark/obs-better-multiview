@@ -222,7 +222,7 @@ namespace StreamDeck {
         }
 
         private void ShowWindow_OnClick(object sender, RoutedEventArgs e) {
-            if (_view.IsClosed) {
+            if (_view?.IsClosed ?? false) {
                 _view = new StreamView();
                 _view.Show();
             }

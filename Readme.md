@@ -29,9 +29,11 @@ Supports manipulating DMX Devices through QLC+. Requires QLC+ to be launched wit
 
 This Plugin allows you to associate a scene with one or multiple functions or widgets from the virtual console which will be activated when the scene is activated and optionally reset when leaving the scene. For functions, any value other than zero will activate the function. For widgets it depends on the type of widget; buttons only support on/off, while sliders allow to set a value between 0 and 255.
 
-## Planned Plugins
 ### KNX
-A popular home-automation system. Requires a KNX/IP interface.
+Supports sending messages to a KNX/IP interface. Requires a KNX/IP interface in the local network.
 
+This Plugin allows you to send arbitrary messages to a device on the KNX bus system. You have to configure available groups and their datapoint types by hand before using them, currently Datapoint 1.* (boolean) and 5.* (relative) are supported. You can then define actions for the entry and exit of a scene slot.
+
+## Planned Plugins
 ### PELCO-D
 A popular PTZ-protocol for cameras via RS485. Requires a RS485 dongle.

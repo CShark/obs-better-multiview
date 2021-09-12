@@ -234,11 +234,7 @@ namespace StreamDeck {
             // check for obs preview
             WindowActivated();
         }
-
-        private void SwitchLive_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-            _scenes.SwitchLive();
-        }
-
+        
         private void ProfileSettings_OnClick(object sender, RoutedEventArgs e) {
             var settings = JObject.FromObject(_watcher.ActiveProfile.SceneView);
             var id = _watcher.ActiveProfile.Id;

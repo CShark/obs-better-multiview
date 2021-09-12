@@ -45,5 +45,15 @@ namespace StreamDeck.Plugins.KNX {
                 Settings.Groups.Add(new KnxSlotGroup {Group = dlg.SelectedGroup});
             }
         }
+
+        private void ClearEntry_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            var group = ((FrameworkElement) sender).DataContext as KnxSlotGroup;
+            group.OnEntry = null;
+        }
+
+        private void ClearExit_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            var group = ((FrameworkElement)sender).DataContext as KnxSlotGroup;
+            group.OnExit = null;
+        }
     }
 }

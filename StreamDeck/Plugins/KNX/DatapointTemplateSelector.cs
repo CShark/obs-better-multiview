@@ -64,12 +64,17 @@ namespace StreamDeck.Plugins.KNX {
                             case KnxDatapointType.Dpt1:
                                 return data.Aggregate(0, (x, i) => x + i) != 0;
                             case KnxDatapointType.Dpt5:
-                                return data.Length > 0 ? data[0] : 0;
+                                return data.Length > 0 ? (int)(data[0] / 2.55f) : 0;
                             default:
                                 return value;
                         }
                     } else {
-                        return value;
+                        switch (type) {
+                            case KnxDatapointType.Dpt5:
+                                return 0;
+                            default:
+                                return value;
+                        }
                     }
                 } catch (Exception ex) {
                     return value;
@@ -91,7 +96,7 @@ namespace StreamDeck.Plugins.KNX {
                                 value = s.Replace("%", "");
                             }
 
-                            var dpt5 = (byte) (System.Convert.ToInt32(value) * 255);
+                            var dpt5 = (byte) (System.Convert.ToInt32(value) * 2.55f);
                             return new[] {dpt5};
                         default:
                             return value;
@@ -102,6 +107,19 @@ namespace StreamDeck.Plugins.KNX {
             } else {
                 return value;
             }
+        }
+    }
+
+    public class NullConverter : IValueConverter {
+        public object Null { get; set; }
+        public object NotNull { get; set; }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            return value is null ? Null : NotNull;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotImplementedException();
         }
     }
 }

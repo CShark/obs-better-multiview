@@ -48,8 +48,8 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button IsDefault="True" Width="100" Margin="5" Padding="2" Click="Ok_OnClick" Content="{lex:Loc Ok}"></Button>
-            <Button IsCancel="True" Width="100" Margin="5" Padding="2" Click="Cancel_OnClick" Content="{lex:Loc Cancel}"></Button>
+            <Button Width="100" Margin="5" Padding="2" Click="Ok_OnClick" Content="{lex:Loc Ok}" />
+            <Button Width="100" Margin="5" Padding="2" Click="Cancel_OnClick" Content="{lex:Loc Cancel}" />
             <Button Margin="5" Padding="2" Width="100" FontFamily="Segoe MDL2 Assets" FontWeight="Bold"
                     Foreground="Red" Click="Unlink_OnClick">
                 &#xE711;

@@ -88,10 +88,35 @@ namespace StreamDeck.Plugins.KNX {
         }
     }
 
-    public class KnxSlotGroup {
+    public class KnxSlotGroup:INotifyPropertyChanged {
+        private byte[] _onExit = null;
+        private byte[] _onEntry = null;
         public KnxGroup Group { get; set; }
-        public byte[] OnEntry { get; set; } = new byte[0];
-        public byte[] OnExit { get; set; } = new byte[0];
+
+        public byte[] OnEntry {
+            get => _onEntry;
+            set {
+                if (Equals(value, _onEntry)) return;
+                _onEntry = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] OnExit {
+            get => _onExit;
+            set {
+                if (Equals(value, _onExit)) return;
+                _onExit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     /// <summary>

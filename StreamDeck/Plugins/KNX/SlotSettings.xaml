@@ -19,24 +19,33 @@
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
-
+                <local:NullConverter x:Key="NulLConv">
+                    <local:NullConverter.Null>
+                        <SolidColorBrush Color="OrangeRed" />
+                    </local:NullConverter.Null>
+                    <local:NullConverter.NotNull>
+                        <SolidColorBrush Color="DarkGreen"/>
+                    </local:NullConverter.NotNull>
+                </local:NullConverter>
             </ListBox.Resources>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="local:KnxSlotGroup">
                     <StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{Binding Group.GroupAddress}" />
-                            <Button FontFamily="Segoe MDL2 Assets" Foreground="Red" FontWeight="Bold" Grid.Column="1"
+                            <TextBlock Text="{Binding Group.GroupAddress}" MinWidth="75" />
+                            <TextBlock Text="{Binding Group.Name}" Grid.Column="1" />
+                            <Button FontFamily="Segoe MDL2 Assets" Foreground="Red" FontWeight="Bold" Grid.Column="2"
                                     Click="Delete_OnClick">
                                 &#xE711;
                             </Button>
                         </Grid>
-                        <TextBlock Text="{Binding Group.Name}" />
+
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50" />
@@ -48,12 +57,12 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <local:DatapointEditor Data="{Binding OnEntry}" Type="{Binding Group.Type}" Grid.Column="1" />
-                            <local:DatapointEditor Data="{Binding OnExit}" Type="{Binding Group.Type}" Grid.Column="1"
+                            <local:DatapointEditor Data="{Binding OnEntry, Mode=TwoWay}" Type="{Binding Group.Type}" Grid.Column="1" />
+                            <local:DatapointEditor Data="{Binding OnExit, Mode=TwoWay}" Type="{Binding Group.Type}" Grid.Column="1"
                                                    Grid.Row="1" />
 
-                            <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="16">&#xea4e;</TextBlock>
-                            <TextBlock FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="1"
+                            <TextBlock VerticalAlignment="Center" FontFamily="Segoe MDL2 Assets" FontSize="16" FontWeight="Bold" Foreground="{Binding OnEntry, Converter={StaticResource NulLConv}, Mode=OneWay}" MouseLeftButtonDown="ClearEntry_OnMouseLeftButtonDown">&#xea4e;</TextBlock>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="1" FontWeight="Bold" Foreground="{Binding OnExit, Converter={StaticResource NulLConv}, Mode=OneWay}" MouseLeftButtonDown="ClearExit_OnMouseLeftButtonDown"
                                        FontSize="16">
                                 &#xea53;
                             </TextBlock>
