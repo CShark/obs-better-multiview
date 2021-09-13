@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KNXLib;
 using Microsoft.Extensions.Logging;
-using StreamDeck.Extensions;
+using ObsMultiview.Plugins.Extensions;
 
-namespace StreamDeck.Plugins.KNX {
+namespace ObsMultiview.Plugins.KNX {
     /// <summary>
     /// A plugin to talk to a KNX/IP Interface
     /// </summary>

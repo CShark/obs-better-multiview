@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace StreamDeck.Plugins.Converters {
+namespace ObsMultiview.Plugins.Converters {
     /// <summary>
     /// convert an enum value to boolean
     /// </summary>

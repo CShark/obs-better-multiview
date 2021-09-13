@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Printing;
-using System.Windows.Documents;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using StreamDeck.Extensions;
-using WPFLocalizeExtension.Engine;
+using ObsMultiview.Plugins.Extensions;
 
-namespace StreamDeck.Plugins.Keyboard {
+namespace ObsMultiview.Plugins.Keyboard {
     /// <summary>
     /// Plugin to handle keyboard shortcuts
     /// </summary>

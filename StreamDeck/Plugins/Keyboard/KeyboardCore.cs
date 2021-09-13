@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using KeyboardHooks;
 
-namespace StreamDeck.Plugins.Keyboard {
+namespace ObsMultiview.Plugins.Keyboard {
 
     /// <summary>
     /// Parameters of a Keyboard event

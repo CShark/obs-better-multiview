@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
-namespace StreamDeck.Plugins.qlc {
+namespace ObsMultiview.Plugins.qlc {
     /// <summary>
     /// Type of QLC+ function
     /// </summary>

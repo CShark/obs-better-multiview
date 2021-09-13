@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using WPFLocalizeExtension.Engine;
 
-namespace StreamDeck.Extensions {
+namespace ObsMultiview.Plugins.Extensions {
     static class Localizer {
         public static T Localize<T>(string dictionary, string key) {
             var asm = Assembly.GetCallingAssembly().FullName;

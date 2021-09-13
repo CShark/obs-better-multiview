@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace StreamDeck.Plugins {
+namespace ObsMultiview.Plugins {
     /// <summary>
     /// The current state of the plugin
     /// </summary>

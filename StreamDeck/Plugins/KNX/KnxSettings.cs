@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-namespace StreamDeck.Plugins.KNX {
+namespace ObsMultiview.Plugins.KNX {
     /// <summary>
     /// Modes to connect to the KNX endpoint
     /// </summary>

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace StreamDeck.Plugins.Keyboard {
+namespace ObsMultiview.Plugins.Keyboard {
     /// <summary>
     /// Global settings for the keyboard plugin
     /// </summary>

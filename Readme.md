@@ -1,4 +1,4 @@
-# Stream Deck
+# Better Multiview
 An enhanced version of the OBS-Multiview with support for controlling more than just OBS. It allows arbitrary layouting your scenes in a custom grid and adding custom actions that will trigger when activating that scene.
 
 It is a standalone app that interfaces with OBS via the OBS-WebSocket Plugin.
@@ -12,7 +12,7 @@ OBS-WebSocket >= 4.9.1
 Currently there is no config UI for the OBS settings, so you have to enter the password, port & host of obs manually in the settings.json
 
 ## Removing the app
-StreamDeck adds two scenes to your OBS: multiview and preview. Just delete them. StreamDeck will recreate them if necessary.
+This multiview adds two scenes to your OBS: multiview and preview. Just delete them. The app will recreate them if necessary.
 
 ## Available Plugins
 The available plugins come from personal use. Any ideas can be either suggested or added as a pull request.

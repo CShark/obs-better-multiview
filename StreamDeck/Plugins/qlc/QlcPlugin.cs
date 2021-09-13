@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using StreamDeck.Extensions;
+using ObsMultiview.Plugins.Extensions;
 using WebSocketSharp;
 using WebSocket = WebSocketSharp.WebSocket;
 using WebSocketState = WebSocketSharp.WebSocketState;
 
-namespace StreamDeck.Plugins.qlc {
+namespace ObsMultiview.Plugins.qlc {
     /// <summary>
     /// A plugin for QLC+
     /// </summary>

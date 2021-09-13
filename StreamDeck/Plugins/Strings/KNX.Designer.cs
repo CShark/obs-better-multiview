@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace StreamDeck.Plugins.Strings {
+namespace ObsMultiview.Plugins.Strings {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace StreamDeck.Plugins.Strings {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StreamDeck.Plugins.Strings.KNX", typeof(KNX).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ObsMultiview.Plugins.Strings.KNX", typeof(KNX).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
