@@ -72,18 +72,42 @@ namespace StreamDeck.Services {
             _obs.ObsInitialized += () => {
                 _logger.LogInformation("Enabling active plugins");
                 App.Current.Dispatcher.Invoke(() => {
-                    foreach (var plugin in Plugins.Where(x => x.Active))
-                        plugin.Plugin.OnEnabled();
+                    foreach (var plugin in Plugins.Where(x => x.Active)) {
+                        try {
+                            plugin.Plugin.OnEnabled();
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, "Failed to activate plugin " + plugin.Plugin.Name);
+                        }
+                    }
                 });
             };
 
             _obs.ObsDisconnected += () => {
                 _logger.LogInformation("Disabling running plugins");
                 App.Current.Dispatcher.Invoke(() => {
-                    foreach (var plugin in Plugins.Where(x => x.Active))
-                        plugin.Plugin.OnDisabled();
+                    foreach (var plugin in Plugins.Where(x => x.Active)) {
+                        try {
+                            plugin.Plugin.OnDisabled();
+                        } catch (Exception ex) {
+                            _logger.LogWarning(ex, $"Deactivating plugin {plugin.Plugin.Name} threw an exception");
+                        }
+                    }
                 });
             };
+        }
+
+        public void PausePlugins(PluginInfo plugin, bool pause) {
+            var plugins = _availablePlugins
+                .Where(x => x.Active && x.Plugin.State != PluginState.Disabled)
+                .Where(x => plugin == null || x == plugin);
+
+            foreach (var p in plugins) {
+                try {
+                    p.Plugin.PausePlugin(pause);
+                } catch (Exception ex) {
+                    _logger.LogWarning(ex,$"Failed to set pause state of {p.Plugin.Name} to {pause}");
+                }
+            }
         }
 
         /// <summary>
@@ -102,7 +126,7 @@ namespace StreamDeck.Services {
                 if (typeof(PluginBase).IsAssignableFrom(type) && !type.IsAbstract && type.IsPublic) {
                     try {
                         var plugin = Activator.CreateInstance(type) as PluginBase;
-                        
+
                         if (plugin != null) {
                             _logger.LogDebug("Found Plugin " + plugin.Name);
 
@@ -123,14 +147,23 @@ namespace StreamDeck.Services {
                                     _settings.ActivePlugins.Add(plugin.Name);
 
                                     if (_obs.IsInitialized) {
-                                        plugin.OnEnabled();
+                                        try {
+                                            plugin.OnEnabled();
+                                        } catch (Exception ex) {
+                                            _logger.LogError(ex, "Failed to activate plugin " + plugin.Name);
+                                        }
                                     }
                                 } else {
                                     _logger.LogInformation("Deactivating plugin " + plugin.Name);
                                     _settings.ActivePlugins.Remove(plugin.Name);
 
                                     if (_obs.IsInitialized) {
-                                        plugin.OnDisabled();
+                                        try {
+                                            plugin.OnDisabled();
+                                        } catch (Exception ex) {
+                                            _logger.LogWarning(ex,
+                                                $"Deactivating plugin {plugin.Name} threw an exception");
+                                        }
                                     }
                                 }
                             };
@@ -189,7 +222,7 @@ namespace StreamDeck.Services {
             }
 
             protected override void WriteSettings(JObject settings, string subtype = null) {
-                _logger.LogDebug($"Writing settings for subtype {subtype??"(default)"}");
+                _logger.LogDebug($"Writing settings for subtype {subtype ?? "(default)"}");
                 subtype = string.IsNullOrWhiteSpace(subtype) ? "" : "." + subtype;
                 var key = _plugin.Name + subtype;
                 _settings.PluginSettings[key] = settings;

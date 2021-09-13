@@ -24,7 +24,7 @@
         <StackPanel VerticalAlignment="Center" Margin="15">
             <TextBlock Text="{Binding Key}" HorizontalAlignment="Center" />
             <TextBlock Text="{Binding ReadableKeyboard}" HorizontalAlignment="Center" Visibility="{Binding EditKeyboardLabel, Converter={StaticResource BoolToVisInv}}" MouseLeftButtonUp="KeyboardLabel_OnMouseLeftButtonUp" PreviewMouseLeftButtonDown="KeyboardLabel_OnPreviewMouseLeftButtonDown"/>
-            <TextBox Text="{Binding ReadableKeyboard, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding EditKeyboardLabel, Converter={StaticResource BoolToVis}}" x:Name="KeyboardLabelText" LostFocus="KeyboardLabelText_OnLostFocus"/>
+            <TextBox Text="{Binding ReadableKeyboard, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="KeyboardLabelText_OnPreviewKeyDown" Visibility="{Binding EditKeyboardLabel, Converter={StaticResource BoolToVis}}" x:Name="KeyboardLabelText" LostFocus="KeyboardLabelText_OnLostFocus"/>
         </StackPanel>
     </Grid>
 </UserControl>

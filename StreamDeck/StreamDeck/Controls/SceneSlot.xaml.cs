@@ -111,18 +111,14 @@ namespace StreamDeck.Controls {
             var config = new SlotConfig(_slot);
             config.Owner = Window.GetWindow(this);
 
-            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.State != PluginState.Disabled)) {
-                plugin.Plugin.PausePlugin(true);
-            }
+            _plugins.PausePlugins(null, true);
 
             if (config.ShowDialog() == true) {
                 LoadSlot();
                 _owner.PrepareObsMultiview();
             }
 
-            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.State != PluginState.Disabled)) {
-                plugin.Plugin.PausePlugin(false);
-            }
+            _plugins.PausePlugins(null, false);
         }
 
         private void SceneSlot_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

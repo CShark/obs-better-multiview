@@ -38,6 +38,7 @@ namespace StreamDeck.Plugins.qlc {
 
         public SlotSettings(QlcPlugin plugin, CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
             Plugin = plugin;
+            plugin.FetchInfo();
             InitializeComponent();
         }
 

@@ -23,6 +23,7 @@ using StreamDeck.Extensions;
 using StreamDeck.Plugins;
 using StreamDeck.Services;
 using WPFLocalizeExtension.Engine;
+using Exception = System.Exception;
 
 namespace StreamDeck {
     /// <summary>
@@ -204,9 +205,7 @@ namespace StreamDeck {
             }
 
             if (ctrl != null) {
-                if (info.Active && info.Plugin.State != PluginState.Disabled) {
-                    info.Plugin.PausePlugin(true);
-                }
+                _plugins.PausePlugins(info, true);
 
                 ctrl.FetchSettings();
                 var window = new PluginConfig(ctrl);
@@ -215,9 +214,7 @@ namespace StreamDeck {
                     ctrl.WriteSettings();
                 }
 
-                if (info.Active && info.Plugin.State != PluginState.Disabled) {
-                    info.Plugin.PausePlugin(false);
-                }
+                _plugins.PausePlugins(info, false);
             }
         }
 

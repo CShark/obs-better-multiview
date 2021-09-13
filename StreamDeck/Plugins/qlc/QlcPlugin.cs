@@ -117,7 +117,7 @@ namespace StreamDeck.Plugins.qlc {
             }catch{}
         }
 
-        private void FetchInfo() {
+        public void FetchInfo() {
             // Grab a list of all available functions and widgets
             try {
                 _functions.Clear();

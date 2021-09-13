@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using KeyboardHooks;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace StreamDeck.Plugins.Keyboard {
     /// <summary>
@@ -146,6 +147,7 @@ namespace StreamDeck.Plugins.Keyboard {
         }
 
         private void InputGrabber_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            Capturing = false;
             Key = null;
             Keyboard = null;
         }
@@ -195,6 +197,12 @@ namespace StreamDeck.Plugins.Keyboard {
         private void KeyboardLabel_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (!Capturing)
                 e.Handled = true;
+        }
+
+        private void KeyboardLabelText_OnPreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == System.Windows.Input.Key.Return) {
+                EditKeyboardLabel = false;
+            }
         }
     }
 }
