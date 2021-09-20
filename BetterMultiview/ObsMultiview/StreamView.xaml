@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="MainWindow"
         ResizeMode="NoResize"
         AllowsTransparency="True"

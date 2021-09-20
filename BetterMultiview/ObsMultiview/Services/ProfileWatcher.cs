@@ -44,10 +44,12 @@ namespace ObsMultiview.Services {
         /// </summary>
         private void ResolveConfig() {
             if (_profile.ActiveProfile != null && _obs.IsObsConnected) {
+                _profile.SaveProfile();
+
                 _logger.LogInformation("Resolving active scene collection configuration");
                 var collection = _obs.WebSocket.GetCurrentSceneCollection();
                 _logger.LogDebug($"Currently active scene collection: {collection}");
-                
+
                 if (collection == null) {
                     OnActiveProfileChanged(null);
                     return;
@@ -64,6 +66,27 @@ namespace ObsMultiview.Services {
                 OnActiveProfileChanged(profile);
             } else {
                 OnActiveProfileChanged(null);
+            }
+        }
+
+        /// <summary>
+        /// Swap to slot configs
+        /// </summary>
+        /// <param name="localSlotId"></param>
+        /// <param name="remSlotId"></param>
+        public void SwapSlots(Guid slotA, Guid slotB) {
+            if (ActiveProfile?.SceneView != null) {
+                var idxA = ActiveProfile.SceneView.Slots.FindIndex(x => x.Id == slotA);
+                var idxB = ActiveProfile.SceneView.Slots.FindIndex(x => x.Id == slotB);
+
+                if (idxA >= 0 && idxB >= 0) {
+                    var sA = ActiveProfile.SceneView.Slots[idxA];
+                    var sB = ActiveProfile.SceneView.Slots[idxB];
+
+                    ActiveProfile.SceneView.Slots[idxB] = sA;
+                    ActiveProfile.SceneView.Slots[idxA] = sB;
+                    OnActiveProfileChanged(ActiveProfile);
+                }
             }
         }
 

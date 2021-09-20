@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="{lex:Loc PluginConfig}" Height="450" Width="800">

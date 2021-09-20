@@ -11,7 +11,7 @@
                          mc:Ignorable="d"
                          Background="White"
                          lex:LocalizeDictionary.DesignCulture="en"
-                         lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+                         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
                          lex:ResxLocalizationProvider.DefaultDictionary="KNX"
                          DataContext="{Binding RelativeSource={RelativeSource Self}}"
                          Height="302" Width="336">

@@ -9,7 +9,7 @@
         xmlns:knx="clr-namespace:ObsMultiview.Plugins.KNX"
         mc:Ignorable="d"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
         lex:ResxLocalizationProvider.DefaultDictionary="KNX"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         WindowStartupLocation="CenterOwner"
@@ -47,9 +47,9 @@
         </DataGrid>
         <UniformGrid Grid.Row="1" Columns="2" HorizontalAlignment="Right" Margin="5"
                      Visibility="{Binding ReadOnly, Converter={StaticResource BoolToVis}}">
-            <Button Margin="5" Padding="7,2" Content="{lex:Loc StreamDeck:Dialogs:Ok}" IsDefault="True"
+            <Button Margin="5" Padding="7,2" Content="{lex:Loc ObsMultiview:Dialogs:Ok}" IsDefault="True"
                     Click="Ok_OnClick" />
-            <Button Margin="5" Padding="7,2" Content="{lex:Loc StreamDeck:Dialogs:Cancel}" IsCancel="True"
+            <Button Margin="5" Padding="7,2" Content="{lex:Loc ObsMultiview:Dialogs:Cancel}" IsCancel="True"
                     Click="Cancel_OnClick" />
         </UniformGrid>
     </Grid>

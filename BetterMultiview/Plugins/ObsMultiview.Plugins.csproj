@@ -16,6 +16,7 @@
     <PackageReference Include="KNX.net" Version="1.1.10" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
     <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
     <PackageReference Include="WPFLocalizeExtension" Version="3.9.0" />
   </ItemGroup>

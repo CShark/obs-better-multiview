@@ -10,7 +10,7 @@
         xmlns:services="clr-namespace:ObsMultiview.Services"
         mc:Ignorable="d"
         loc:LocalizeDictionary.DesignCulture="en"
-        loc:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        loc:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         loc:ResxLocalizationProvider.DefaultDictionary="MainWindow"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Stream Deck" Height="450" Width="800">

@@ -8,7 +8,7 @@
                              xmlns:local="clr-namespace:ObsMultiview.Plugins.qlc"
                              mc:Ignorable="d"
                              lex:LocalizeDictionary.DesignCulture="en"
-                             lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+                             lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
                              lex:ResxLocalizationProvider.DefaultDictionary="Qlc"
                              DataContext="{Binding RelativeSource={RelativeSource Self}}"
                              d:DesignHeight="450" d:DesignWidth="800">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,10 +13,11 @@ namespace ObsMultiview.Controls {
     /// Control for a single slot in the stream view
     /// </summary>
     public partial class SceneSlot : UserControl {
-        private readonly UserProfile.DSlot _slot;
+        private UserProfile.DSlot _slot;
         private readonly SceneService _scenes;
         private readonly StreamView _owner;
         private readonly PluginService _plugins;
+        private readonly ProfileWatcher _profile;
 
         public static readonly DependencyProperty UnconfiguredProperty = DependencyProperty.Register(
             nameof(Unconfigured), typeof(bool), typeof(SceneSlot), new PropertyMetadata(true));
@@ -49,11 +51,20 @@ namespace ObsMultiview.Controls {
             set { SetValue(NameProperty, value); }
         }
 
+        public static readonly DependencyProperty SlotConfiguringProperty = DependencyProperty.Register(
+            nameof(SlotConfiguring), typeof(bool), typeof(SceneSlot), new PropertyMetadata(default(bool)));
+
+        public bool SlotConfiguring {
+            get { return (bool) GetValue(SlotConfiguringProperty); }
+            set { SetValue(SlotConfiguringProperty, value); }
+        }
+
         public SceneSlot(UserProfile.DSlot slot, StreamView owner) {
             _slot = slot;
             _owner = owner;
             _scenes = App.Container.Resolve<SceneService>();
             _plugins = App.Container.Resolve<PluginService>();
+            _profile = App.Container.Resolve<ProfileWatcher>();
             LoadSlot();
 
             InitializeComponent();
@@ -102,23 +113,57 @@ namespace ObsMultiview.Controls {
 
             _plugins.PausePlugins(null, true);
 
+            SlotConfiguring = true;
             if (config.ShowDialog() == true) {
                 LoadSlot();
                 _owner.PrepareObsMultiview();
             }
 
+            SlotConfiguring = false;
             _plugins.PausePlugins(null, false);
         }
 
         private void SceneSlot_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            if (!Unconfigured)
+            if (!Unconfigured) {
                 _scenes.ActivatePreview(_slot.Id);
+
+                var data = new DataObject();
+                data.SetData(typeof(SceneSlot), this);
+                DragDrop.DoDragDrop(this, data, DragDropEffects.Move);
+            }
         }
 
         private void SceneSlot_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
             if (!Unconfigured) {
                 _scenes.SwitchLive();
                 e.Handled = true;
+            }
+        }
+
+        private void SceneSlot_OnDrop(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(typeof(SceneSlot))) {
+                var data = e.Data.GetData(typeof(SceneSlot));
+
+                if (data is SceneSlot slot && slot != this) {
+                    var localSlot = _slot;
+                    var remSlot = slot._slot;
+                    
+                    _profile.SwapSlots(localSlot.Id, remSlot.Id);
+                }
+            }
+        }
+
+        private void SceneSlot_OnDragOver(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(typeof(SceneSlot))) {
+                var data = e.Data.GetData(typeof(SceneSlot));
+
+                if (data == this) {
+                    e.Effects = DragDropEffects.None;
+                    e.Handled = true;
+                }
+            } else {
+                e.Effects = DragDropEffects.None;
+                e.Handled = false;
             }
         }
     }

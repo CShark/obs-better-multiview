@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}, Path=Config}"
         Title="{lex:Loc ProfileConfig}" Height="185" Width="307">

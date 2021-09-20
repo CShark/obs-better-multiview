@@ -10,7 +10,7 @@
         MinWidth="345"
         WindowStartupLocation="CenterOwner"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="{lex:Loc SlotConfig}" Height="450" Width="345">

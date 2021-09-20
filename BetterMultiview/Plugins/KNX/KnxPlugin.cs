@@ -8,7 +8,7 @@ namespace ObsMultiview.Plugins.KNX {
     /// <summary>
     /// A plugin to talk to a KNX/IP Interface
     /// </summary>
-    public class KnxPlugin : PluginBase {
+    class KnxPlugin : PluginBase {
         public override string Name => "KNX";
         public override string Author => "Nathanael Schneider";
         public override string Version => "1.0";
