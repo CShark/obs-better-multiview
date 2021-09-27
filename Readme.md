@@ -34,6 +34,7 @@ Supports sending messages to a KNX/IP interface. Requires a KNX/IP interface in 
 
 This Plugin allows you to send arbitrary messages to a device on the KNX bus system. You have to configure available groups and their datapoint types by hand before using them, currently Datapoint 1.* (boolean) and 5.* (relative) are supported. You can then define actions for the entry and exit of a scene slot.
 
-## Planned Plugins
 ### PELCO-D
 A popular PTZ-protocol for cameras via RS485. Requires a RS485 dongle.
+
+This plugin allows you to recall presets programmed in cameras that support the PelcoD-Protocol. Usually requires a PelcoD-Capable camera console to program the presets first as well as an RS485-dongle.

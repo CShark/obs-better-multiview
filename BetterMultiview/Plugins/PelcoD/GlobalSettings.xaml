@@ -1,0 +1,42 @@
+﻿<plugins:SettingsControl x:TypeArguments="local:PelcoSettings" x:Class="ObsMultiview.Plugins.PelcoD.GlobalSettings"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:local="clr-namespace:ObsMultiview.Plugins.PelcoD"
+                         xmlns:plugins="clr-namespace:ObsMultiview.Plugins"
+                         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+                         lex:LocalizeDictionary.DesignCulture="en"
+                         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
+                         lex:ResxLocalizationProvider.DefaultDictionary="PelcoD"
+                         mc:Ignorable="d"
+                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                         Background="White"
+                         Height="350" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{lex:Loc Port}" Margin="5" VerticalAlignment="Center" />
+        <ComboBox Grid.Column="1" Margin="5" SelectedItem="{Binding Settings.ComPort}" ItemsSource="{Binding AvailablePorts}"/>
+        <TextBlock Text="{lex:Loc Baudrate}" Grid.Column="2" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Column="4" Margin="5" Text="{Binding Settings.BaudRate}"/>
+
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="4" AutoGenerateColumns="False" ItemsSource="{Binding Settings.Presets}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding CameraID}" Header="{lex:Loc CameraID}" Width="100"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding PresetID}" Header="{lex:Loc PresetID}" Width="100"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Name}" Header="{lex:Loc Name}" Width="*"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</plugins:SettingsControl>

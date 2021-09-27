@@ -9,7 +9,7 @@
                          xmlns:converters="clr-namespace:ObsMultiview.Plugins.Converters"
                          mc:Ignorable="d"
                          lex:LocalizeDictionary.DesignCulture="en"
-                         lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck.Plugins"
+                         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
                          lex:ResxLocalizationProvider.DefaultDictionary="Keyboard"
                          Background="White"
                          DataContext="{Binding RelativeSource={RelativeSource Self}}"

@@ -36,6 +36,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Update="Strings\PelcoD.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PelcoD.resx</DependentUpon>
+    </Compile>
     <Compile Update="Strings\Qlc.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -51,6 +56,10 @@
     <EmbeddedResource Update="Strings\KNX.resx">
       <LastGenOutput>KNX.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Strings\PelcoD.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PelcoD.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Strings\Qlc.resx">
       <Generator>ResXFileCodeGenerator</Generator>
