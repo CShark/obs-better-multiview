@@ -13,6 +13,7 @@
         lex:ResxLocalizationProvider.DefaultDictionary="MainWindow"
         ResizeMode="NoResize"
         AllowsTransparency="True"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         Background="#01FFFFFF"
         Title="Stream View" Height="1080" Width="1920 ">
     <Window.Resources>

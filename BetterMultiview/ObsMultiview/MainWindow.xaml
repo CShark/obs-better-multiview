@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:ObsMultiview.Converters"
         xmlns:services="clr-namespace:ObsMultiview.Services"
         mc:Ignorable="d"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         loc:LocalizeDictionary.DesignCulture="en"
         loc:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         loc:ResxLocalizationProvider.DefaultDictionary="MainWindow"

@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         lex:LocalizeDictionary.DesignCulture="en"
         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"

@@ -8,6 +8,7 @@
         xmlns:converters="clr-namespace:ObsMultiview.Plugins.Converters"
         xmlns:knx="clr-namespace:ObsMultiview.Plugins.KNX"
         mc:Ignorable="d"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         lex:LocalizeDictionary.DesignCulture="en"
         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
         lex:ResxLocalizationProvider.DefaultDictionary="KNX"

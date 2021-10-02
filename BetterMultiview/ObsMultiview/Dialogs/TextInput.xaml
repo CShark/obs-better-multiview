@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         lex:LocalizeDictionary.DesignCulture="en"

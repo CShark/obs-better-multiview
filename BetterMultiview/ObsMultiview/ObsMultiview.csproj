@@ -5,6 +5,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -13,6 +14,11 @@
     <DebugSymbols>true</DebugSymbols>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\Icon.ico" />
+    <None Remove="Images\Icon.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.2.0" />
@@ -29,6 +35,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\obs-websocket-dotnet\obs-websocket-dotnet\obs-websocket-dotnet.csproj" />
     <ProjectReference Include="..\Plugins\ObsMultiview.Plugins.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Icon.ico" />
+    <Resource Include="Images\Icon.png" />
   </ItemGroup>
 
   <ItemGroup>

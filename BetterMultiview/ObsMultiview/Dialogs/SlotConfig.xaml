@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ObsMultiview"
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
+        Icon="pack://application:,,,/ObsMultiview;component/Images/Icon.png"
         Closing="SlotConfig_OnClosing"
         MinWidth="345"
         WindowStartupLocation="CenterOwner"

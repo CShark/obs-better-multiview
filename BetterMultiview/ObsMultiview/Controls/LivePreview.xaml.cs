@@ -30,8 +30,7 @@ namespace ObsMultiview.Controls {
                 }
 
 
-                var currentAssembly = Assembly.GetEntryAssembly();
-                var currentDirectory = new FileInfo(currentAssembly.Location).DirectoryName;
+                var currentDirectory = Directory.GetCurrentDirectory();
                 // Default installation path of VideoLAN.LibVLC.Windows
                 var libDirectory = new DirectoryInfo(Path.Combine(currentDirectory, "libvlc",
                     IntPtr.Size == 4 ? "win-x86" : "win-x64"));
