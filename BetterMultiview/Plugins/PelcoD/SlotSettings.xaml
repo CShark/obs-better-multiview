@@ -14,12 +14,7 @@
                              lex:ResxLocalizationProvider.DefaultDictionary="PelcoD"
                              Height="26" d:DesignWidth="800">
     <Grid>
-        <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding Settings.Preset}" >
-            <ComboBox.ItemTemplate>
-                <DataTemplate DataType="local:Preset">
-                    <TextBlock Text="{Binding Name}"></TextBlock>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding Settings.Preset}" IsTextSearchEnabled="True"
+                  TextSearch.TextPath="Name" DisplayMemberPath="Name" IsEnabled="true" />
     </Grid>
 </plugins:SlotSettingsControl>

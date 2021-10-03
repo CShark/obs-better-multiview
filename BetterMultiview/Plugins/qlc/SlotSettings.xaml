@@ -15,7 +15,7 @@
     <StackPanel>
         <TextBlock Text="{lex:Loc AddFunction}" />
         <ComboBox ItemsSource="{Binding Plugin.Functions}" SelectionChanged="AddFkt_OnSelectionChanged"
-                  SelectedItem="{Binding SelectedFunction}">
+                  SelectedItem="{Binding SelectedFunction}" IsEnabled="True" IsTextSearchEnabled="True" TextSearch.TextPath="Name">
             <ComboBox.Resources>
                 <Style TargetType="ComboBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />

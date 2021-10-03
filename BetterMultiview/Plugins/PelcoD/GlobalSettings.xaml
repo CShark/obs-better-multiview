@@ -33,8 +33,8 @@
 
         <DataGrid Grid.Row="1" Grid.ColumnSpan="4" AutoGenerateColumns="False" ItemsSource="{Binding Settings.Presets}">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding CameraID}" Header="{lex:Loc CameraID}" Width="100"></DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding PresetID}" Header="{lex:Loc PresetID}" Width="100"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding CameraID}" Header="{lex:Loc CameraId}" Width="100"></DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding PresetID}" Header="{lex:Loc PresetId}" Width="100"></DataGridTextColumn>
                 <DataGridTextColumn Binding="{Binding Name}" Header="{lex:Loc Name}" Width="*"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
