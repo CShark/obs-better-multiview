@@ -60,6 +60,11 @@ namespace ObsMultiview.Data {
         public HashSet<string> HiddenPlugins { get; set; } = new();
 
         /// <summary>
+        /// Whether to enable experimental plugins
+        /// </summary>
+        public bool ExperimentalPlugins { get; set; } = false;
+
+        /// <summary>
         /// A list of global plugin settings
         /// </summary>
         public Dictionary<string, JObject> PluginSettings { get; set; } = new();

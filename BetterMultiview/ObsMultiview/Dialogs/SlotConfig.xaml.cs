@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Autofac;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObsMultiview.Data;
@@ -16,6 +18,8 @@ namespace ObsMultiview.Dialogs {
     /// Config Dialog for a scene slot
     /// </summary>
     public partial class SlotConfig : Window {
+        private readonly ILogger _logger;
+
         public static readonly DependencyProperty SlotProperty = DependencyProperty.Register(
             nameof(Slot), typeof(UserProfile.DSlot), typeof(SlotConfig),
             new PropertyMetadata(default(UserProfile.DSlot)));
@@ -47,6 +51,7 @@ namespace ObsMultiview.Dialogs {
 
             _obs = App.Container.Resolve<ObsWatchService>();
             _plugins = App.Container.Resolve<PluginService>();
+            _logger = App.Container.Resolve<ILogger<SlotConfig>>();
 
             var scenes = _obs.WebSocket.GetSceneList().Scenes.Select(x => x.Name)
                 .Where(x => x != "multiview" && x != "preview");
@@ -64,7 +69,7 @@ namespace ObsMultiview.Dialogs {
                 title.Style = TryFindResource("Title") as Style;
                 title.HorizontalAlignment = HorizontalAlignment.Stretch;
                 expander.Header = title;
-                
+
                 var slotSettings = plugin.Plugin.GetSlotSettings(slot.Id);
                 if (slotSettings == null) return;
 
@@ -84,7 +89,11 @@ namespace ObsMultiview.Dialogs {
             DialogResult = true;
 
             foreach (var item in _pluginSettings) {
-                item.settings.WriteSettings();
+                try {
+                    item.settings.WriteSettings();
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "Failed to write slot settings for " + item.plugin.Name);
+                }
             }
 
             Close();

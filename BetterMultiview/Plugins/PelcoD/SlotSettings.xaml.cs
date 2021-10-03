@@ -36,7 +36,7 @@ namespace ObsMultiview.Plugins.PelcoD {
         }
         
         public override void WriteSettings() {
-            if (Settings.Preset.CameraID == 0) {
+            if (Settings.Preset?.CameraID == 0) {
                 Settings.Preset = null;
             }
             base.WriteSettings();

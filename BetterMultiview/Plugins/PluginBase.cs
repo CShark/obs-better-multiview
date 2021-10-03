@@ -148,6 +148,11 @@ namespace ObsMultiview.Plugins {
         public virtual bool HasSlotSettings { get; } = false;
 
         /// <summary>
+        /// Whether this plugin is in experimental stages
+        /// </summary>
+        public virtual bool IsExperimental { get; } = false;
+
+        /// <summary>
         /// A facade to interface with the normal application
         /// </summary>
         protected CommandFacade CommandFacade { get; private set; }

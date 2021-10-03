@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -197,7 +198,11 @@ namespace ObsMultiview {
                 var window = new PluginConfig(ctrl);
                 window.Owner = this;
                 if (window.ShowDialog() == true) {
-                    ctrl.WriteSettings();
+                    try {
+                        ctrl.WriteSettings();
+                    } catch (Exception ex) {
+                        _logger.LogError(ex, "Failed to save global plugin settings for " + info.Plugin.Name);
+                    }
                 }
 
                 _plugins.PausePlugins(info, false);

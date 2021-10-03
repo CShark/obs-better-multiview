@@ -16,6 +16,8 @@ namespace ObsMultiview.Plugins.KNX {
         public override bool HasSettings => true;
         public override bool HasSlotSettings => true;
 
+        public override bool IsExperimental => true;
+
         private KnxConnection _knx;
 
         public override void OnEnabled() {

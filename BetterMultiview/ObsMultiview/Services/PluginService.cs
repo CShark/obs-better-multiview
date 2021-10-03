@@ -128,6 +128,11 @@ namespace ObsMultiview.Services {
                         if (plugin != null) {
                             _logger.LogDebug("Found Plugin " + plugin.Name);
 
+                            if (!_settings.ExperimentalPlugins && plugin.IsExperimental) {
+                                _logger.LogInformation("Plugin is in experimental and therefore disabled");
+                                continue;
+                            }
+
                             if (_settings.HiddenPlugins.Contains(plugin.Name)) {
                                 _logger.LogDebug("Plugin is hidden");
                                 continue;
