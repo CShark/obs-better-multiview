@@ -14,7 +14,7 @@
                              lex:ResxLocalizationProvider.DefaultDictionary="PelcoD"
                              Height="26" d:DesignWidth="800">
     <Grid>
-        <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding Settings.Preset}" IsTextSearchEnabled="True"
-                  TextSearch.TextPath="Name" DisplayMemberPath="Name" IsEnabled="true" />
+        <ComboBox ItemsSource="{Binding Presets, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" DataContext="{Binding Settings}" SelectedItem="{Binding Preset}" IsTextSearchEnabled="True"
+                  TextSearch.TextPath="Name" DisplayMemberPath="Name" x:Name="PelcoConfig" IsEditable="True"/>
     </Grid>
 </plugins:SlotSettingsControl>

@@ -34,7 +34,14 @@ namespace ObsMultiview.Plugins.PelcoD {
                 new Preset {CameraID = 0, PresetID = 0, Name = Localizer.Localize<string>("PelcoD", "NoCamera")});
             InitializeComponent();
         }
-        
+
+        public override void FetchSettings() {
+            base.FetchSettings();
+            var idx = Presets.FindIndex(x=>x.CameraID == Settings.Preset?.CameraID && x.PresetID == Settings.Preset?.PresetID);
+            if (idx < 0) idx = 0;
+            PelcoConfig.SelectedItem = Presets[idx];
+        }
+
         public override void WriteSettings() {
             if (Settings.Preset?.CameraID == 0) {
                 Settings.Preset = null;
