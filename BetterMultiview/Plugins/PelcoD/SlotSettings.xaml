@@ -15,6 +15,6 @@
                              Height="26" d:DesignWidth="800">
     <Grid>
         <ComboBox ItemsSource="{Binding Presets, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" DataContext="{Binding Settings}" SelectedItem="{Binding Preset}" IsTextSearchEnabled="True"
-                  TextSearch.TextPath="Name" DisplayMemberPath="Name" x:Name="PelcoConfig" IsEditable="True"/>
+                  TextSearch.TextPath="Name" DisplayMemberPath="Name" x:Name="PelcoConfig" IsEditable="False"/>
     </Grid>
 </plugins:SlotSettingsControl>
