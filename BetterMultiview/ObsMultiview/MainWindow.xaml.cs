@@ -28,7 +28,7 @@ namespace ObsMultiview {
             nameof(ObsRunning), typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
 
         public bool ObsRunning {
-            get { return (bool) GetValue(ObsRunningProperty); }
+            get { return (bool)GetValue(ObsRunningProperty); }
             set { SetValue(ObsRunningProperty, value); }
         }
 
@@ -37,7 +37,7 @@ namespace ObsMultiview {
             new PropertyMetadata(default(ProfileManager)));
 
         public ProfileManager ProfileManager {
-            get { return (ProfileManager) GetValue(ProfileManagerProperty); }
+            get { return (ProfileManager)GetValue(ProfileManagerProperty); }
             set { SetValue(ProfileManagerProperty, value); }
         }
 
@@ -45,7 +45,7 @@ namespace ObsMultiview {
             nameof(SelectedProfile), typeof(string), typeof(MainWindow), new PropertyMetadata(default(string)));
 
         public string SelectedProfile {
-            get { return (string) GetValue(SelectedProfileProperty); }
+            get { return (string)GetValue(SelectedProfileProperty); }
             set { SetValue(SelectedProfileProperty, value); }
         }
 
@@ -54,7 +54,7 @@ namespace ObsMultiview {
             new PropertyMetadata(default(ObservableCollection<MonitorInfo>)));
 
         public ObservableCollection<MonitorInfo> Screens {
-            get { return (ObservableCollection<MonitorInfo>) GetValue(ScreensProperty); }
+            get { return (ObservableCollection<MonitorInfo>)GetValue(ScreensProperty); }
             set { SetValue(ScreensProperty, value); }
         }
 
@@ -62,7 +62,7 @@ namespace ObsMultiview {
             nameof(ActiveScreen), typeof(int), typeof(MainWindow), new PropertyMetadata(default(int)));
 
         public int ActiveScreen {
-            get { return (int) GetValue(ActiveScreenProperty); }
+            get { return (int)GetValue(ActiveScreenProperty); }
             set { SetValue(ActiveScreenProperty, value); }
         }
 
@@ -71,7 +71,7 @@ namespace ObsMultiview {
             new PropertyMetadata(default(IReadOnlyCollection<PluginInfo>)));
 
         public IReadOnlyCollection<PluginInfo> Plugins {
-            get { return (IReadOnlyCollection<PluginInfo>) GetValue(PluginsProperty); }
+            get { return (IReadOnlyCollection<PluginInfo>)GetValue(PluginsProperty); }
             set { SetValue(PluginsProperty, value); }
         }
 
@@ -83,7 +83,21 @@ namespace ObsMultiview {
             ProfileManager = App.Container.Resolve<ProfileManager>();
 
             ProfileManager.ProfileChanged += () => {
-                Dispatcher.Invoke(() => { SelectedProfile = ProfileManager.ActiveProfile?.Name ?? ""; });
+                Dispatcher.Invoke(() => {
+                    SelectedProfile = ProfileManager.ActiveProfile?.Name ?? "";
+
+                    if (ProfileManager.ActiveProfile != null) {
+                        if (_view == null && ObsRunning) {
+                            _view = new StreamView();
+                            _view.Show();
+                        }
+                    } else {
+                        if (_view != null) { 
+                            _view.Close();
+                            _view = null;   
+                        }
+                    }
+                });
             };
 
             _watcher = App.Container.Resolve<ObsWatchService>();
@@ -91,15 +105,18 @@ namespace ObsMultiview {
             _watcher.ObsConnected += () => {
                 Dispatcher.Invoke(() => {
                     ObsRunning = true;
-                    _view = new StreamView();
-                    _view.Show();
+                    if (ProfileManager.ActiveProfile != null) {
+                        _view = new StreamView();
+                        _view.Show();
+                    }
                 });
             };
 
             _watcher.ObsDisconnected += () => {
                 Dispatcher.Invoke(() => {
                     ObsRunning = false;
-                    _view.Close();
+                    _view?.Close();
+                    _view = null;
                 });
             };
 
@@ -183,7 +200,7 @@ namespace ObsMultiview {
         }
 
         private void PluginSettings_OnClick(object sender, RoutedEventArgs e) {
-            var info = ((Button) sender).DataContext as PluginInfo;
+            var info = ((Button)sender).DataContext as PluginInfo;
             var ctrl = info.Plugin.GetGlobalSettings();
             var config = new JObject();
 

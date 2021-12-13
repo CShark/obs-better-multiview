@@ -101,6 +101,7 @@ namespace ObsMultiview.Services {
                 _logger.LogInformation("Deleting active profile");
                 File.Delete(Path.Combine("Profiles", ActiveProfile.Name + ".json"));
                 ActiveProfile = null;
+                Refresh();
                 OnProfileChanged();
             }
         }
@@ -118,6 +119,7 @@ namespace ObsMultiview.Services {
                 SaveProfile();
                 Refresh();
                 ActiveProfile = new UserProfile {Name = name};
+                OnProfileChanged();
                 return true;
             }
 
