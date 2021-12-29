@@ -74,17 +74,27 @@
             <RowDefinition Height="4*" />
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Template="{DynamicResource ButtonTemplate1}" HorizontalAlignment="Left" VerticalAlignment="Top"
-                    FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="10" Click="ProfileSettings_OnClick">
-                &#xf8b0;
-            </Button>
+            <Grid Grid.Column="0" Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Rectangle Fill="#29FFFFFF"></Rectangle>
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Template="{DynamicResource ButtonTemplate1}" 
+                            FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="5" Click="ProfileSettings_OnClick">
+                        &#xf8b0;
+                    </Button>
+                    <TextBlock Text="{Binding PresetName}" VerticalAlignment="Center" Foreground="White"></TextBlock>
+                </WrapPanel>
+            </Grid>
             <TextBlock Grid.Column="2" Text="{lex:Loc VlcNotFound}" VerticalAlignment="Center"
                        HorizontalAlignment="Center" FontSize="26" Foreground="OrangeRed" />
             <controls:LivePreview Grid.Column="2" Margin="4,0" x:Name="LivePreview" />

@@ -30,6 +30,14 @@ namespace ObsMultiview {
 
         public bool IsClosed { get; private set; }
 
+        public static readonly DependencyProperty PresetNameProperty = DependencyProperty.Register(
+            nameof(PresetName), typeof(string), typeof(StreamView), new PropertyMetadata(default(string)));
+
+        public string PresetName {
+            get { return (string)GetValue(PresetNameProperty); }
+            set { SetValue(PresetNameProperty, value); }
+        }
+
         public StreamView() {
             InitializeComponent();
             Closed += (sender, args) => IsClosed = true;
@@ -112,6 +120,7 @@ namespace ObsMultiview {
 
         private void SceneCollectionChanged(UserProfile.DObsProfile profile) {
             // Reconfigure view
+            Dispatcher.Invoke(() => PresetName = profile.Id);
             var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
             Dispatcher.InvokeAsync(() => {

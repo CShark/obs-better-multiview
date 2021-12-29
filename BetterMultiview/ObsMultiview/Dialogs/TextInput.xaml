@@ -9,10 +9,10 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         lex:LocalizeDictionary.DesignCulture="en"
-        lex:ResxLocalizationProvider.DefaultAssembly="StreamDeck"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="{Binding DialogTitle}" Height="207" Width="800">
+        Title="{Binding DialogTitle}" Height="188" Width="371">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
