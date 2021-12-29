@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
@@ -24,6 +25,8 @@ namespace ObsMultiview {
         private readonly Win32Interop _win32;
         private readonly SceneService _scenes;
         private readonly ILogger _logger;
+
+        private readonly Dictionary<UserProfile.DSlot, SceneSlot> _sceneSlots = new();
 
         public bool IsClosed { get; private set; }
 
@@ -114,6 +117,7 @@ namespace ObsMultiview {
             Dispatcher.InvokeAsync(() => {
                 _logger.LogInformation("Recalculating slot layout");
                 SlotGrid.Children.Clear();
+                _sceneSlots.Clear();
 
                 if (profile != null) {
                     SlotGrid.Rows = profile.SceneView.Rows;
@@ -127,10 +131,11 @@ namespace ObsMultiview {
                             profile.SceneView.Slots.Add(slot);
                         }
 
-                        SlotGrid.Children.Add(new SceneSlot(slot, this));
+                        _sceneSlots.Add(slot, new SceneSlot(slot, this));
+                        SlotGrid.Children.Add(_sceneSlots[slot]);
                     }
                 }
-            });
+            }).Wait();
 
             PrepareObsPreview();
             PrepareObsMultiview();
@@ -148,12 +153,17 @@ namespace ObsMultiview {
             var preview = slot?.Obs.Scene;
             if (items.Count != 1 || items[0].SourceName != preview) {
                 foreach (var item in items) {
-                    _obs.WebSocket.DeleteSceneItem(new SceneItemStub {SourceName = item.SourceName, ID = item.ItemId},
+                    _obs.WebSocket.DeleteSceneItem(new SceneItemStub { SourceName = item.SourceName, ID = item.ItemId },
                         "preview");
                 }
 
-                if (!string.IsNullOrEmpty(preview))
-                    _obs.WebSocket.AddSceneItem("preview", preview);
+                if (!string.IsNullOrEmpty(preview)) {
+                    if (_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == preview)) {
+                        _obs.WebSocket.AddSceneItem("preview", preview);
+                    } else {
+                        _sceneSlots[slot].IsInvalid = true;
+                    }
+                }
             }
         }
 
@@ -167,7 +177,7 @@ namespace ObsMultiview {
             //clear items
             var items = _obs.WebSocket.GetSceneItemList("multiview");
             foreach (var item in items) {
-                _obs.WebSocket.DeleteSceneItem(new SceneItemStub {SourceName = item.SourceName, ID = item.ItemId},
+                _obs.WebSocket.DeleteSceneItem(new SceneItemStub { SourceName = item.SourceName, ID = item.ItemId },
                     "multiview");
             }
 
@@ -175,9 +185,9 @@ namespace ObsMultiview {
             var videoInfo = _obs.WebSocket.GetVideoInfo();
             var offsetTop = videoInfo.BaseHeight / 3f;
             var height = videoInfo.BaseHeight / 3f * 2f;
-            var width = (float) videoInfo.BaseWidth;
-            var scaleFromCanvas = new Vector2((float) (ActualWidth / (float) videoInfo.BaseWidth),
-                (float) (ActualHeight / (float) videoInfo.BaseHeight));
+            var width = (float)videoInfo.BaseWidth;
+            var scaleFromCanvas = new Vector2((float)(ActualWidth / (float)videoInfo.BaseWidth),
+                (float)(ActualHeight / (float)videoInfo.BaseHeight));
 
             // Add preview
             {
@@ -196,14 +206,22 @@ namespace ObsMultiview {
 
             // Add slots
             if (_watcher.ActiveProfile != null) {
-                var multiview = _obs.WebSocket.GetSceneList().Scenes.First(x => x.Name == "multiview");
+                var scenes = _obs.WebSocket.GetSceneList().Scenes.Select(x => x.Name);
+                var multiview = scenes.First(x => x == "multiview");
 
                 var rows = _watcher.ActiveProfile.SceneView.Rows;
                 var cols = _watcher.ActiveProfile.SceneView.Columns;
 
                 for (var i = 0; i < _watcher.ActiveProfile.SceneView.Slots.Count; i++) {
                     var slot = _watcher.ActiveProfile.SceneView.Slots[i];
+                    _sceneSlots[slot].IsInvalid = false;
+
                     if (slot.Obs.Scene != null) {
+                        if (!scenes.Contains(slot.Obs.Scene)) {
+                            _sceneSlots[slot].IsInvalid = true;
+                            continue;
+                        }
+
                         var id = _obs.WebSocket.AddSceneItem("multiview", slot.Obs.Scene);
                         var props = _obs.WebSocket.GetSceneItemProperties(id, "multiview");
 
@@ -222,7 +240,7 @@ namespace ObsMultiview {
             // check for obs preview
             WindowActivated();
         }
-        
+
         private void ProfileSettings_OnClick(object sender, RoutedEventArgs e) {
             var settings = JObject.FromObject(_watcher.ActiveProfile.SceneView);
             var id = _watcher.ActiveProfile.Id;

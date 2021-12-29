@@ -103,8 +103,13 @@ namespace ObsMultiview.Services {
         /// <param name="slot"></param>
         private void ApplyScene(UserProfile.DSlot slot) {
             _logger.LogDebug($"Applying scene {slot?.Id}");
+            
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
-                _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
+                if (_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == slot.Obs.Scene)) {
+                    _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
+                } else {
+                    _logger.LogError("Scene does not exist in OBS");
+                }
             }
 
             foreach (var plugin in

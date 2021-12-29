@@ -19,6 +19,10 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
         
+<Border Background="#4CFF0000" Visibility="{Binding IsInvalid, Converter={StaticResource BoolToVis}}">
+            <TextBlock FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="150" Foreground="DarkRed">&#xE7BA;</TextBlock>
+</Border>
+
         <Rectangle Fill="#254682B4" Visibility="{Binding Unconfigured, Converter={StaticResource BoolToVis}}" />
         <Rectangle Stroke="DarkGray" StrokeThickness="6" Margin="-6" />
         <Rectangle Stroke="ForestGreen" StrokeThickness="7" Margin="-3"

@@ -43,6 +43,14 @@ namespace ObsMultiview.Controls {
             set { SetValue(ActiveLiveProperty, value); }
         }
 
+        public static readonly DependencyProperty IsInvalidProperty = DependencyProperty.Register(
+            nameof(IsInvalid), typeof(bool), typeof(SceneSlot), new PropertyMetadata(default(bool)));
+
+        public bool IsInvalid {
+            get { return (bool)GetValue(IsInvalidProperty); }
+            set { SetValue(IsInvalidProperty, value); }
+        }
+
         public static readonly DependencyProperty NameProperty = DependencyProperty.Register(
             nameof(Name), typeof(string), typeof(SceneSlot), new PropertyMetadata(default(string)));
 
