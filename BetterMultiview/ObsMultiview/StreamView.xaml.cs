@@ -97,7 +97,10 @@ namespace ObsMultiview {
             _logger.LogDebug("Activating OBS scene projector");
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
-                _obs.WebSocket.OpenProjector("scene", _settings.Screen, null, "multiview");
+                var obsScreen = _settings.ObsScreenOverride;
+                if (obsScreen < 0) obsScreen = _settings.Screen;
+
+                _obs.WebSocket.OpenProjector("scene", obsScreen, null, "multiview");
                 window = _win32.GetObsWindows("- multiview").FirstOrDefault();
                 _win32.HideAltTab(window.handle);
             }

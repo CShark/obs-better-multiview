@@ -40,6 +40,11 @@ namespace ObsMultiview.Data {
         public int Screen { get; set; }
 
         /// <summary>
+        /// Overwrite the index in OBS if it does not match the selected index
+        /// </summary>
+        public int ObsScreenOverride { get; set; }
+
+        /// <summary>
         /// Connection infos to OBS Websocket
         /// </summary>
         public DConnection Connection { get; set; }
