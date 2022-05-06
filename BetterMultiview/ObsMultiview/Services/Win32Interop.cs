@@ -276,8 +276,9 @@ namespace ObsMultiview.Services {
                     new Point(src.modeInfo.sourceMode.position.x, src.modeInfo.sourceMode.position.y)));
             }
 
+            var primary = list.First(x => x.Offset.X == 0 && x.Offset.Y == 0);
 
-            return list;
+            return Enumerable.Repeat(primary, 1).Concat(list.Where(x => x != primary));
         }
 
         #endregion

@@ -1,0 +1,16 @@
+﻿<Window x:Class="ObsMultiview.Dialogs.CopySetup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ObsMultiview.Dialogs"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        mc:Ignorable="d"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
+        Title="CopySetup" Height="126" Width="311">
+    <Grid>
+
+    </Grid>
+</Window>
