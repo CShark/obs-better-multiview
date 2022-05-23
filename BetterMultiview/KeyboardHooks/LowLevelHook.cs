@@ -38,6 +38,9 @@ namespace KeyboardHooks {
         private IntPtr _hook;
         private LowLevelKeyboardProc _handler;
         private GCHandle _gcHandler;
+        
+        private int _lastKey;
+        private DateTime _lastPress;
 
         public LowLevelHook() {
             // For Win32 Api calls, delegates need to be at a fixed position in memory
@@ -70,6 +73,14 @@ namespace KeyboardHooks {
             if (code >= 0) {
                 var args = new KeyEventArgs(Marshal.ReadInt32(lParam),
                     param == (IntPtr) WM_KEYDOWN || param == (IntPtr) WM_SYSKEYDOWN, null, true);
+
+                if (_lastKey == args.KeyCode && (DateTime.Now - _lastPress).TotalMilliseconds < 100) {
+                    Console.WriteLine("Double detection");
+                    return CallNextHookEx(_hook, code, param, lParam);
+                }
+
+                _lastKey = args.KeyCode;
+                _lastPress = DateTime.Now;
 
                 OnKeyEvent(args);
 

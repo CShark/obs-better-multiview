@@ -97,12 +97,12 @@ namespace ObsMultiview {
             _logger.LogDebug("Activating OBS scene projector");
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
-                var obsScreen = _settings.ObsScreenOverride;
-                if (obsScreen < 0) obsScreen = _settings.Screen;
-
-                _obs.WebSocket.OpenProjector("scene", obsScreen, null, "multiview");
+                _obs.WebSocket.OpenProjector("scene", 0, null, "multiview");
                 window = _win32.GetObsWindows("- multiview").FirstOrDefault();
                 _win32.HideAltTab(window.handle);
+
+                var monitor = _win32.GetMonitors().ToArray()[_settings.Screen];
+                _win32.PlaceWindowOnScreen(window.handle, monitor);
             }
 
             _win32.ShowWindowBehind(window.handle, this);
@@ -146,6 +146,12 @@ namespace ObsMultiview {
                         _sceneSlots.Add(slot, new SceneSlot(slot, this));
                         SlotGrid.Children.Add(_sceneSlots[slot]);
                     }
+                }
+
+                var invalid = profile.SceneView.Slots.Where(x => !_sceneSlots.Keys.Contains(x)).ToList();
+
+                foreach (var inv in invalid) {
+                    profile.SceneView.Slots.Remove(inv);
                 }
             }).Wait();
 

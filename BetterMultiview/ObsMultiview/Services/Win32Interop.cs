@@ -184,6 +184,7 @@ namespace ObsMultiview.Services {
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_NOSIZE = 0x0001;
         private const uint SWP_NOMOVE = 0x0002;
+        private const uint SWP_NOZORDER = 0x0004;
 
         [DllImport("user32.dll")]
         private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
@@ -232,6 +233,11 @@ namespace ObsMultiview.Services {
             }
         }
 
+        public void PlaceWindowOnScreen(IntPtr handle, MonitorInfo monitor) {
+            SetWindowPos(handle, IntPtr.Zero, (int)monitor.Offset.X, (int)monitor.Offset.Y, (int)monitor.Size.X, (int)monitor.Size.Y,
+                SWP_NOZORDER | SWP_NOACTIVATE);
+        }
+
         public void CloseWindow(IntPtr window) {
             SendMessage(window, WM_CLOSE, 0, null);
         }
@@ -260,6 +266,7 @@ namespace ObsMultiview.Services {
 
             QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, ref pathSize, pathInfo, ref modeSize, modeInfo, IntPtr.Zero);
 
+            pathInfo = pathInfo.OrderBy(x => x.targetInfo.id).ToArray();
             foreach (var path in pathInfo) {
                 var src = modeInfo.First(x => x.id == path.sourceInfo.id);
                 var target = modeInfo.First(x => x.id == path.targetInfo.id);
@@ -275,6 +282,7 @@ namespace ObsMultiview.Services {
                     new Point(src.modeInfo.sourceMode.width, src.modeInfo.sourceMode.height),
                     new Point(src.modeInfo.sourceMode.position.x, src.modeInfo.sourceMode.position.y)));
             }
+
 
             var primary = list.First(x => x.Offset.X == 0 && x.Offset.Y == 0);
 
