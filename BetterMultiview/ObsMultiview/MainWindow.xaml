@@ -144,15 +144,6 @@
                     &#xe727;
                 </Button>
             </Grid>
-            <TextBlock Text="{loc:Loc Profile}"></TextBlock>
-            <ComboBox Margin="5" ItemsSource="{Binding ProfileManager.Profiles}"
-                      SelectionChanged="Profile_OnSelectionChanged"
-                      SelectedItem="{Binding SelectedProfile,Mode=TwoWay}" />
-            <UniformGrid Columns="3" Margin="3">
-                <Button Margin="2" Padding="2" Click="CreateProfile_OnClick" Content="{loc:Loc CreateProfile}"></Button>
-                <Button Margin="2" Padding="2" Click="RenameProfile_OnClick" Content="{loc:Loc RenameProfile}"></Button>
-                <Button Margin="2" Padding="2" Click="DeleteProfile_OnClick" Content="{loc:Loc DeleteProfile}"></Button>
-            </UniformGrid>
         </StackPanel>
     </Grid>
 </Window>

@@ -149,47 +149,7 @@ namespace ObsMultiview {
             _plugins.Scan();
             Plugins = _plugins.Plugins;
         }
-
-        private void Profile_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (SelectedProfile != ProfileManager.ActiveProfile?.Name) {
-                ProfileManager.LoadProfile(SelectedProfile);
-            }
-        }
-
-        private void DeleteProfile_OnClick(object sender, RoutedEventArgs e) {
-            if (SelectedProfile != null) {
-                ProfileManager.DeleteActiveProfile();
-            }
-        }
-
-        private void CreateProfile_OnClick(object sender, RoutedEventArgs e) {
-            var input = new TextInput(Localizer.Localize<string>("Dialogs", "CreateProfile.Title"),
-                Localizer.Localize<string>("Dialogs", "CreateProfile.Message"));
-            input.Owner = this;
-
-            if (input.ShowDialog() == true) {
-                ProfileManager.CreateProfile(input.Value);
-            }
-        }
-
-        private void RenameProfile_OnClick(object sender, RoutedEventArgs e) {
-            if (SelectedProfile != null) {
-                var input = new TextInput(Localizer.Localize<string>("Dialogs", "RenameProfile.Title"),
-                    Localizer.Localize<string>("Dialogs", "RenameProfile.Message"), SelectedProfile);
-                input.Owner = this;
-
-                if (input.ShowDialog() == true) {
-                    if (ProfileManager.RenameActiveProfile(input.Value)) {
-                        SelectedProfile = input.Value;
-                    } else {
-                        MessageBox.Show(this, Localizer.Localize<string>("Dialogs", "RenameProfile.FailedMessage"),
-                            Localizer.Localize<string>("Dialogs", "RenameProfile.Failed"), MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                    }
-                }
-            }
-        }
-
+        
         private void ScreenSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             _settings.Screen = ActiveScreen;
             if (_view != null) {

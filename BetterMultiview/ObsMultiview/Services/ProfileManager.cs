@@ -42,7 +42,7 @@ namespace ObsMultiview.Services {
 
             Refresh();
 
-            LoadProfile(_settings.LastProfile);
+            LoadProfile();
         }
 
         /// <summary>
@@ -63,19 +63,16 @@ namespace ObsMultiview.Services {
         /// Load a specific profile
         /// </summary>
         /// <param name="name">Name of the profile</param>
-        public void LoadProfile(string name) {
-            _logger.LogInformation($"Loading profile {name}");
-            SaveProfile();
+        public void LoadProfile() {
+            _logger.LogInformation($"Loading profile default");
 
-            if (_profiles.Contains(name)) {
-                _settings.LastProfile = name;
-                var profile = File.ReadAllText(Path.Combine("Profiles", name + ".json"));
+            try {
+                var profile = File.ReadAllText(Path.Combine("Profiles", "default.json"));
                 ActiveProfile = JsonConvert.DeserializeObject<UserProfile>(profile);
-                if (ActiveProfile == null) ActiveProfile = new UserProfile();
+            }catch(FileNotFoundException){}
 
-                ActiveProfile.Name = name;
-                OnProfileChanged();
-            }
+            if (ActiveProfile == null) ActiveProfile = new UserProfile();
+            ActiveProfile.Name = "default";
         }
 
         /// <summary>
@@ -91,64 +88,6 @@ namespace ObsMultiview.Services {
 
         protected virtual void OnProfileChanged() {
             ProfileChanged?.Invoke();
-        }
-
-        /// <summary>
-        /// Deletes the active profile file and unloads the profile
-        /// </summary>
-        public void DeleteActiveProfile() {
-            if (ActiveProfile != null) {
-                _logger.LogInformation("Deleting active profile");
-                File.Delete(Path.Combine("Profiles", ActiveProfile.Name + ".json"));
-                ActiveProfile = null;
-                Refresh();
-                OnProfileChanged();
-            }
-        }
-
-        /// <summary>
-        /// Create a new empty profile
-        /// </summary>
-        /// <param name="name">Name of the profile</param>
-        /// <returns></returns>
-        public bool CreateProfile(string name) {
-            _logger.LogInformation($"Creating new profile {name}");
-            if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
-                using (var file = new FileStream(Path.Combine("Profiles", name + ".json"), FileMode.Create)) {
-                }
-                SaveProfile();
-                Refresh();
-                ActiveProfile = new UserProfile {Name = name};
-                OnProfileChanged();
-                return true;
-            }
-
-            _logger.LogError($"Profile could not be created");
-
-            return false;
-        }
-
-        /// <summary>
-        /// Try to rename the currently active profile
-        /// </summary>
-        /// <param name="name">The new name of the profile</param>
-        /// <returns></returns>
-        public bool RenameActiveProfile(string name) {
-            if (ActiveProfile != null) {
-                _logger.LogInformation($"Renaming active profile to {name}");
-                if (!File.Exists(Path.Combine("Profiles", name + ".json"))) {
-                    File.Move(Path.Combine("Profiles", ActiveProfile.Name + ".json"),
-                        Path.Combine("Profiles", name + ".json"));
-                    _profiles.Remove(ActiveProfile.Name);
-                    _profiles.Add(name);
-                    ActiveProfile.Name = name;
-                    _settings.LastProfile = name;
-                    return true;
-                }
-                _logger.LogError($"Renaming profile failed");
-            }
-
-            return false;
         }
     }
 }

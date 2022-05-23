@@ -45,11 +45,6 @@ namespace ObsMultiview.Data {
         public DConnection Connection { get; set; }
 
         /// <summary>
-        /// The last active profile
-        /// </summary>
-        public string LastProfile { get; set; }
-
-        /// <summary>
         /// A list of activated plugins
         /// </summary>
         public HashSet<string> ActivePlugins { get; set; } = new();
