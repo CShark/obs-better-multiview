@@ -8,7 +8,8 @@ namespace ObsMultiview.Plugins.KNX {
     /// <summary>
     /// A plugin to talk to a KNX/IP Interface
     /// </summary>
-    public class KnxPlugin : PluginBase {
+    public class KnxPlugin : ChangePluginBase {
+        
         public override string Name => "KNX";
         public override string Author => "Nathanael Schneider";
         public override string Version => "1.0";
@@ -60,7 +61,15 @@ namespace ObsMultiview.Plugins.KNX {
             }
         }
 
-        public override void UnapplySlot(Guid slot, Guid? next) {
+        public override SettingsControl GetGlobalSettings() {
+            return new GlobalSettings(CommandFacade);
+        }
+
+        public override SettingsControl GetSlotSettings(Guid slot) {
+            return new SlotSettings(this, CommandFacade, slot);
+        }
+
+        public override void OnSlotExit(Guid slot, Guid? next) {
             var config = CommandFacade.RequestSlotSetting<KnxSlotSettings>(slot);
 
             foreach (var group in config.Groups.Where(x => x.OnExit != null && x.OnExit.Length > 0)) {
@@ -68,20 +77,12 @@ namespace ObsMultiview.Plugins.KNX {
             }
         }
 
-        public override void ApplySlot(Guid slot) {
+        public override void OnSlotEnter(Guid slot, Guid? previous) {
             var config = CommandFacade.RequestSlotSetting<KnxSlotSettings>(slot);
 
             foreach (var group in config.Groups.Where(x => x.OnEntry != null && x.OnEntry.Length > 0)) {
                 _knx.Action(group.Group.GroupAddress, group.OnEntry);
             }
-        }
-
-        public override SettingsControl GetGlobalSettings() {
-            return new GlobalSettings(CommandFacade);
-        }
-
-        public override SettingsControl GetSlotSettings(Guid slot) {
-            return new SlotSettings(this, CommandFacade, slot);
         }
     }
 }

@@ -13,7 +13,19 @@ namespace ObsMultiview.Plugins.qlc {
     /// <summary>
     /// A plugin for QLC+
     /// </summary>
-    public class QlcPlugin : PluginBase {
+    public class QlcPlugin : ChangePluginBase {
+        public override void OnSlotExit(Guid slot, Guid? next) {
+            
+        }
+
+        public override void OnSlotEnter(Guid slot, Guid? previous) {
+            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
+
+            foreach (var fkt in settings.Functions) {
+                SetFkt(fkt.Function, fkt.Value);
+            }
+        }
+
         public override string Name => "QLC+";
         public override string Author => "Nathanael Schneider";
         public override string Version => "1.0";
@@ -142,30 +154,6 @@ namespace ObsMultiview.Plugins.qlc {
 
         public override SettingsControl GetSlotSettings(Guid slot) {
             return new SlotSettings(this, CommandFacade, slot);
-        }
-
-        public override void UnapplySlot(Guid slot, Guid? next) {
-            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
-            
-            // only reset functions that are not referenced in the next slot to avoid jitter
-            QlcSlotSettings nextSettings = new QlcSlotSettings();
-            if (next != null) {
-                nextSettings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(next.Value);
-            }
-
-            var fkts = settings.Functions.Where(x => !nextSettings.Functions.Any(y => x.Function == y.Function));
-
-            foreach (var fkt in fkts) {
-                SetFkt(fkt.Function, 0);
-            }
-        }
-
-        public override void ApplySlot(Guid slot) {
-            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
-
-            foreach (var fkt in settings.Functions) {
-                SetFkt(fkt.Function, fkt.Value);
-            }
         }
 
         private void SetFkt(FunctionInfo fkt, byte value) {

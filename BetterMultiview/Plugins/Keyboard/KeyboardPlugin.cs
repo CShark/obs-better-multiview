@@ -8,13 +8,13 @@ namespace ObsMultiview.Plugins.Keyboard {
     /// <summary>
     /// Plugin to handle keyboard shortcuts
     /// </summary>
-    public class KeyboardPlugin : PluginBase {
+    public class KeyboardPlugin : TriggerPluginBase {
         private KeyboardCore _core;
         private KeyboardSettings _settings;
         private List<(Guid slot, KeyboardSlotSettings config)> _slots;
         private string _numpadEntry = "";
         private DateTime _lastEntry = DateTime.MinValue;
-
+        
         public override string Name => "Keyboard Shortcuts";
         public override string Author => "Nathanael Schneider";
         public override string Version => "1.0";

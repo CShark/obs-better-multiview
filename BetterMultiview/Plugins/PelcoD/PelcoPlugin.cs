@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace ObsMultiview.Plugins.PelcoD {
-    public class PelcoPlugin : PluginBase {
+    public class PelcoPlugin : StatePluginBase {
+
         public override string Name => "Pelco-D";
         public override string Author => "Nathanael Schneider";
         public override string Version => "1.0";
@@ -41,7 +42,15 @@ namespace ObsMultiview.Plugins.PelcoD {
             State = PluginState.Disabled;
         }
 
-        public override void ApplySlot(Guid slot) {
+        public override SettingsControl GetGlobalSettings() {
+            return new GlobalSettings(CommandFacade);
+        }
+
+        public override SettingsControl GetSlotSettings(Guid slot) {
+            return new SlotSettings(CommandFacade, slot);
+        }
+
+        public override void ActiveSlotChanged(Guid slot) {
             var settings = CommandFacade.RequestSlotSetting<PelcoSlotSettings>(slot);
 
             if (settings.Preset != null && settings.Preset.CameraID > 0) {
@@ -52,18 +61,10 @@ namespace ObsMultiview.Plugins.PelcoD {
                 message[3] = 0x07;
                 message[4] = 0x00;
                 message[5] = settings.Preset.PresetID;
-                message[6] = message.Skip(1).Take(5).Aggregate((byte) 0, (s, x) => (byte) (s + x));
+                message[6] = message.Skip(1).Take(5).Aggregate((byte)0, (s, x) => (byte)(s + x));
 
                 _port.Write(message, 0, 7);
             }
-        }
-
-        public override SettingsControl GetGlobalSettings() {
-            return new GlobalSettings(CommandFacade);
-        }
-
-        public override SettingsControl GetSlotSettings(Guid slot) {
-            return new SlotSettings(CommandFacade, slot);
         }
     }
 }

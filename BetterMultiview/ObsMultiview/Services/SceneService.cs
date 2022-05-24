@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using ObsMultiview.Data;
+using ObsMultiview.Plugins;
 
 namespace ObsMultiview.Services {
     /// <summary>
@@ -57,7 +58,7 @@ namespace ObsMultiview.Services {
             UnapplyScene(_liveScene, _previewScene);
             OnLiveChanged(_previewScene);
             OnPreviewChanged(temp);
-            ApplyScene(_liveScene);
+            ApplyScene(_liveScene, _previewScene);
         }
 
         /// <summary>
@@ -89,11 +90,20 @@ namespace ObsMultiview.Services {
         /// <param name="slot"></param>
         /// <param name="next"></param>
         private void UnapplyScene(UserProfile.DSlot slot, UserProfile.DSlot next) {
-            _logger.LogDebug($"Unapplying scene {slot?.Id} to {next?.Id}");
+            _logger.LogDebug($"Unapplying scene {slot?.Name} to {next?.Name}");
 
             foreach (var plugin in
-                _plugins.Plugins.Where(x => slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)) {
-                plugin.Plugin.UnapplySlot(slot.Id, next?.Id);
+                     _plugins.Plugins.Where(x =>
+                         (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false) &&
+                         x.Plugin.TriggerType == PluginTriggerType.Change)) {
+
+                if (plugin.Plugin is ChangePluginBase cplug) {
+                    try {
+                        cplug.OnSlotExit(slot.Id, next?.Id);
+                    } catch (Exception ex) {
+                        _logger.LogError(ex,$"Failed to trigger SlotExit for plugin {cplug.Name}");
+                    }
+                }
             }
         }
 
@@ -101,9 +111,9 @@ namespace ObsMultiview.Services {
         /// Called to apply a scene config
         /// </summary>
         /// <param name="slot"></param>
-        private void ApplyScene(UserProfile.DSlot slot) {
-            _logger.LogDebug($"Applying scene {slot?.Id}");
-            
+        private void ApplyScene(UserProfile.DSlot slot, UserProfile.DSlot prev) {
+            _logger.LogDebug($"Applying scene {slot?.Name}");
+
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
                 if (_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == slot.Obs.Scene)) {
                     _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
@@ -113,8 +123,27 @@ namespace ObsMultiview.Services {
             }
 
             foreach (var plugin in
-                _plugins.Plugins.Where(x => slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)) {
-                plugin.Plugin.ApplySlot(slot.Id);
+                     _plugins.Plugins.Where(x => (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)
+                                                 && (x.Plugin.TriggerType == PluginTriggerType.Change))) {
+                if (plugin.Plugin is ChangePluginBase cplug) {
+                    try {
+                        cplug.OnSlotEnter(slot.Id, prev?.Id);
+                    } catch (Exception ex) {
+                        _logger.LogError(ex,$"Failed to trigger SlotEnter for plugin {cplug.Name}");
+                    }
+                }
+            }
+
+            foreach (var plugin in
+                     _plugins.Plugins.Where(x => (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)
+                                                 && (x.Plugin.TriggerType == PluginTriggerType.State))) {
+                if (plugin.Plugin is StatePluginBase splug) {
+                    try {
+                        splug.ActiveSlotChanged(slot.Id);
+                    } catch (Exception ex) {
+                        _logger.LogError(ex,$"Failed to apply slot state for plugin {splug.Name}");
+                    }
+                }
             }
         }
     }

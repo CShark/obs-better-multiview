@@ -20,6 +20,24 @@ namespace ObsMultiview.Plugins {
     }
 
     /// <summary>
+    /// The type of change the plugin gets triggered by
+    /// </summary>
+    public enum PluginTriggerType {
+        /// <summary>
+        /// Is not triggered by slots but instead triggers a slot
+        /// </summary>
+        Trigger,
+        /// <summary>
+        /// Gets triggered when a slot is activated
+        /// </summary>
+        State,
+        /// <summary>
+        /// Gets triggered when a slot gets activated or deactivated
+        /// </summary>
+        Change
+    }
+
+    /// <summary>
     /// A settings control for plugins
     /// </summary>
     public abstract class SettingsControl : UserControl {
@@ -123,6 +141,11 @@ namespace ObsMultiview.Plugins {
         protected ILogger Logger { get; private set; }
 
         /// <summary>
+        /// The trigger type of this plugin
+        /// </summary>
+        public abstract PluginTriggerType TriggerType { get; }
+
+        /// <summary>
         /// Name of the Plugin
         /// </summary>
         public abstract string Name { get; }
@@ -199,21 +222,6 @@ namespace ObsMultiview.Plugins {
         }
 
         /// <summary>
-        /// Called before transitioning to a new live-slot
-        /// </summary>
-        /// <param name="slot">The currently active live-slot</param>
-        /// <param name="next">The next active live-slot</param>
-        public virtual void UnapplySlot(Guid slot, Guid? next) {
-        }
-
-        /// <summary>
-        /// Called after transitioning to a new live-slot
-        /// </summary>
-        /// <param name="slot">The now active live-slot</param>
-        public virtual void ApplySlot(Guid slot) {
-        }
-
-        /// <summary>
         /// Requests a control for the global settings
         /// </summary>
         /// <returns></returns>
@@ -250,6 +258,44 @@ namespace ObsMultiview.Plugins {
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    /// <summary>
+    /// Plugin base for Trigger-Type plugins
+    /// </summary>
+    public abstract class TriggerPluginBase : PluginBase {
+        public sealed override PluginTriggerType TriggerType => PluginTriggerType.Trigger;
+    }
+
+    /// <summary>
+    /// Plugin base for State-Type plugins
+    /// </summary>
+    public abstract class StatePluginBase : PluginBase {
+        public sealed override PluginTriggerType TriggerType => PluginTriggerType.State;
+
+        /// <summary>
+        /// Gets triggered when the live-slot changes
+        /// </summary>
+        /// <param name="slot">The name of the slot</param>
+        public abstract void ActiveSlotChanged(Guid slot);
+    }
+
+    public abstract class ChangePluginBase : PluginBase {
+        public sealed override PluginTriggerType TriggerType => PluginTriggerType.Change;
+
+        /// <summary>
+        /// Triggered when exiting a live slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="next"></param>
+        public abstract void OnSlotExit(Guid slot, Guid? next);
+
+        /// <summary>
+        /// Triggered when entering a new slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="previous"></param>
+        public abstract void OnSlotEnter(Guid slot, Guid? previous);
     }
 
     /// <summary>
@@ -305,8 +351,10 @@ namespace ObsMultiview.Plugins {
         /// <typeparam name="T">The settings class</typeparam>
         /// <param name="slot">The slot id</param>
         /// <returns></returns>
-        public T RequestSlotSetting<T>(Guid slot) {
-            var json = RequestSlotSetting(slot);
+        public T RequestSlotSetting<T>(Guid? slot) {
+            if (slot == null) return default(T);
+
+            var json = RequestSlotSetting(slot.Value);
 
             if (json != null) {
                 return json.ToObject<T>();
