@@ -126,13 +126,22 @@
   <data name="IP" xml:space="preserve">
     <value>IP-Adresse:</value>
   </data>
-  <data name="AddFunction" xml:space="preserve">
-    <value>Funktion hinzufügen:</value>
-  </data>
   <data name="ResetFunctions" xml:space="preserve">
     <value>Funktionen deaktivieren bei Szenenwechsel</value>
   </data>
   <data name="ConnectionPending" xml:space="preserve">
     <value>Warte auf Verbindung...</value>
+  </data>
+  <data name="FunctionSelect" xml:space="preserve">
+    <value>QLC+ Funktion auswählen</value>
+  </data>
+  <data name="Scenes" xml:space="preserve">
+    <value>Szenen</value>
+  </data>
+  <data name="Widgets" xml:space="preserve">
+    <value>Steuerelemente</value>
+  </data>
+  <data name="CompatWarn" xml:space="preserve">
+    <value>Aufgrund der QLC+ API werden nur Schieberegler richtig unterstützt. Schaltflächen können nur umgeschaltet werden und verhalten sich bei Übergangen eventuell unerwartet.</value>
   </data>
 </root>

@@ -22,6 +22,7 @@ namespace ObsMultiview.Plugins.PelcoD {
             Logger.LogInformation("Enabling Plugin");
             var settings = CommandFacade.RequestSettings<PelcoSettings>();
             _port = new SerialPort(settings.ComPort, settings.BaudRate, Parity.None, 8, StopBits.One);
+            _port.WriteTimeout = 500;
 
             try {
                 _port.Open();
@@ -53,7 +54,7 @@ namespace ObsMultiview.Plugins.PelcoD {
         public override void ActiveSlotChanged(Guid slot) {
             var settings = CommandFacade.RequestSlotSetting<PelcoSlotSettings>(slot);
 
-            if (settings.Presets != null) {
+            if (settings.Presets != null && _port.IsOpen) {
                 foreach (var preset in settings.Presets) {
                     if (preset.CameraID > 0) {
                         byte[] message = new byte[7];

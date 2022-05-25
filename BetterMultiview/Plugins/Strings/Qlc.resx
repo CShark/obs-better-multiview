@@ -106,13 +106,22 @@
   <data name="Port" xml:space="preserve">
     <value>Port:</value>
   </data>
-  <data name="AddFunction" xml:space="preserve">
-    <value>Add Function:</value>
-  </data>
   <data name="ResetFunctions" xml:space="preserve">
     <value>Reset Functions on scene switch</value>
   </data>
   <data name="ConnectionPending" xml:space="preserve">
     <value>Waiting for connection...</value>
+  </data>
+  <data name="FunctionSelect" xml:space="preserve">
+    <value>Select QLC+ Function</value>
+  </data>
+  <data name="Scenes" xml:space="preserve">
+    <value>Scenes</value>
+  </data>
+  <data name="Widgets" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+  <data name="CompatWarn" xml:space="preserve">
+    <value>Only Sliders are properly supported due to QLC+ Api limitations. Buttons can only be toggled and might not behave as expected on transitions.</value>
   </data>
 </root>

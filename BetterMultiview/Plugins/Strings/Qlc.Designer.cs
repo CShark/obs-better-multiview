@@ -19,7 +19,7 @@ namespace ObsMultiview.Plugins.Strings {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Qlc {
@@ -61,11 +61,11 @@ namespace ObsMultiview.Plugins.Strings {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Add Function: ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Only Sliders are properly supported due to QLC+ Api limitations. Buttons can only be toggled and might not behave as expected on transitions. ähnelt.
         /// </summary>
-        internal static string AddFunction {
+        internal static string CompatWarn {
             get {
-                return ResourceManager.GetString("AddFunction", resourceCulture);
+                return ResourceManager.GetString("CompatWarn", resourceCulture);
             }
         }
         
@@ -75,6 +75,15 @@ namespace ObsMultiview.Plugins.Strings {
         internal static string ConnectionPending {
             get {
                 return ResourceManager.GetString("ConnectionPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select QLC+ Function ähnelt.
+        /// </summary>
+        internal static string FunctionSelect {
+            get {
+                return ResourceManager.GetString("FunctionSelect", resourceCulture);
             }
         }
         
@@ -111,6 +120,24 @@ namespace ObsMultiview.Plugins.Strings {
         internal static string ResetFunctions {
             get {
                 return ResourceManager.GetString("ResetFunctions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scenes ähnelt.
+        /// </summary>
+        internal static string Scenes {
+            get {
+                return ResourceManager.GetString("Scenes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Widgets ähnelt.
+        /// </summary>
+        internal static string Widgets {
+            get {
+                return ResourceManager.GetString("Widgets", resourceCulture);
             }
         }
     }

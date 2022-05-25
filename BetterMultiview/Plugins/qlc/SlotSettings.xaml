@@ -13,72 +13,55 @@
                              DataContext="{Binding RelativeSource={RelativeSource Self}}"
                              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
-        <TextBlock Text="{lex:Loc AddFunction}" />
-        <ComboBox ItemsSource="{Binding Plugin.Functions}" SelectionChanged="AddFkt_OnSelectionChanged"
-                  SelectedItem="{Binding SelectedFunction}" IsEditable="False" IsTextSearchEnabled="True" TextSearch.TextPath="Name">
-            <ComboBox.Resources>
-                <Style TargetType="ComboBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ComboBox.Resources>
-            <ComboBox.ItemTemplate>
-                <DataTemplate DataType="local:FunctionInfo">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+        <StackPanel.Resources>
+            <DataTemplate x:Key="FunctionTemplate" DataType="local:SlotFunction">
+                <Grid x:Name="Container">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="50px" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock x:Name="Type" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="5,0"/>
-                        <TextBlock Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center"/>
-                    </Grid>
+                    <TextBlock x:Name="Type" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="5,0" />
+                    <TextBlock Text="{Binding Function.Name}" Grid.Column="1" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="2" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button FontFamily="Segoe MDL2 Assets" Foreground="Red" FontWeight="Bold" Grid.Column="3"
+                            Click="DeleteFkt_OnClick">
+                        &#xE711;
+                    </Button>
+                </Grid>
 
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Type}" Value="{x:Static local:FunctionType.Function}">
-                            <Setter TargetName="Type" Property="Text" Value="&#xe8a9;" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Type}" Value="{x:Static local:FunctionType.Widget}">
-                            <Setter TargetName="Type" Property="Text" Value="&#xeb91;" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-        <ListBox ItemsSource="{Binding Settings.Functions}" BorderThickness="0">
-            <ListBox.Resources>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListBox.Resources>
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="local:SlotFunction">
-                    <Grid x:Name="Container">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="50px" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Faulted}" Value="True">
+                        <Setter TargetName="Container" Property="Background" Value="OrangeRed"></Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Function.Type}" Value="{x:Static local:FunctionType.Function}">
+                        <Setter TargetName="Type" Property="Text" Value="&#xe8a9;" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Function.Type}" Value="{x:Static local:FunctionType.Widget}">
+                        <Setter TargetName="Type" Property="Text" Value="&#xeb91;" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
 
-                        <TextBlock x:Name="Type" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="5,0"/>
-                        <TextBlock Text="{Binding Function.Name}" Grid.Column="1" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="2" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button FontFamily="Segoe MDL2 Assets" Foreground="Red" FontWeight="Bold" Grid.Column="3" Click="DeleteFkt_OnClick">&#xE711;</Button>
-                    </Grid>
+            <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            </Style>
+        </StackPanel.Resources>
 
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Faulted}" Value="True">
-                            <Setter TargetName="Container" Property="Background" Value="OrangeRed"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Function.Type}" Value="{x:Static local:FunctionType.Function}">
-                            <Setter TargetName="Type" Property="Text" Value="&#xe8a9;" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Function.Type}" Value="{x:Static local:FunctionType.Widget}">
-                            <Setter TargetName="Type" Property="Text" Value="&#xeb91;" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
+        
+        <Grid>
+            <TextBlock><Run Foreground="Orange">⚡</Run> Entry</TextBlock>
+            <Button HorizontalAlignment="Right" FontFamily="Segoe MDL2 Assets" FontWeight="Bold" Padding="4,0" Click="AddEntryFkt_OnClick">&#xE710;</Button>
+        </Grid>
+        <ListBox ItemsSource="{Binding Settings.EntryFunctions}" BorderThickness="0" ItemTemplate="{StaticResource FunctionTemplate}">
+        </ListBox>
+        <Grid>
+            <TextBlock><Run Foreground="Orange">⚡</Run> Exit</TextBlock>
+            <Button HorizontalAlignment="Right" FontFamily="Segoe MDL2 Assets" FontWeight="Bold" Padding="4,0" Click="AddExitFkt_OnClick">&#xE710;</Button>
+        </Grid>
+        <ListBox ItemsSource="{Binding Settings.ExitFunctions}" BorderThickness="0" ItemTemplate="{StaticResource FunctionTemplate}">
         </ListBox>
     </StackPanel>
 </plugins:SlotSettingsControl>

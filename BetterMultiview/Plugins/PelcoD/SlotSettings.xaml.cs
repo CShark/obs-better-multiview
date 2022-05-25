@@ -63,7 +63,7 @@ namespace ObsMultiview.Plugins.PelcoD {
             base.FetchSettings();
 
             foreach (var cam in Presets) {
-                var preset = Settings.Presets?.FirstOrDefault(x => x.CameraID == cam.CameraID);
+                var preset = Settings.Presets?.FirstOrDefault(x => x?.CameraID == cam?.CameraID);
                 if (preset == null) {
                     preset = cam.AvailablePresets[0];
                 } else {

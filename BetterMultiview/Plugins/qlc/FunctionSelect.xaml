@@ -1,0 +1,72 @@
+﻿<Window x:Class="ObsMultiview.Plugins.qlc.FunctionSelect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ObsMultiview.Plugins.qlc"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview.Plugins"
+        lex:ResxLocalizationProvider.DefaultDictionary="Qlc"
+        mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="{lex:Loc FunctionSelect}" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.ColumnSpan="2" Margin="5" Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                 x:Name="txtSearch">
+        </TextBox>
+        <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,5"
+                   FontFamily="Segoe MDL2 Assets">
+            &#xE721;
+        </TextBlock>
+
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{lex:Loc Scenes}"></TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Text="{lex:Loc Widgets}"></TextBlock>
+
+        <ListBox Grid.Row="2" BorderThickness="0" ItemsSource="{Binding Scenes.View}"
+                 IsSynchronizedWithCurrentItem="True">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="local:FunctionInfo">
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <EventSetter Event="MouseDoubleClick" Handler="Scenes_OnMouseDoubleClick"></EventSetter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <ListBox BorderThickness="0" ItemsSource="{Binding Widgets.View}"
+                     IsSynchronizedWithCurrentItem="True">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="local:FunctionInfo">
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <EventSetter Event="MouseDoubleClick" Handler="Widgets_OnMouseDoubleClick"></EventSetter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{lex:Loc CompatWarn}"></TextBlock>
+        </Grid>
+    </Grid>
+</Window>

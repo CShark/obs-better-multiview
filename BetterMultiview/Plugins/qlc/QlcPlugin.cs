@@ -13,15 +13,30 @@ namespace ObsMultiview.Plugins.qlc {
     /// <summary>
     /// A plugin for QLC+
     /// </summary>
+    /// <remarks>
+    /// - Scenes can only switched on / off using the API
+    /// - Widgets behave differently based on type
+    ///     - Buttons only toggle, Sliders support full range
+    /// - Can't easily fetch button state, because it's a) async and b) the response has no identifier as to which control it belongs to
+    /// - Can't easily fetch widget type, because a) there is no identifier for the control that is associated with the response and b) they are localized (wtf?)
+    /// </remarks>
     public class QlcPlugin : ChangePluginBase {
         public override void OnSlotExit(Guid slot, Guid? next) {
-            
+            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
+            var nextSettings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(next);
+
+            foreach (var fkt in settings.ExitFunctions) {
+                // Only turn off functions that don't get triggered in the next scene
+                if (!(nextSettings?.EntryFunctions.Any(x =>
+                        x.Function.Type == fkt.Function.Type && x.Function.ID == fkt.Function.ID) ?? false))
+                    SetFkt(fkt.Function, fkt.Value);
+            }
         }
 
         public override void OnSlotEnter(Guid slot, Guid? previous) {
             var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
 
-            foreach (var fkt in settings.Functions) {
+            foreach (var fkt in settings.EntryFunctions) {
                 SetFkt(fkt.Function, fkt.Value);
             }
         }
@@ -106,6 +121,7 @@ namespace ObsMultiview.Plugins.qlc {
                     case "getWidgetsList":
                         for (int i = 2; i < data.Length; i += 2) {
                             _functions.Add(new FunctionInfo(data[i], data[i + 1], FunctionType.Widget));
+                            _webSocket.Send($"QLC+Api|getWidgetType|{data[i]}");
                         }
 
                         break;
@@ -123,7 +139,8 @@ namespace ObsMultiview.Plugins.qlc {
 
             try {
                 _webSocket.CloseAsync();
-            }catch{}
+            } catch {
+            }
         }
 
         public void FetchInfo() {
@@ -162,7 +179,7 @@ namespace ObsMultiview.Plugins.qlc {
                     _webSocket.Send($"QLC+API|setFunctionStatus|{fkt.ID}|{(value > 0 ? 1 : 0)}");
                     break;
                 case FunctionType.Widget:
-                    _webSocket.Send($"{fkt.ID}|{(value == 0 ? 1 : value)}");
+                    _webSocket.Send($"{fkt.ID}|{value}");
                     break;
             }
         }

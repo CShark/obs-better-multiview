@@ -80,8 +80,13 @@ namespace ObsMultiview.Plugins.qlc {
 
     public class QlcSlotSettings {
         /// <summary>
-        /// List of functions to apply for this slot
+        /// List of functions to apply for this slot on entry
         /// </summary>
-        public ObservableCollection<SlotFunction> Functions { get; set; } = new();
+        public ObservableCollection<SlotFunction> EntryFunctions { get; set; } = new();
+
+        /// <summary>
+        /// List of functions to apply for this slot on exit
+        /// </summary>
+        public ObservableCollection<SlotFunction> ExitFunctions { get; set; } = new();
     }
 }
