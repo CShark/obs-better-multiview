@@ -121,7 +121,6 @@ namespace ObsMultiview.Plugins.qlc {
                     case "getWidgetsList":
                         for (int i = 2; i < data.Length; i += 2) {
                             _functions.Add(new FunctionInfo(data[i], data[i + 1], FunctionType.Widget));
-                            _webSocket.Send($"QLC+Api|getWidgetType|{data[i]}");
                         }
 
                         break;
