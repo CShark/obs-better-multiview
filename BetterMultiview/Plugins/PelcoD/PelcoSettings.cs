@@ -11,6 +11,8 @@ namespace ObsMultiview.Plugins.PelcoD {
         public byte PresetID { get; set; }
 
         public string Name { get; set; }
+
+        public string Group { get; set; }
     }
 
     public class PelcoSettings {
@@ -21,6 +23,6 @@ namespace ObsMultiview.Plugins.PelcoD {
     }
 
     public class PelcoSlotSettings {
-        public Preset Preset { get; set; }
+        public List<Preset> Presets { get; set; }
     }
 }

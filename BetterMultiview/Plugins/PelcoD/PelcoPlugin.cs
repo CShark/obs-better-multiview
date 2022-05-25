@@ -53,17 +53,21 @@ namespace ObsMultiview.Plugins.PelcoD {
         public override void ActiveSlotChanged(Guid slot) {
             var settings = CommandFacade.RequestSlotSetting<PelcoSlotSettings>(slot);
 
-            if (settings.Preset != null && settings.Preset.CameraID > 0) {
-                byte[] message = new byte[7];
-                message[0] = 0xFF;
-                message[1] = settings.Preset.CameraID;
-                message[2] = 0x00;
-                message[3] = 0x07;
-                message[4] = 0x00;
-                message[5] = settings.Preset.PresetID;
-                message[6] = message.Skip(1).Take(5).Aggregate((byte)0, (s, x) => (byte)(s + x));
+            if (settings.Presets != null) {
+                foreach (var preset in settings.Presets) {
+                    if (preset.CameraID > 0) {
+                        byte[] message = new byte[7];
+                        message[0] = 0xFF;
+                        message[1] = preset.CameraID;
+                        message[2] = 0x00;
+                        message[3] = 0x07;
+                        message[4] = 0x00;
+                        message[5] = preset.PresetID;
+                        message[6] = message.Skip(1).Take(5).Aggregate((byte)0, (s, x) => (byte)(s + x));
 
-                _port.Write(message, 0, 7);
+                        _port.Write(message, 0, 7);
+                    }
+                }
             }
         }
     }

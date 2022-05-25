@@ -135,4 +135,10 @@
   <data name="NoCamera" xml:space="preserve">
     <value>Keine Kamera</value>
   </data>
+  <data name="Group" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="Camera" xml:space="preserve">
+    <value>Kamera</value>
+  </data>
 </root>
