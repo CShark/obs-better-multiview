@@ -153,6 +153,18 @@ namespace ObsMultiview {
                 foreach (var inv in invalid) {
                     profile.SceneView.Slots.Remove(inv);
                 }
+
+                if (_scenes.ActivePreviewSlot != null) {
+                    if (!_sceneSlots.ContainsKey(_scenes.ActivePreviewSlot)) {
+                        _scenes.ClearPreview();
+                    }
+                }
+
+                if (_scenes.ActiveLiveSlot != null) {
+                    if (!_sceneSlots.ContainsKey(_scenes.ActiveLiveSlot)) {
+                        _scenes.ClearLive();
+                    }
+                }
             }).Wait();
 
             PrepareObsPreview();
@@ -263,7 +275,7 @@ namespace ObsMultiview {
             var settings = JObject.FromObject(_watcher.ActiveProfile.SceneView);
             var id = _watcher.ActiveProfile.Id;
 
-            var config = new ProfileConfig();
+            var config = new ProfileConfig(ReplaceRunningConfig);
             config.Config = _watcher.ActiveProfile.SceneView;
             config.Owner = this;
             if (config.ShowDialog() == true) {
@@ -273,6 +285,10 @@ namespace ObsMultiview {
                     _watcher.ActiveProfile.SceneView = settings.ToObject<UserProfile.DSceneViewConfig>();
                 }
             }
+        }
+
+        private void ReplaceRunningConfig(UserProfile.DSceneViewConfig config) {
+            _watcher.ReplaceProfile(config);
         }
     }
 }

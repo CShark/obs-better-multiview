@@ -146,5 +146,13 @@ namespace ObsMultiview.Services {
                 }
             }
         }
+
+        public void ClearPreview() {
+            OnPreviewChanged(null);
+        }
+
+        public void ClearLive() {
+            OnLiveChanged(null);
+        }
     }
 }

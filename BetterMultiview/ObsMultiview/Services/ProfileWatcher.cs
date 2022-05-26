@@ -96,5 +96,12 @@ namespace ObsMultiview.Services {
                 ActiveProfileChanged?.Invoke(obj);
             });
         }
+
+        public void ReplaceProfile(UserProfile.DSceneViewConfig config) {
+            var newProfile = new UserProfile.DObsProfile(ActiveProfile.Id);
+            newProfile.SceneView = config;
+
+            OnActiveProfileChanged(newProfile);
+        }
     }
 }

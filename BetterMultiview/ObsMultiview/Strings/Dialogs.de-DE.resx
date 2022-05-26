@@ -162,4 +162,10 @@
   <data name="RenameProfile.FailedMessage" xml:space="preserve">
     <value>Das Profil kann nicht umbenannt werden, weil bereits ein Profil mit diesem Namen existiert.</value>
   </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importieren</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportieren</value>
+  </data>
 </root>
