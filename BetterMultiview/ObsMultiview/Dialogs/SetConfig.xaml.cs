@@ -73,7 +73,7 @@ namespace ObsMultiview.Dialogs {
                 Set.PluginConfigs = new Dictionary<string, JObject>();
 
             // load config controls for all active plugins
-            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings)) {
+            foreach (var plugin in _plugins.Plugins.Where(x => x.Active && x.Plugin.HasSlotSettings && x.Plugin.TriggerType != PluginTriggerType.Trigger)) {
                 PluginState.Add(plugin.Plugin.Name, Set.PluginConfigs.ContainsKey(plugin.Plugin.Name));
 
                 var expander = new Expander();

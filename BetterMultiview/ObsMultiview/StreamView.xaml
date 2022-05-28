@@ -88,11 +88,11 @@
                 </Grid.RowDefinitions>
                 <Rectangle Fill="#29FFFFFF"></Rectangle>
                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Template="{DynamicResource ButtonTemplate1}" 
+                    <Button Template="{DynamicResource ButtonTemplate1}" PreviewKeyDown="AbortEnter_OnPreviewKeyDown"
                             FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="5" Click="ProfileSettings_OnClick">
                         &#xf8b0;
                     </Button>
-                    <Button Template="{DynamicResource ButtonTemplate1}" 
+                    <Button Template="{DynamicResource ButtonTemplate1}" PreviewKeyDown="AbortEnter_OnPreviewKeyDown"
                             FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="5" Click="ConfigSets_OnClick">
                         &#xE74C;
                     </Button>

@@ -100,6 +100,9 @@ namespace ObsMultiview.Services {
         public void ReplaceProfile(UserProfile.DSceneViewConfig config) {
             var newProfile = new UserProfile.DObsProfile(ActiveProfile.Id);
             newProfile.SceneView = config;
+            _profile.ActiveProfile.Profiles.Remove(ActiveProfile);
+            _profile.ActiveProfile.Profiles.Add(newProfile);
+            _profile.SaveProfile();
 
             OnActiveProfileChanged(newProfile);
         }

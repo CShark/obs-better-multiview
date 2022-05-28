@@ -311,5 +311,9 @@ namespace ObsMultiview {
                 SceneCollectionChanged(_watcher.ActiveProfile);
             }
         }
+
+        private void AbortEnter_OnPreviewKeyDown(object sender, KeyEventArgs e) {
+            e.Handled = (e.Key == Key.Enter || e.Key == Key.Return);
+        }
     }
 }

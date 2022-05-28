@@ -1,7 +1,11 @@
 # Better Multiview
 An enhanced version of the OBS-Multiview with support for controlling more than just OBS. It allows arbitrary layouting your scenes in a custom grid and adding custom actions that will trigger when activating that scene.
 
+Actions can also be grouped into sets and will only be triggered when entering or exiting that group of slots.
+
 It is a standalone app that interfaces with OBS via the OBS-WebSocket Plugin.
+
+![StreamView](https://github.com/CShark/obs-stream-deck/blob/master/Assets/StreamView.jpg)
 
 ## Requirements
 OBS >= 27.0.0
@@ -29,12 +33,12 @@ Supports manipulating DMX Devices through QLC+. Requires QLC+ to be launched wit
 
 This Plugin allows you to associate a scene with one or multiple functions or widgets from the virtual console which will be activated when the scene is activated and optionally reset when leaving the scene. For functions, any value other than zero will activate the function. For widgets it depends on the type of widget; buttons only support on/off, while sliders allow to set a value between 0 and 255.
 
-### KNX
-Supports sending messages to a KNX/IP interface. Requires a KNX/IP interface in the local network.
-
-This Plugin allows you to send arbitrary messages to a device on the KNX bus system. You have to configure available groups and their datapoint types by hand before using them, currently Datapoint 1.* (boolean) and 5.* (relative) are supported. You can then define actions for the entry and exit of a scene slot.
-
 ### PELCO-D
 A popular PTZ-protocol for cameras via RS485. Requires a RS485 dongle.
 
 This plugin allows you to recall presets programmed in cameras that support the PelcoD-Protocol. Usually requires a PelcoD-Capable camera console to program the presets first as well as an RS485-dongle.
+
+### KNX
+Supports sending messages to a KNX/IP interface. Requires a KNX/IP interface in the local network.
+
+This Plugin allows you to send arbitrary messages to a device on the KNX bus system. You have to configure available groups and their datapoint types by hand before using them, currently Datapoint 1.* (boolean) and 5.* (relative) are supported. You can then define actions for the entry and exit of a scene slot.
