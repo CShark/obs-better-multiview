@@ -106,6 +106,15 @@ namespace ObsMultiview.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Set ähnelt.
+        /// </summary>
+        internal static string Group {
+            get {
+                return ResourceManager.GetString("Group", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Import ähnelt.
         /// </summary>
         internal static string Import {
@@ -120,6 +129,15 @@ namespace ObsMultiview.Strings {
         internal static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No Set ähnelt.
+        /// </summary>
+        internal static string NoSet {
+            get {
+                return ResourceManager.GetString("NoSet", resourceCulture);
             }
         }
         
@@ -201,6 +219,24 @@ namespace ObsMultiview.Strings {
         internal static string Scene {
             get {
                 return ResourceManager.GetString("Scene", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Set Config ähnelt.
+        /// </summary>
+        internal static string SetConfig {
+            get {
+                return ResourceManager.GetString("SetConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Edit Sets ähnelt.
+        /// </summary>
+        internal static string SetEditor {
+            get {
+                return ResourceManager.GetString("SetEditor", resourceCulture);
             }
         }
         

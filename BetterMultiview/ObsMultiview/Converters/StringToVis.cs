@@ -8,7 +8,7 @@ namespace ObsMultiview.Converters {
     /// <summary>
     /// Convert a string to visibility (null or whitespace => hidden)
     /// </summary>
-    public class StringToVis : IValueConverter {
+    public class NullToVis : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value is string s) {
                 return string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible;

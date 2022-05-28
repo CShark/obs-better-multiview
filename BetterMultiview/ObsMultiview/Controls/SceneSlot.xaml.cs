@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,6 +68,14 @@ namespace ObsMultiview.Controls {
             set { SetValue(SlotConfiguringProperty, value); }
         }
 
+        public static readonly DependencyProperty SetProperty = DependencyProperty.Register(
+            nameof(Set), typeof(Set), typeof(SceneSlot), new PropertyMetadata(default(Set)));
+
+        public Set Set {
+            get { return (Set)GetValue(SetProperty); }
+            set { SetValue(SetProperty, value); }
+        }
+
         public SceneSlot(UserProfile.DSlot slot, StreamView owner) {
             _slot = slot;
             _owner = owner;
@@ -113,10 +122,13 @@ namespace ObsMultiview.Controls {
         private void LoadSlot() {
             Unconfigured = string.IsNullOrEmpty(_slot.Obs.Scene);
             Name = _slot.Name;
+            Set = _profile.ActiveProfile?.SceneView?.Sets.FirstOrDefault(x => x.Id == _slot.SetId);
         }
 
         private void SceneSlot_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            var config = new SlotConfig(_slot);
+            if (_profile.ActiveProfile == null) return;
+
+            var config = new SlotConfig(_slot, _profile.ActiveProfile.SceneView);
             config.Owner = Window.GetWindow(this);
 
             _plugins.PausePlugins(null, true);

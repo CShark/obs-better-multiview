@@ -6,7 +6,7 @@ namespace ObsMultiview.Plugins.Keyboard {
     /// </summary>
     public partial class SlotSettings : SlotSettingsControl<KeyboardSlotSettings> {
 
-        public SlotSettings(CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
+        public SlotSettings(CommandFacade commandFacade, Guid? slotID) : base(commandFacade, slotID) {
             InitializeComponent();
             Grabber.SetCommandFacade(commandFacade);
         }

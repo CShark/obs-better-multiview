@@ -168,4 +168,16 @@
   <data name="Export" xml:space="preserve">
     <value>Exportieren</value>
   </data>
+  <data name="SetEditor" xml:space="preserve">
+    <value>Gruppen Bearbeiten</value>
+  </data>
+  <data name="SetConfig" xml:space="preserve">
+    <value>Gruppe Konfigurieren</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="NoSet" xml:space="preserve">
+    <value>Keine Gruppe</value>
+  </data>
 </root>

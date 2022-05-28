@@ -148,4 +148,16 @@
   <data name="Export" xml:space="preserve">
     <value>Export</value>
   </data>
+  <data name="SetEditor" xml:space="preserve">
+    <value>Edit Sets</value>
+  </data>
+  <data name="SetConfig" xml:space="preserve">
+    <value>Set Config</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="NoSet" xml:space="preserve">
+    <value>No Set</value>
+  </data>
 </root>

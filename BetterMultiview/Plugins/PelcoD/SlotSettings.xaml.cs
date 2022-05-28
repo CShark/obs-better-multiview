@@ -32,7 +32,7 @@ namespace ObsMultiview.Plugins.PelcoD {
             set { SetValue(PresetsProperty, value); }
         }
 
-        public SlotSettings(CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
+        public SlotSettings(CommandFacade commandFacade, Guid? slotID) : base(commandFacade, slotID) {
             Presets = new List<PresetData>();
 
             var settings = commandFacade.RequestSettings<PelcoSettings>();

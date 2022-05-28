@@ -1,4 +1,4 @@
-﻿<Window x:Class="ObsMultiview.Dialogs.SlotConfig"
+﻿<Window x:Class="ObsMultiview.Dialogs.SetConfig"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,7 +16,7 @@
         lex:ResxLocalizationProvider.DefaultAssembly="ObsMultiview"
         lex:ResxLocalizationProvider.DefaultDictionary="Dialogs"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="{lex:Loc SlotConfig}" Height="450" Width="345">
+        Title="{lex:Loc SetConfig}" Height="450" Width="345">
     <Grid>
         <Grid.Resources>
             <converters:NullToVis x:Key="NullToVis" />
@@ -45,19 +45,8 @@
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="5" x:Name="ConfigPanel">
                 <TextBlock Text="{lex:Loc Name}" />
-                <TextBox Text="{Binding Slot.Name}" x:Name="input" />
+                <TextBox Text="{Binding Set.Name}" x:Name="input" />
                 <Rectangle Height="2" Fill="LightGray" />
-                <TextBlock Style="{StaticResource Title}">OBS</TextBlock>
-                <TextBlock Text="{lex:Loc Scene}" />
-                <ComboBox ItemsSource="{Binding AvailableScenes}" SelectedItem="{Binding Slot.Obs.Scene}" />
-                <TextBlock Text="{lex:Loc Group}"></TextBlock>
-                <ComboBox ItemsSource="{Binding Sets}" SelectedValue="{Binding Slot.SetId}" SelectedValuePath="Id">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate DataType="data:Set">
-                            <TextBlock Text="{Binding  Name}"></TextBlock>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="1">

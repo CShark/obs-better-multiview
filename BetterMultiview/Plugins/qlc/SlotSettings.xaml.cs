@@ -16,7 +16,7 @@ namespace ObsMultiview.Plugins.qlc {
             set { SetValue(PluginProperty, value); }
         }
 
-        public SlotSettings(QlcPlugin plugin, CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
+        public SlotSettings(QlcPlugin plugin, CommandFacade commandFacade, Guid? slotID) : base(commandFacade, slotID) {
             Plugin = plugin;
             plugin.FetchInfo();
             InitializeComponent();

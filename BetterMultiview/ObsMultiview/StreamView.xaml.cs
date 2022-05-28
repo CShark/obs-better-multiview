@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
@@ -289,6 +290,26 @@ namespace ObsMultiview {
 
         private void ReplaceRunningConfig(UserProfile.DSceneViewConfig config) {
             _watcher.ReplaceProfile(config);
+        }
+
+        private void ConfigSets_OnClick(object sender, RoutedEventArgs e) {
+            if (_watcher?.ActiveProfile == null) return;
+
+            var dlg = new SetEditor();
+            dlg.Owner = this;
+            dlg.Sets = new ObservableCollection<Set>(_watcher.ActiveProfile.SceneView.Sets ?? new List<Set>());
+
+            if (dlg.ShowDialog() == true) {
+                _watcher.ActiveProfile.SceneView.Sets = dlg.Sets?.ToList();
+
+                foreach (var slot in _watcher.ActiveProfile.SceneView.Slots) {
+                    if (slot.SetId != null && !dlg.Sets.Any(x=>x.Id == slot.SetId.Value)) {
+                        slot.SetId = null;
+                    }
+                }
+
+                SceneCollectionChanged(_watcher.ActiveProfile);
+            }
         }
     }
 }

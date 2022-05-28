@@ -92,6 +92,10 @@
                             FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="5" Click="ProfileSettings_OnClick">
                         &#xf8b0;
                     </Button>
+                    <Button Template="{DynamicResource ButtonTemplate1}" 
+                            FontSize="16" FontFamily="Segoe MDL2 Assets" Margin="5" Click="ConfigSets_OnClick">
+                        &#xE74C;
+                    </Button>
                     <TextBlock Text="{Binding PresetName}" VerticalAlignment="Center" Foreground="White"></TextBlock>
                 </WrapPanel>
             </Grid>

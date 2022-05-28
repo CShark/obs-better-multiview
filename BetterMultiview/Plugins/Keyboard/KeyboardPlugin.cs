@@ -131,7 +131,7 @@ namespace ObsMultiview.Plugins.Keyboard {
             return new GlobalSettings(CommandFacade);
         }
 
-        public override SettingsControl GetSlotSettings(Guid id) {
+        public override SettingsControl GetSlotSettings(Guid? id) {
             return new SlotSettings(CommandFacade, id);
         }
     }

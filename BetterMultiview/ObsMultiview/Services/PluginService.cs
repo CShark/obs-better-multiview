@@ -235,11 +235,17 @@ namespace ObsMultiview.Services {
                 _logger.LogDebug($"Requesting slot config for slot {guid}");
                 var slot = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == guid);
 
-                if (slot != null && slot.PluginConfigs != null) {
-                    return slot.PluginConfigs.FirstOrDefault(x => x.Key == _plugin.Name).Value;
+                if (slot != null && slot.PluginConfigs.ContainsKey(_plugin.Name)) {
+                    return slot.PluginConfigs[_plugin.Name];
                 } else {
-                    return new JObject();
+                    var set = _profile.ActiveProfile.SceneView.Sets.FirstOrDefault(x => x.Id == guid);
+
+                    if (set != null && set.PluginConfigs.ContainsKey(_plugin.Name)) {
+                        return set.PluginConfigs[_plugin.Name];
+                    }
                 }
+
+                return null;
             }
 
             protected override IEnumerable<(Guid id, JObject config)> RequestSlotSettings() {
@@ -254,10 +260,13 @@ namespace ObsMultiview.Services {
                 var slot = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == guid);
 
                 if (slot != null) {
-                    if (slot.PluginConfigs == null)
-                        slot.PluginConfigs = new Dictionary<string, JObject>();
-
                     slot.PluginConfigs[_plugin.Name] = config;
+                } else {
+                    var set = _profile.ActiveProfile.SceneView.Sets.FirstOrDefault(x => x.Id == guid);
+
+                    if (set != null) {
+                        set.PluginConfigs[_plugin.Name] = config;
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ObsMultiview.Plugins {
@@ -27,10 +28,12 @@ namespace ObsMultiview.Plugins {
         /// Is not triggered by slots but instead triggers a slot
         /// </summary>
         Trigger,
+
         /// <summary>
         /// Gets triggered when a slot is activated
         /// </summary>
         State,
+
         /// <summary>
         /// Gets triggered when a slot gets activated or deactivated
         /// </summary>
@@ -64,7 +67,7 @@ namespace ObsMultiview.Plugins {
         /// The global settings of this plugin
         /// </summary>
         public T Settings {
-            get { return (T) GetValue(SettingsProperty); }
+            get { return (T)GetValue(SettingsProperty); }
             set { SetValue(SettingsProperty, value); }
         }
 
@@ -97,7 +100,7 @@ namespace ObsMultiview.Plugins {
             nameof(Settings), typeof(T), typeof(SlotSettingsControl<T>), new PropertyMetadata(default(T)));
 
         public T Settings {
-            get { return (T) GetValue(SettingsProperty); }
+            get { return (T)GetValue(SettingsProperty); }
             set { SetValue(SettingsProperty, value); }
         }
 
@@ -112,9 +115,11 @@ namespace ObsMultiview.Plugins {
         /// <remarks>ID is not persistent through restarts</remarks>
         protected Guid SlotID { get; }
 
-        protected SlotSettingsControl(CommandFacade commandFacade, Guid slotID) {
+        protected SlotSettingsControl(CommandFacade commandFacade, Guid? slotID) {
+            if(slotID == null) throw new ArgumentNullException(nameof(slotID));
+
             CommandFacade = commandFacade;
-            SlotID = slotID;
+            SlotID = slotID.Value;
         }
 
         /// <inheritdoc/>
@@ -232,7 +237,7 @@ namespace ObsMultiview.Plugins {
         /// </summary>
         /// <param name="slot">The slot id</param>
         /// <returns></returns>
-        public abstract SettingsControl GetSlotSettings(Guid slot);
+        public abstract SettingsControl GetSlotSettings(Guid? slot);
 
         /// <summary>
         /// Set the command facade for this plugin. Can only be set once (during initialization)
@@ -267,158 +272,68 @@ namespace ObsMultiview.Plugins {
         public sealed override PluginTriggerType TriggerType => PluginTriggerType.Trigger;
     }
 
+    public abstract class StatePluginBase : PluginBase {
+        public sealed override PluginTriggerType TriggerType => PluginTriggerType.State;
+
+        public abstract void ActiveSettingsChanged(JObject settings);
+
+        public abstract void PrepareSettings(JObject preview, JObject live);
+    }
+
     /// <summary>
     /// Plugin base for State-Type plugins
     /// </summary>
-    public abstract class StatePluginBase : PluginBase {
-        public sealed override PluginTriggerType TriggerType => PluginTriggerType.State;
+    public abstract class StatePluginBase<T> : StatePluginBase where T : class {
+        public override void ActiveSettingsChanged(JObject settings) {
+            ActiveSettingsChanged(settings?.ToObject<T>());
+        }
+
+        public override void PrepareSettings(JObject preview, JObject live) {
+            PrepareSettings(preview?.ToObject<T>(), live?.ToObject<T>());
+        }
 
         /// <summary>
         /// Gets triggered when the live-slot changes
         /// </summary>
         /// <param name="slot">The name of the slot</param>
-        public abstract void ActiveSlotChanged(Guid slot);
+        protected abstract void ActiveSettingsChanged(T slot);
+
+        /// <summary>
+        /// Gets triggered when the preview slot changes to prepare for transitions
+        /// </summary>
+        /// <param name="preview"></param>
+        /// <param name="live"></param>
+        protected abstract void PrepareSettings(T preview, T live);
     }
 
     public abstract class ChangePluginBase : PluginBase {
         public sealed override PluginTriggerType TriggerType => PluginTriggerType.Change;
+
+        public abstract void OnSlotExit(JObject slot, JObject next);
+        public abstract void OnSlotEnter(JObject slot, JObject previous);
+    }
+
+    public abstract class ChangePluginBase<T> : ChangePluginBase where T : class {
+        public sealed override void OnSlotExit(JObject slot, JObject next) {
+            OnSlotExit(slot?.ToObject<T>(), next?.ToObject<T>());
+        }
+
+        public sealed override void OnSlotEnter(JObject slot, JObject previous) {
+            OnSlotEnter(slot?.ToObject<T>(), previous?.ToObject<T>());
+        }
 
         /// <summary>
         /// Triggered when exiting a live slot
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="next"></param>
-        public abstract void OnSlotExit(Guid slot, Guid? next);
+        protected abstract void OnSlotExit(T slot, T next);
 
         /// <summary>
         /// Triggered when entering a new slot
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="previous"></param>
-        public abstract void OnSlotEnter(Guid slot, Guid? previous);
-    }
-
-    /// <summary>
-    /// A facade to interface with the normal application
-    /// </summary>
-    public abstract class CommandFacade {
-        /// <summary>
-        /// Fired when the settings have changed
-        /// </summary>
-        public event Action<string> SettingsChanged;
-
-        /// <summary>
-        /// Fired when a slot config has changed
-        /// </summary>
-        public event Action<Guid> SlotConfigChanged;
-
-        /// <summary>
-        /// The logging instance for this plugin
-        /// </summary>
-        public ILogger Logger { get; protected set; }
-
-        /// <summary>
-        /// Request settings
-        /// </summary>
-        /// <typeparam name="T">The settings class</typeparam>
-        /// <param name="subtype">The subtype to fetch or null for the default settings</param>
-        /// <returns></returns>
-        public T RequestSettings<T>(string subtype = null) {
-            var json = RequestSettings(subtype);
-
-            if (json != null) {
-                return json.ToObject<T>();
-            } else {
-                return new JObject().ToObject<T>();
-            }
-        }
-
-        /// <summary>
-        /// Save settings
-        /// </summary>
-        /// <typeparam name="T">The settings class</typeparam>
-        /// <param name="settings">The global settings</param>
-        /// <param name="subtype">The subtype of the settings</param>
-        public void WriteSettings<T>(T settings, string subtype = null) {
-            var json = JObject.FromObject(settings);
-            WriteSettings(json, subtype);
-            OnSettingsChanged(subtype);
-        }
-
-        /// <summary>
-        /// Request settings for a slot
-        /// </summary>
-        /// <typeparam name="T">The settings class</typeparam>
-        /// <param name="slot">The slot id</param>
-        /// <returns></returns>
-        public T RequestSlotSetting<T>(Guid? slot) {
-            if (slot == null) return default(T);
-
-            var json = RequestSlotSetting(slot.Value);
-
-            if (json != null) {
-                return json.ToObject<T>();
-            } else {
-                return new JObject().ToObject<T>();
-            }
-        }
-
-        /// <summary>
-        /// Request all slot settings with their IDs
-        /// </summary>
-        /// <typeparam name="T">The settings class</typeparam>
-        /// <returns></returns>
-        public IEnumerable<(Guid id, T config)> RequestSlotSettings<T>() {
-            foreach (var item in RequestSlotSettings()) {
-                if (item.Item2 != null) {
-                    yield return (item.Item1, item.Item2.ToObject<T>());
-                }
-            }
-        }
-
-        /// <summary>
-        /// Save slot settings
-        /// </summary>
-        /// <typeparam name="T">The settings class</typeparam>
-        /// <param name="id">The slot ID</param>
-        /// <param name="config">The slot settings</param>
-        public void WriteSlotSettings<T>(Guid id, T config) {
-            WriteSlotSettings(id, JObject.FromObject(config));
-            OnSlotConfigChanged(id);
-        }
-
-        /// <summary>
-        /// Activate a scene in preview mode
-        /// </summary>
-        /// <param name="scene">The scene ID</param>
-        public abstract void ActivateScene(Guid scene);
-
-        /// <summary>
-        /// Switch the currently live and preview scenes
-        /// </summary>
-        public abstract void SwitchLive();
-
-        /// <inheritdoc cref="RequestSettings{T}"/>
-        protected abstract JObject RequestSettings(string subtype = null);
-
-        /// <inheritdoc cref="WriteSettings{T}"/>
-        protected abstract void WriteSettings(JObject settings, string subtype = null);
-
-        /// <inheritdoc cref="RequestSlotSetting{T}"/>
-        protected abstract JObject RequestSlotSetting(Guid slot);
-
-        /// <inheritdoc cref="RequestSlotSettings{T}"/>
-        protected abstract IEnumerable<(Guid id, JObject config)> RequestSlotSettings();
-
-        /// <inheritdoc cref="WriteSlotSettings{T}"/>
-        protected abstract void WriteSlotSettings(Guid id, JObject config);
-
-        private void OnSettingsChanged(string obj) {
-            SettingsChanged?.Invoke(obj);
-        }
-
-        private void OnSlotConfigChanged(Guid obj) {
-            SlotConfigChanged?.Invoke(obj);
-        }
+        protected abstract void OnSlotEnter(T slot, T previous);
     }
 }

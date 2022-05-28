@@ -1,5 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Windows.Media;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -11,17 +17,39 @@ namespace ObsMultiview.Data {
         /// <summary>
         /// Config options for a single slot
         /// </summary>
-        public class DSlot {
+        public class DSlot : INotifyPropertyChanged, IPluginSettingsProvider {
+            private string _name;
+
             /// <summary>
             /// Name of the slot
             /// </summary>
-            public string Name { get; set; }
+            public string Name {
+                get => _name;
+                set {
+                    if (value == _name) return;
+                    _name = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            public void SetPluginSettings(string pluginId, JObject pluginSettings) {
+                if (pluginSettings == null) {
+                    PluginConfigs.Remove(pluginId);
+                } else {
+                    PluginConfigs[pluginId] = pluginSettings;
+                }
+            }
 
             /// <summary>
             /// internal id of the slot. Not persistent during restarts
             /// </summary>
             [JsonIgnore]
             public Guid Id { get; }
+
+            /// <summary>
+            /// The id of the set this slot belongs to
+            /// </summary>
+            public Guid? SetId { get; set; }
 
             /// <summary>
             /// OBS config
@@ -36,6 +64,12 @@ namespace ObsMultiview.Data {
             public DSlot() {
                 Obs = new DSlotObs();
                 Id = Guid.NewGuid();
+                PluginConfigs = new();
+            }
+
+            [OnDeserialized]
+            private void OnDeserialized(StreamingContext context) {
+                if (PluginConfigs == null) PluginConfigs = new();
             }
 
             public static bool operator ==(DSlot a, DSlot b) {
@@ -44,6 +78,21 @@ namespace ObsMultiview.Data {
 
             public static bool operator !=(DSlot a, DSlot b) {
                 return !(a == b);
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            [NotifyPropertyChangedInvocator]
+            protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            public JObject GetPluginSettings(string pluginId) {
+                if (PluginConfigs.ContainsKey(pluginId)) {
+                    return PluginConfigs[pluginId];
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -72,9 +121,21 @@ namespace ObsMultiview.Data {
             public int Columns { get; set; } = 6;
 
             public List<DSlot> Slots { get; set; }
+            public List<Set> Sets { get; set; }
 
             public DSceneViewConfig() {
                 Slots = new List<DSlot>();
+                Sets = new List<Set>();
+                Sets.Add(new Set {
+                    Color = Colors.DarkGray,
+                    Name = "Neutral",
+                    Id = Guid.Empty
+                });
+            }
+
+            [OnDeserialized]
+            internal void OnDeserialized(StreamingContext context) {
+                Sets = Sets.DistinctBy(x => x.Id).ToList();
             }
         }
 
@@ -102,7 +163,7 @@ namespace ObsMultiview.Data {
 
             public DObsProfile(string id, int rows, int columns) {
                 Id = id;
-                SceneView = new DSceneViewConfig {Rows = rows, Columns = columns};
+                SceneView = new DSceneViewConfig { Rows = rows, Columns = columns };
             }
         }
 

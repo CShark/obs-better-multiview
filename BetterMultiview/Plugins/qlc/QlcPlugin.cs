@@ -20,22 +20,17 @@ namespace ObsMultiview.Plugins.qlc {
     /// - Can't easily fetch button state, because it's a) async and b) the response has no identifier as to which control it belongs to
     /// - Can't easily fetch widget type, because a) there is no identifier for the control that is associated with the response and b) they are localized (wtf?)
     /// </remarks>
-    public class QlcPlugin : ChangePluginBase {
-        public override void OnSlotExit(Guid slot, Guid? next) {
-            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
-            var nextSettings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(next);
-
+    public class QlcPlugin : ChangePluginBase<QlcSlotSettings> {
+        protected override void OnSlotExit(QlcSlotSettings settings, QlcSlotSettings? next) {
             foreach (var fkt in settings.ExitFunctions) {
                 // Only turn off functions that don't get triggered in the next scene
-                if (!(nextSettings?.EntryFunctions.Any(x =>
+                if (!(next?.EntryFunctions.Any(x =>
                         x.Function.Type == fkt.Function.Type && x.Function.ID == fkt.Function.ID) ?? false))
                     SetFkt(fkt.Function, fkt.Value);
             }
         }
 
-        public override void OnSlotEnter(Guid slot, Guid? previous) {
-            var settings = CommandFacade.RequestSlotSetting<QlcSlotSettings>(slot);
-
+        protected override void OnSlotEnter(QlcSlotSettings settings, QlcSlotSettings? previous) {
             foreach (var fkt in settings.EntryFunctions) {
                 SetFkt(fkt.Function, fkt.Value);
             }
@@ -168,7 +163,7 @@ namespace ObsMultiview.Plugins.qlc {
             return new GlobalSettings(CommandFacade);
         }
 
-        public override SettingsControl GetSlotSettings(Guid slot) {
+        public override SettingsControl GetSlotSettings(Guid? slot) {
             return new SlotSettings(this, CommandFacade, slot);
         }
 

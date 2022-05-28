@@ -8,7 +8,7 @@ namespace ObsMultiview.Plugins.KNX {
     /// <summary>
     /// A plugin to talk to a KNX/IP Interface
     /// </summary>
-    public class KnxPlugin : ChangePluginBase {
+    public class KnxPlugin : ChangePluginBase<KnxSlotSettings> {
         
         public override string Name => "KNX";
         public override string Author => "Nathanael Schneider";
@@ -65,21 +65,17 @@ namespace ObsMultiview.Plugins.KNX {
             return new GlobalSettings(CommandFacade);
         }
 
-        public override SettingsControl GetSlotSettings(Guid slot) {
+        public override SettingsControl GetSlotSettings(Guid? slot) {
             return new SlotSettings(this, CommandFacade, slot);
         }
 
-        public override void OnSlotExit(Guid slot, Guid? next) {
-            var config = CommandFacade.RequestSlotSetting<KnxSlotSettings>(slot);
-
+        protected override void OnSlotExit(KnxSlotSettings config, KnxSlotSettings? next) {
             foreach (var group in config.Groups.Where(x => x.OnExit != null && x.OnExit.Length > 0)) {
                 _knx.Action(group.Group.GroupAddress, group.OnExit);
             }
         }
 
-        public override void OnSlotEnter(Guid slot, Guid? previous) {
-            var config = CommandFacade.RequestSlotSetting<KnxSlotSettings>(slot);
-
+        protected override void OnSlotEnter(KnxSlotSettings config, KnxSlotSettings? previous) {
             foreach (var group in config.Groups.Where(x => x.OnEntry != null && x.OnEntry.Length > 0)) {
                 _knx.Action(group.Group.GroupAddress, group.OnEntry);
             }

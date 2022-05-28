@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using ObsMultiview.Data;
 using ObsMultiview.Plugins;
 
@@ -16,6 +18,7 @@ namespace ObsMultiview.Services {
 
         private UserProfile.DSlot _previewScene;
         private UserProfile.DSlot _liveScene;
+        private Dictionary<PluginBase, IPluginSettingsProvider> _activeSettings = new();
 
         /// <summary>
         /// Fired when the active preview changes
@@ -93,15 +96,18 @@ namespace ObsMultiview.Services {
             _logger.LogDebug($"Unapplying scene {slot?.Name} to {next?.Name}");
 
             foreach (var plugin in
-                     _plugins.Plugins.Where(x =>
-                         (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false) &&
-                         x.Plugin.TriggerType == PluginTriggerType.Change)) {
-
+                     _plugins.Plugins.Where(x => x.Active && x.Plugin.TriggerType == PluginTriggerType.Change)) {
                 if (plugin.Plugin is ChangePluginBase cplug) {
-                    try {
-                        cplug.OnSlotExit(slot.Id, next?.Id);
-                    } catch (Exception ex) {
-                        _logger.LogError(ex,$"Failed to trigger SlotExit for plugin {cplug.Name}");
+                    var current = ResolveActiveSettings(cplug, slot);
+                    var nextS = ResolveActiveSettings(cplug, next);
+
+                    if (_activeSettings[cplug] != nextS) {
+                        try {
+                            cplug.OnSlotExit(current.GetPluginSettings(cplug.Name),
+                                nextS.GetPluginSettings(cplug.Name));
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, $"Failed to trigger SlotExit for plugin {cplug.Name}");
+                        }
                     }
                 }
             }
@@ -123,27 +129,63 @@ namespace ObsMultiview.Services {
             }
 
             foreach (var plugin in
-                     _plugins.Plugins.Where(x => (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)
-                                                 && (x.Plugin.TriggerType == PluginTriggerType.Change))) {
+                     _plugins.Plugins.Where(x => x.Active && x.Plugin.TriggerType == PluginTriggerType.Change)) {
                 if (plugin.Plugin is ChangePluginBase cplug) {
-                    try {
-                        cplug.OnSlotEnter(slot.Id, prev?.Id);
-                    } catch (Exception ex) {
-                        _logger.LogError(ex,$"Failed to trigger SlotEnter for plugin {cplug.Name}");
+                    var next = ResolveActiveSettings(cplug, slot);
+                    var prevS = ResolveActiveSettings(cplug, prev);
+
+                    if (_activeSettings[cplug] != next) {
+                        try {
+                            cplug.OnSlotEnter(next.GetPluginSettings(cplug.Name), prevS.GetPluginSettings(cplug.Name));
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, $"Failed to trigger SlotEnter for plugin {cplug.Name}");
+                        }
+
+                        _activeSettings[cplug] = next;
                     }
                 }
             }
 
             foreach (var plugin in
-                     _plugins.Plugins.Where(x => (slot?.PluginConfigs?.ContainsKey(x.Plugin.Name) ?? false)
-                                                 && (x.Plugin.TriggerType == PluginTriggerType.State))) {
+                     _plugins.Plugins.Where(x => x.Active && x.Plugin.TriggerType == PluginTriggerType.State)) {
                 if (plugin.Plugin is StatePluginBase splug) {
-                    try {
-                        splug.ActiveSlotChanged(slot.Id);
-                    } catch (Exception ex) {
-                        _logger.LogError(ex,$"Failed to apply slot state for plugin {splug.Name}");
+                    var config = ResolveActiveSettings(splug, slot);
+
+                    if (_activeSettings[splug] != config) {
+                        try {
+                            splug.ActiveSettingsChanged(config.GetPluginSettings(splug.Name));
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, $"Failed to apply slot state for plugin {splug.Name}");
+                        }
+
+                        _activeSettings[splug] = config;
                     }
                 }
+            }
+        }
+
+        private IPluginSettingsProvider ResolveActiveSettings(PluginBase plugin, UserProfile.DSlot slot) {
+            if (slot == null) return null;
+
+            if (!_activeSettings.ContainsKey(plugin))
+                _activeSettings.Add(plugin, null);
+
+            if (slot.PluginConfigs.ContainsKey(plugin.Name) && slot.PluginConfigs[plugin.Name] != null) {
+                return slot;
+            } else if (slot.SetId != null) {
+                var set = _profile.ActiveProfile.SceneView.Sets.FirstOrDefault(x => x.Id == slot.SetId);
+
+                if (set != null && set.Id == Guid.Empty) {
+                    _activeSettings.TryGetValue(plugin, out var config);
+                    return config;
+                } else if (set != null && set.PluginConfigs.ContainsKey(plugin.Name) &&
+                           set.PluginConfigs[plugin.Name] != null) {
+                    return set;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
             }
         }
 

@@ -16,7 +16,7 @@ namespace ObsMultiview.Plugins.KNX {
             set { SetValue(PluginProperty, value); }
         }
 
-        public SlotSettings(KnxPlugin plugin, CommandFacade commandFacade, Guid slotID) : base(commandFacade, slotID) {
+        public SlotSettings(KnxPlugin plugin, CommandFacade commandFacade, Guid? slotID) : base(commandFacade, slotID) {
             Plugin = plugin;
             InitializeComponent();
         }
