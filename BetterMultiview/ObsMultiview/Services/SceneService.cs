@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using ObsMultiview.Data;
+using ObsMultiview.Extensions;
 using ObsMultiview.Plugins;
 
 namespace ObsMultiview.Services {
@@ -18,7 +19,9 @@ namespace ObsMultiview.Services {
 
         private UserProfile.DSlot _previewScene;
         private UserProfile.DSlot _liveScene;
-        private Dictionary<PluginBase, IPluginSettingsProvider> _activeSettings = new();
+
+        private NullDictionary<PluginBase, (IPluginSettingsProvider set, IPluginSettingsProvider slot)> _activeSettings =
+            new();
 
         /// <summary>
         /// Fired when the active preview changes
@@ -98,15 +101,24 @@ namespace ObsMultiview.Services {
             foreach (var plugin in
                      _plugins.Plugins.Where(x => x.Active && x.Plugin.TriggerType == PluginTriggerType.Change)) {
                 if (plugin.Plugin is ChangePluginBase cplug) {
-                    var current = ResolveActiveSettings(cplug, slot);
-                    var nextS = ResolveActiveSettings(cplug, next);
+                    var config = ResolveActiveSettings(cplug, next);
 
-                    if (_activeSettings[cplug] != nextS) {
+                    // first exit slot, then set
+                    if (config.slot != _activeSettings?[cplug].slot) {
                         try {
-                            cplug.OnSlotExit(current.GetPluginSettings(cplug.Name),
-                                nextS.GetPluginSettings(cplug.Name));
+                            cplug.OnSlotExit(_activeSettings?[cplug].slot?.GetPluginSettings(cplug.Name),
+                                config.slot?.GetPluginSettings(cplug.Name));
                         } catch (Exception ex) {
                             _logger.LogError(ex, $"Failed to trigger SlotExit for plugin {cplug.Name}");
+                        }
+                    }
+
+                    if (config.set != _activeSettings?[cplug].set) {
+                        try {
+                            cplug.OnSlotExit(_activeSettings?[cplug].set?.GetPluginSettings(cplug.Name),
+                                config.set?.GetPluginSettings(cplug.Name));
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, $"Failed to trigger SetExit for plugin {cplug.Name}");
                         }
                     }
                 }
@@ -131,18 +143,28 @@ namespace ObsMultiview.Services {
             foreach (var plugin in
                      _plugins.Plugins.Where(x => x.Active && x.Plugin.TriggerType == PluginTriggerType.Change)) {
                 if (plugin.Plugin is ChangePluginBase cplug) {
-                    var next = ResolveActiveSettings(cplug, slot);
-                    var prevS = ResolveActiveSettings(cplug, prev);
+                    var config = ResolveActiveSettings(cplug, slot);
 
-                    if (_activeSettings[cplug] != next) {
+                    // first enter set, then slot
+                    if (config.set != _activeSettings?[cplug].set) {
                         try {
-                            cplug.OnSlotEnter(next.GetPluginSettings(cplug.Name), prevS.GetPluginSettings(cplug.Name));
+                            cplug.OnSlotEnter(config.set?.GetPluginSettings(cplug.Name),
+                                _activeSettings?[cplug].set?.GetPluginSettings(cplug.Name));
                         } catch (Exception ex) {
                             _logger.LogError(ex, $"Failed to trigger SlotEnter for plugin {cplug.Name}");
                         }
-
-                        _activeSettings[cplug] = next;
                     }
+
+                    if (config.slot != _activeSettings?[cplug].slot) {
+                        try {
+                            cplug.OnSlotEnter(config.slot?.GetPluginSettings(cplug.Name),
+                                _activeSettings?[cplug].slot?.GetPluginSettings(cplug.Name));
+                        } catch (Exception ex) {
+                            _logger.LogError(ex, $"Failed to trigger SlotEnter for plugin {cplug.Name}");
+                        }
+                    }
+
+                    _activeSettings[cplug] = config;
                 }
             }
 
@@ -151,42 +173,45 @@ namespace ObsMultiview.Services {
                 if (plugin.Plugin is StatePluginBase splug) {
                     var config = ResolveActiveSettings(splug, slot);
 
-                    if (_activeSettings[splug] != config) {
-                        try {
-                            splug.ActiveSettingsChanged(config.GetPluginSettings(splug.Name));
-                        } catch (Exception ex) {
-                            _logger.LogError(ex, $"Failed to apply slot state for plugin {splug.Name}");
-                        }
-
-                        _activeSettings[splug] = config;
+                    try {
+                        splug.ActiveSettingsChanged((config.slot ?? config.set).GetPluginSettings(splug.Name),
+                            (_activeSettings?[splug].slot ?? _activeSettings?[splug].set)
+                            ?.GetPluginSettings(splug.Name));
+                    } catch (Exception ex) {
+                        _logger.LogError(ex, $"Failed to apply slot state for plugin {splug.Name}");
                     }
+
+                    _activeSettings[splug] = config;
                 }
             }
         }
 
-        private IPluginSettingsProvider ResolveActiveSettings(PluginBase plugin, UserProfile.DSlot slot) {
-            if (slot == null) return null;
+        private (IPluginSettingsProvider set, IPluginSettingsProvider slot) ResolveActiveSettings(PluginBase plugin,
+            UserProfile.DSlot slot) {
+            if (slot == null) return (null, null);
+            (IPluginSettingsProvider set, IPluginSettingsProvider slot) result = (null, null);
 
             if (!_activeSettings.ContainsKey(plugin))
-                _activeSettings.Add(plugin, null);
+                _activeSettings.Add(plugin, (null, null));
+
 
             if (slot.PluginConfigs.ContainsKey(plugin.Name) && slot.PluginConfigs[plugin.Name] != null) {
-                return slot;
-            } else if (slot.SetId != null) {
+                result.slot = slot;
+            }
+
+            if (slot.SetId != null) {
                 var set = _profile.ActiveProfile.SceneView.Sets.FirstOrDefault(x => x.Id == slot.SetId);
 
                 if (set != null && set.Id == Guid.Empty) {
                     _activeSettings.TryGetValue(plugin, out var config);
-                    return config;
+                    result.set = config.set;
                 } else if (set != null && set.PluginConfigs.ContainsKey(plugin.Name) &&
                            set.PluginConfigs[plugin.Name] != null) {
-                    return set;
-                } else {
-                    return null;
+                    result.set = set;
                 }
-            } else {
-                return null;
             }
+
+            return result;
         }
 
         public void ClearPreview() {

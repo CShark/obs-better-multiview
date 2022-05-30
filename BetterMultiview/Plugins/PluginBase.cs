@@ -275,7 +275,7 @@ namespace ObsMultiview.Plugins {
     public abstract class StatePluginBase : PluginBase {
         public sealed override PluginTriggerType TriggerType => PluginTriggerType.State;
 
-        public abstract void ActiveSettingsChanged(JObject settings);
+        public abstract void ActiveSettingsChanged(JObject next, JObject previous);
 
         public abstract void PrepareSettings(JObject preview, JObject live);
     }
@@ -284,8 +284,13 @@ namespace ObsMultiview.Plugins {
     /// Plugin base for State-Type plugins
     /// </summary>
     public abstract class StatePluginBase<T> : StatePluginBase where T : class {
-        public override void ActiveSettingsChanged(JObject settings) {
-            ActiveSettingsChanged(settings?.ToObject<T>());
+        public override void ActiveSettingsChanged(JObject next, JObject previous) {
+            var nextT = next?.ToObject<T>();
+            var prevT = previous?.ToObject<T>();
+
+            if (nextT != null && !nextT.Equals(prevT)) {
+                ActiveSettingsChanged(nextT);
+            }
         }
 
         public override void PrepareSettings(JObject preview, JObject live) {
