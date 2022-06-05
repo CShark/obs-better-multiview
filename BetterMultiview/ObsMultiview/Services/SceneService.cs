@@ -174,7 +174,7 @@ namespace ObsMultiview.Services {
                     var config = ResolveActiveSettings(splug, slot);
 
                     try {
-                        splug.ActiveSettingsChanged((config.slot ?? config.set).GetPluginSettings(splug.Name),
+                        splug.ActiveSettingsChanged((config.slot ?? config.set)?.GetPluginSettings(splug.Name),
                             (_activeSettings?[splug].slot ?? _activeSettings?[splug].set)
                             ?.GetPluginSettings(splug.Name));
                     } catch (Exception ex) {

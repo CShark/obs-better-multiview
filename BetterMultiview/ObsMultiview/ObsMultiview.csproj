@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
