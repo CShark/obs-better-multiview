@@ -61,10 +61,10 @@ namespace ObsMultiview.Services {
             _logger.LogDebug("Trying to connect to OBS Websocket...");
             // Try to connect.
             try {
-                while (true) {
-                    _socket.Connect($"ws://{_settings.Connection.IP}:{_settings.Connection.Port}",
-                        _settings.Connection.Password);
+                _socket.ConnectAsync($"ws://{_settings.Connection.IP}:{_settings.Connection.Port}",
+                    _settings.Connection.Password);
 
+                while (true) {
                     if (_socket.IsConnected) {
                         break;
                     } else {

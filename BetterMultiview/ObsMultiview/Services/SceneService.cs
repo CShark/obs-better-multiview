@@ -76,6 +76,12 @@ namespace ObsMultiview.Services {
             var scene = _profile.ActiveProfile.SceneView.Slots.FirstOrDefault(x => x.Id == id);
 
             if (scene != null) {
+                try {
+                    _obs.WebSocket.SetCurrentPreviewScene(scene.Obs.Scene);
+                } catch {
+                    // Scene does not exist?
+                }
+
                 OnPreviewChanged(scene);
             }
         }
@@ -134,7 +140,7 @@ namespace ObsMultiview.Services {
 
             if (!string.IsNullOrEmpty(slot?.Obs.Scene)) {
                 if (_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == slot.Obs.Scene)) {
-                    _obs.WebSocket.SetCurrentScene(slot.Obs.Scene);
+                    _obs.WebSocket.SetCurrentProgramScene(slot.Obs.Scene);
                 } else {
                     _logger.LogError("Scene does not exist in OBS");
                 }

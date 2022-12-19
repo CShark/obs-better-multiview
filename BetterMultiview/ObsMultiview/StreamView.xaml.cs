@@ -98,7 +98,7 @@ namespace ObsMultiview {
             _logger.LogDebug("Activating OBS scene projector");
             var window = _win32.GetObsWindows("- multiview").FirstOrDefault();
             if (window.handle == IntPtr.Zero) {
-                _obs.WebSocket.OpenProjector("scene", 0, null, "multiview");
+                _obs.WebSocket.OpenSourceProjector( "multiview",null,0);
                 window = _win32.GetObsWindows("- multiview").FirstOrDefault();
                 _win32.HideAltTab(window.handle);
 
@@ -124,7 +124,7 @@ namespace ObsMultiview {
 
         private void SceneCollectionChanged(UserProfile.DObsProfile profile) {
             // Reconfigure view
-            Dispatcher.Invoke(() => PresetName = profile.Id);
+            Dispatcher.Invoke(() => PresetName = profile?.Id);
             var collection = _obs.WebSocket.GetCurrentSceneCollection();
 
             Dispatcher.InvokeAsync(() => {
@@ -184,13 +184,12 @@ namespace ObsMultiview {
             var preview = slot?.Obs.Scene;
             if (items.Count != 1 || items[0].SourceName != preview) {
                 foreach (var item in items) {
-                    _obs.WebSocket.DeleteSceneItem(new SceneItemStub { SourceName = item.SourceName, ID = item.ItemId },
-                        "preview");
+                    _obs.WebSocket.RemoveSceneItem("preview", item.ItemId);
                 }
 
                 if (!string.IsNullOrEmpty(preview)) {
                     if (_obs.WebSocket.GetSceneList().Scenes.Any(x => x.Name == preview)) {
-                        _obs.WebSocket.AddSceneItem("preview", preview);
+                        _obs.WebSocket.CreateSceneItem("preview", preview);
                     } else {
                         _sceneSlots[slot].IsInvalid = true;
                     }
@@ -208,12 +207,11 @@ namespace ObsMultiview {
             //clear items
             var items = _obs.WebSocket.GetSceneItemList("multiview");
             foreach (var item in items) {
-                _obs.WebSocket.DeleteSceneItem(new SceneItemStub { SourceName = item.SourceName, ID = item.ItemId },
-                    "multiview");
+                _obs.WebSocket.RemoveSceneItem("multiview", item.ItemId);
             }
 
             // some math
-            var videoInfo = _obs.WebSocket.GetVideoInfo();
+            var videoInfo = _obs.WebSocket.GetVideoSettings();
             var offsetTop = videoInfo.BaseHeight / 3f;
             var height = videoInfo.BaseHeight / 3f * 2f;
             var width = (float)videoInfo.BaseWidth;
@@ -222,17 +220,17 @@ namespace ObsMultiview {
 
             // Add preview
             {
-                var id = _obs.WebSocket.AddSceneItem("multiview", "preview");
-                var props = _obs.WebSocket.GetSceneItemProperties(id, "multiview");
+                var id = _obs.WebSocket.CreateSceneItem("multiview", "preview");
+                var props = _obs.WebSocket.GetSceneItemTransform("multiview", id);
 
-                props.Bounds.Height = offsetTop - (10 / scaleFromCanvas.Y);
-                props.Bounds.Width = width / 3f - (10 / scaleFromCanvas.X);
-                props.Bounds.Type = SceneItemBoundsType.OBS_BOUNDS_SCALE_INNER;
+                props.BoundsHeight = offsetTop - (10 / scaleFromCanvas.Y);
+                props.BoundsWidth = width / 3f - (10 / scaleFromCanvas.X);
+                props.BoundsType = SceneItemBoundsType.OBS_BOUNDS_SCALE_INNER;
 
-                props.Position.X = (width / 6f) + (5 / scaleFromCanvas.X);
-                props.Position.Y = 5 / scaleFromCanvas.Y;
+                props.X = (width / 6f) + (5 / scaleFromCanvas.X);
+                props.Y = 5 / scaleFromCanvas.Y;
 
-                _obs.WebSocket.SetSceneItemProperties(props, id, "multiview");
+                _obs.WebSocket.SetSceneItemTransform("multiview", id, props);
             }
 
             // Add slots
@@ -253,17 +251,17 @@ namespace ObsMultiview {
                             continue;
                         }
 
-                        var id = _obs.WebSocket.AddSceneItem("multiview", slot.Obs.Scene);
-                        var props = _obs.WebSocket.GetSceneItemProperties(id, "multiview");
+                        var id = _obs.WebSocket.CreateSceneItem("multiview", slot.Obs.Scene);
+                        var props = _obs.WebSocket.GetSceneItemTransform("multiview", id);
 
-                        props.Position.X = (i % cols) * (width / cols);
-                        props.Position.Y = (i / cols) * (height / rows) + offsetTop;
+                        props.X = (i % cols) * (width / cols);
+                        props.Y = (i / cols) * (height / rows) + offsetTop;
 
-                        props.Bounds.Type = SceneItemBoundsType.OBS_BOUNDS_SCALE_INNER;
-                        props.Bounds.Width = width / cols;
-                        props.Bounds.Height = height / rows;
+                        props.BoundsType = SceneItemBoundsType.OBS_BOUNDS_SCALE_INNER;
+                        props.BoundsWidth = width / cols;
+                        props.BoundsHeight = height / rows;
 
-                        _obs.WebSocket.SetSceneItemProperties(props, id, "multiview");
+                        _obs.WebSocket.SetSceneItemTransform("multiview", id, props);
                     }
                 }
             }

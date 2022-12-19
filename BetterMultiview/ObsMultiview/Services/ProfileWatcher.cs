@@ -27,7 +27,7 @@ namespace ObsMultiview.Services {
             _profile = profile;
             _logger = logger;
 
-            _obs.WebSocket.SceneCollectionChanged += (sender, args) => { ResolveConfig(); };
+            _obs.WebSocket.CurrentSceneCollectionChanged += (sender, args) => { ResolveConfig(); };
 
             _obs.WebSocket.Connected += (sender, args) => { ResolveConfig(); };
 
