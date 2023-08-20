@@ -1,8 +1,0 @@
-{
-  "LogLevel":  "Information", 
-  "Connection": {
-    "IP": "127.0.0.1",
-    "Port": 4444,
-    "Process": "obs64"
-  }
-}
