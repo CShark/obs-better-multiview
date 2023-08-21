@@ -1,3 +1,7 @@
 [submodule "obs-websocket-dotnet"]
 	path = obs-websocket-dotnet
 	url = git@github.com:CShark/obs-websocket-dotnet.git
+[submodule "BetterMultiview/NetObsBindings"]
+	path = BetterMultiview/NetObsBindings
+	url = https://github.com/kostya9/NetObsBindings.git
+	branch = main
