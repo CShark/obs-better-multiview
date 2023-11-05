@@ -4,8 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Avalonia;
-using BetterMultiview.Views;
+using BetterMultiview.Data;
+using BetterMultiview.Dialogs;
 using ObsInterop;
+
 namespace BetterMultiview.Desktop;
 
 class Plugin {
@@ -18,7 +20,6 @@ class Plugin {
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
-
 
     private static nint _obsModulePointer;
 
@@ -51,18 +52,23 @@ class Plugin {
                 Log(ex.InnerException.StackTrace);
             }
         }
+        
+        Trace.WriteLine("Initializing Trace logger");
 
-        var window = new MainWindow();
+        var window = new Multiview();
         window.Show();
 
         return true;
     }
 
-    private static unsafe void Log(string text) {
-        text = $"[BetterMultiview]: {text}";
-        var asciiBytes = Encoding.UTF8.GetBytes(text);
-        fixed (byte* logMessagePtr = asciiBytes) {
-            ObsBase.blog(ObsBase.LOG_INFO, (sbyte*)logMessagePtr);
+    public static unsafe void Log(string text) {
+        try {
+            text = $"[BetterMultiview]: {text}";
+            fixed (sbyte* logMessagePtr = text.GetBytes()) {
+                ObsBase.blog(ObsBase.LOG_INFO, logMessagePtr);
+            }
+        } catch {
+            Console.WriteLine(text);
         }
     }
 

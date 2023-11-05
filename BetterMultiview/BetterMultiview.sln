@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetObsBindings", "NetObsBin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterMultiview", "BetterMultiview\BetterMultiview.csproj", "{0731BE09-0E58-4B7E-A137-4178A2BB0D57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMultiview.Design", "BetterMultiview.Design\BetterMultiview.Design.csproj", "{1193FBA9-5FB4-4636-BEE5-F71AC6DB2F56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0731BE09-0E58-4B7E-A137-4178A2BB0D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0731BE09-0E58-4B7E-A137-4178A2BB0D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0731BE09-0E58-4B7E-A137-4178A2BB0D57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1193FBA9-5FB4-4636-BEE5-F71AC6DB2F56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1193FBA9-5FB4-4636-BEE5-F71AC6DB2F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1193FBA9-5FB4-4636-BEE5-F71AC6DB2F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1193FBA9-5FB4-4636-BEE5-F71AC6DB2F56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

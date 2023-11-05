@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mv="using:BetterMultiview"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="BetterMultiview.Multiview" Icon="/Assets/icon.ico"
+        Title="Multiview" Background="Transparent">
+    <Grid>
+        <Grid x:Name="WorkingArea" VerticalAlignment="Top" HorizontalAlignment="Center" Background="#01000000"
+              PointerPressed="WorkingArea_OnPointerPressed" PointerMoved="WorkingArea_OnPointerMoved">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Store Preset" />
+                    <MenuItem Header="Preview" />
+                    <MenuItem Header="Live View" Click="CreateLiveView_OnClick"/>
+                    <Separator />
+                    <MenuItem Header="Clear Preset" Click="ClearSelection_OnClick"/>
+                </ContextMenu>
+            </Grid.ContextMenu>
+        </Grid>
+        <mv:ControlPad VerticalAlignment="Bottom"></mv:ControlPad>
+    </Grid>
+</Window>

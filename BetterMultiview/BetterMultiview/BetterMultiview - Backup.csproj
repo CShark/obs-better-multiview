@@ -7,6 +7,7 @@
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 
+
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
@@ -25,12 +26,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\NetObsBindings\NetObsBindings\NetObsBindings.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Update="Controls\PresetButton.axaml.cs">
 	    <DependentUpon>PresetButton.axaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Bindings\Obs\" />
 	</ItemGroup>
 </Project>

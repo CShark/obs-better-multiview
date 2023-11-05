@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ctrl="using:BetterMultiview.Controls"
+             xmlns:presets="clr-namespace:BetterMultiview.Data.Presets"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BetterMultiview.Controls.PresetGroup"
+             DataContext="{Binding $self}"
+             x:DataType="ctrl:PresetGroup"
+             x:CompileBindings="True"
+             BorderBrush="DarkGray" BorderThickness="0,0,1,0">
+    <Grid RowDefinitions="32,*">
+        <Border Background="DimGray">
+            <TextBlock VerticalAlignment="Center" Margin="5,0" Text="{Binding Header}"></TextBlock>
+        </Border>
+
+        <ItemsControl ItemsSource="{Binding Presets}" Grid.Row="1" Margin="5">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding Rows}"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="presets:PresetSlot">
+                    <ctrl:PresetButton Margin="5" IsUnbound="{Binding !HasPreset}" 
+                                       IsOnAir="{Binding IsOnAir}"
+                                       ButtonState="{Binding ButtonState}"
+                                       Content="{Binding Preset.Title}">
+                        <ctrl:PresetButton.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Assign" Click="AssignEdit_OnClick" IsVisible="{Binding !HasPreset}" />
+                                <MenuItem Header="Edit" Click="AssignEdit_OnClick" IsVisible="{Binding HasPreset}" />
+                                <MenuItem Header="Clear" Click="Clear_OnClick" IsEnabled="{Binding HasPreset}" />
+                            </ContextMenu>
+                        </ctrl:PresetButton.ContextMenu>
+                    </ctrl:PresetButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

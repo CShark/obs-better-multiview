@@ -2,10 +2,6 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-
-using BetterMultiview.ViewModels;
-using BetterMultiview.Views;
-
 namespace BetterMultiview;
 
 public partial class App : Application
@@ -23,17 +19,11 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel()
-            };
+            desktop.MainWindow = new Multiview();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
-            };
+            singleViewPlatform.MainView = new Multiview();
         }
 
         base.OnFrameworkInitializationCompleted();

@@ -1,0 +1,237 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:BetterMultiview.Controls">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Styles>
+                <Style Selector="controls|PresetButton">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </StackPanel.Styles>
+            <StackPanel>
+                <controls:PresetButton IsUnbound="True" />
+                <controls:PresetButton ButtonState="Preview" />
+                <controls:PresetButton IsOnAir="True" />
+                <controls:PresetButton CanToggle="True" ButtonState="Toggle" />
+                <controls:PresetButton IsOnAir="True" ButtonState="Preview" />
+            </StackPanel>
+            <StackPanel>
+                <controls:PresetButton>
+                    BLK
+                </controls:PresetButton>
+                <controls:PresetButton ButtonState="Preview">
+                    Cam1
+                </controls:PresetButton>
+                <controls:PresetButton IsOnAir="True">
+                    Fill
+                </controls:PresetButton>
+                <controls:PresetButton CanToggle="True" ButtonState="PreviewOff" />
+                <controls:PresetButton IsOnAir="True" CanToggle="True" ButtonState="Toggle" />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme TargetType="controls:PresetButton" x:Key="{x:Type controls:PresetButton}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Grid>
+                            <Border Margin="-15" x:Name="Glow" Background="Transparent" IsHitTestVisible="False" />
+                            <Border Background="Gray" CornerRadius="5" ClipToBounds="True" x:Name="Root">
+                                <Grid ClipToBounds="True">
+                                    <Border Margin="3" Background="LightGray" CornerRadius="4" BorderThickness="2"
+                                            x:Name="Inner">
+                                        <Border.BorderBrush>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="Transparent" Offset="0.9" />
+                                                <GradientStop Color="#88333333" Offset="1" />
+                                            </RadialGradientBrush>
+                                        </Border.BorderBrush>
+                                    </Border>
+
+
+                                    <Border CornerRadius="24" Margin="1" BorderBrush="#88FFFFFF" BorderThickness="2"
+                                            x:Name="Dish">
+                                        <Border.Background>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="#AAFFFFFF" Offset="0.2" />
+                                                <GradientStop Color="#88AAAAAA" Offset="1" />
+                                            </RadialGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+
+                                    <Border BorderBrush="#88FFFFFF" BorderThickness="2" Margin="-4" CornerRadius="100"
+                                            x:Name="OuterDish">
+                                    </Border>
+
+                                    <Border Background="#EB2B2B" CornerRadius="10" Width="10" Height="10"
+                                            BorderThickness="1" BorderBrush="#51FFFFFF" Margin="5"
+                                            x:Name="OnAirTag"
+                                            VerticalAlignment="Top" HorizontalAlignment="Left" Opacity="0">
+                                    </Border>
+
+                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                      Foreground="{TemplateBinding Foreground}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    </ContentPresenter>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <Grid x:Name="Half" Opacity="0">
+                            <Grid.Clip>
+                                <PathGeometry>
+                                    <PathFigure StartPoint="48,48" IsFilled="True">
+                                        <LineSegment Point="0,48"></LineSegment>
+                                        <LineSegment Point="48,0"></LineSegment>
+                                    </PathFigure>
+                                </PathGeometry>
+                            </Grid.Clip>
+
+                            <Border Background="#914E30" CornerRadius="5" ClipToBounds="True">
+                                <Grid ClipToBounds="True">
+                                    <Border Margin="3" Background="#D45E2A" CornerRadius="4" BorderThickness="2">
+                                        <Border.BorderBrush>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="Transparent" Offset="0.9" />
+                                                <GradientStop Color="#88333333" Offset="1" />
+                                            </RadialGradientBrush>
+                                        </Border.BorderBrush>
+                                    </Border>
+
+                                    <Border CornerRadius="24" Margin="1" BorderBrush="#88E4DBCD" BorderThickness="2">
+                                        <Border.Background>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="#AAFF4700" Offset="0.2" />
+                                                <GradientStop Color="#88CC3F00" Offset="1" />
+                                            </RadialGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+
+                                    <Border BorderBrush="#66E4D4CD" BorderThickness="2" Margin="-4" CornerRadius="100">
+                                    </Border>
+
+                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                      Foreground="{TemplateBinding Foreground}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    </ContentPresenter>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style Selector="^:empty /template/ Border#Inner">
+            <Setter Property="Background" Value="DimGray" />
+        </Style>
+        <Style Selector="^:empty /template/ Border#Dish">
+            <Setter Property="BorderBrush" Value="#88CCCCCC" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#66FFFFFF" Offset="0.2" />
+                        <GradientStop Color="#22AAAAAA" Offset="1" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:empty /template/ Border#OuterDish">
+            <Setter Property="BorderBrush" Value="#88CCCCCC" />
+        </Style>
+
+        <Style Selector="^:onair /template/ Border#OnAirTag">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:preview /template/ Border#Root,
+			             ^:toggle /template/ Border#Root">
+            <Setter Property="Background" Value="#309130" />
+        </Style>
+        <Style Selector="^:preview /template/ Border#Inner,
+			             ^:toggle /template/ Border#Inner">
+            <Setter Property="Background" Value="#2ad42a" />
+        </Style>
+        <Style Selector="^:preview /template/ Border#Dish,
+			             ^:toggle /template/ Border#Dish">
+            <Setter Property="BorderBrush" Value="#88cde4cd" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#AA00FF00" Offset="0.2" />
+                        <GradientStop Color="#8800CC00" Offset="1" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="^:preview /template/ Border#OuterDish,
+			             ^:toggle /template/ Border#OuterDish">
+            <Setter Property="BorderBrush" Value="#66cde4cd" />
+        </Style>
+        <Style Selector="^:preview /template/ Border#Glow,
+			             ^:toggle /template/ Border#Glow">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#6600FF00" Offset="0" />
+                        <GradientStop Color="#0000FF00" Offset="1" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style Selector="^:toggle /template/ Grid#Half">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+
+        <Style Selector="^:previewOff /template/ Border#Root">
+            <Setter Property="Background" Value="#914E30" />
+        </Style>
+        <Style Selector="^:previewOff /template/ Border#Inner">
+            <Setter Property="Background" Value="#D45E2A" />
+        </Style>
+        <Style Selector="^:previewOff /template/ Border#Dish">
+            <Setter Property="BorderBrush" Value="#88E4DBCD" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#AAFF4700" Offset="0.2" />
+                        <GradientStop Color="#88CC3F00" Offset="1" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="^:previewOff /template/ Border#OuterDish">
+            <Setter Property="BorderBrush" Value="#66E4D4CD" />
+        </Style>
+        <Style Selector="^:previewOff /template/ Border#Glow">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#66FF4E00" Offset="0" />
+                        <GradientStop Color="#00FF4E00" Offset="1" />
+                    </RadialGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pressed:not(:empty)">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

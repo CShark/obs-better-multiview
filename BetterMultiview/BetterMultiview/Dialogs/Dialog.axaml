@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="BetterMultiview.Dialogs.Dialog"
+		SizeToContent="WidthAndHeight"
+		WindowStartupLocation="CenterOwner"
+		DataContext="{Binding $self}"
+        Title="Dialog">
+	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="Margin" Value="5"/>
+		</Style>
+	</Window.Styles>
+	<Grid RowDefinitions="*,Auto">
+		<ContentPresenter Content="{Binding DialogContent}" ContentTemplate="{Binding DialogTemplate}"/>
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+			<Button Click="Apply_Click">Apply</Button>
+			<Button Click="Cancel_Click">Cancel</Button>
+		</StackPanel>
+	</Grid>
+</Window>
